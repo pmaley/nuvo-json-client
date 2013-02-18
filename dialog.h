@@ -26,7 +26,7 @@ private:
     void createMenu();
     void createTransportControlsBox();
     void createConsoleWindow();
-    void createMetadataBox();
+    void createMetadataBox(QStringList trackMetadata);
     void createNowPlayingBox();
 
     enum { NumGridRows = 3, NumButtons = 5 };
@@ -42,6 +42,10 @@ private:
 
     QMenu *fileMenu;
     QAction *exitAction;
+
+public slots:
+    void testFunction();
+
 };
 
 #endif // DIALOG_H

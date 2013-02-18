@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>aom.jpg</file>
+        <file>button_play_green.png</file>
+        <file>player_icons/dislike_normal.png</file>
+        <file>player_icons/dislike_normal@2x.png</file>
+        <file>player_icons/dislike_on.png</file>
+        <file>player_icons/dislike_on@2x.png</file>
+        <file>player_icons/like_normal.png</file>
+        <file>player_icons/like_normal@2x.png</file>
+        <file>player_icons/like_on.png</file>
+        <file>player_icons/like_on@2x.png</file>
+        <file>player_icons/next_normal.png</file>
+        <file>player_icons/next_normal@2x.png</file>
+        <file>player_icons/pause_normal.png</file>
+        <file>player_icons/pause_normal@2x.png</file>
+        <file>player_icons/play_normal.png</file>
+        <file>player_icons/play_normal@2x.png</file>
+        <file>player_icons/prev_normal.png</file>
+        <file>player_icons/prev_normal@2x.png</file>
+        <file>player_icons/stop_normal.png</file>
+        <file>player_icons/stop_normal@2x.png</file>
+        <file>player_icons/transport_glow.png</file>
+        <file>player_icons/transport_glow@2x.png</file>
+    </qresource>
+</RCC>
