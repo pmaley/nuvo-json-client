@@ -24,22 +24,19 @@ public:
 
 private:
     void createMenu();
-    void createHorizontalGroupBox();
-    void createVerticalGroupBox();
-    void createGridGroupBox();
-    void createFormGroupBox();
+    void createTransportControlsBox();
+    void createConsoleWindow();
+    void createMetadataBox();
+    void createNowPlayingBox();
 
     enum { NumGridRows = 3, NumButtons = 5 };
 
     QMenuBar *menuBar;
-    QGroupBox *horizontalGroupBox;
-    QGroupBox *verticalGroupBox;
-    QGroupBox *gridGroupBox;
-    QGroupBox *formGroupBox;
-    QTextEdit *smallEditor;
-    QTextEdit *bigEditor;
+    QGroupBox *transportControlsBox;
+    QGroupBox *metadataBox;
+    QGroupBox *nowPlayingBox;
+    QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
-    QLineEdit *lineEdits[NumGridRows];
     QPushButton *buttons[NumButtons];
     QDialogButtonBox *buttonBox;
 
