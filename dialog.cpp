@@ -35,6 +35,7 @@ void Dialog::createTransportControlsBox()
 
     QStringList transportControls = QStringList() << "dislike_normal@2x.png" << "like_normal@2x.png"
                                                   << "prev_normal@2x.png" << "play_normal@2x.png" << "next_normal@2x.png";
+    QStringList transportNames = QStringList() << "dislike" << "like" << "prev" << "play" << "next";
 
     for (int i = 0; i < transportControls.length(); ++i) {
         buttons[i] = new QPushButton();
@@ -87,6 +88,18 @@ void Dialog::createConsoleWindow()
 }
 
 void Dialog::testFunction(){
-    consoleWindow->append("Test button press");
+    consoleWindow->append(tr("PRESSED BUTTON. paused = %2").arg(paused));
+    QPixmap* pixmap;
+    if (paused == false){
+        pixmap = new QPixmap(":/images/player_icons/pause_normal@2x.png");
+        paused = true;
+    } else {
+        pixmap = new QPixmap(":/images/player_icons/play_normal@2x.png");
+        paused = false;
+    }
+    QIcon ButtonIcon(*pixmap);
+    buttons[3]->setIcon(ButtonIcon);
+    buttons[3]->setIconSize(pixmap->rect().size());
     consoleWindow->repaint();
+
 }

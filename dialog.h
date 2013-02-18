@@ -39,6 +39,7 @@ private:
     QLabel *labels[NumGridRows];
     QPushButton *buttons[NumButtons];
     QDialogButtonBox *buttonBox;
+    bool paused = false;
 
     QMenu *fileMenu;
     QAction *exitAction;
