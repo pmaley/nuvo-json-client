@@ -16,7 +16,6 @@ Dialog::Dialog()
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox);
     mainLayout->addWidget(transportControlsBox);
-    mainLayout->addWidget(consoleWindow);
     mainLayout->addWidget(consoleBox);
     setLayout(mainLayout);
 
@@ -71,7 +70,7 @@ void Dialog::createNowPlayingBox()
     nowPlayingBox = new QGroupBox();
     QGridLayout *layout = new QGridLayout;
     QPixmap *image = new QPixmap(":/images/aom.jpg");
-    image = new QPixmap(image->scaledToWidth(200));
+    image = new QPixmap(image->scaledToHeight(100));
     QLabel *imageLabel = new QLabel();
     imageLabel->setPixmap(*image);
     layout->addWidget(imageLabel,0,0);
@@ -98,7 +97,6 @@ void Dialog::testFunction(){
     buttons[3]->setIcon(ButtonIcon);
     buttons[3]->setIconSize(pixmap->rect().size());
     consoleWindow->repaint();
-
 }
 
 void Dialog::createConsoleBox(){
@@ -112,7 +110,7 @@ void Dialog::createConsoleBox(){
     portLineEdit = new QLineEdit("2000");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
     commandTextEdit = new QTextEdit;
-    commandTextEdit->setFixedHeight(100);
+    commandTextEdit->setFixedHeight(50);
     consoleTextEdit = new QTextEdit;
     consoleTextEdit->setReadOnly(true);
 
@@ -143,29 +141,37 @@ void Dialog::createConsoleBox(){
     mainLayout->addWidget(consoleTextEdit, 3, 0, 1, 2);
     mainLayout->addWidget(buttonBox2, 4, 0, 1, 2);
 
-//    setWindowTitle(tr("TCP Client"));
-//    this->resize(800,1200);
-//    portLineEdit->setFocus();
+    portLineEdit->setFocus();
     consoleBox->setLayout(mainLayout);
 }
 
 void Dialog::requestNewFortune() {
+    qDebug() << "In requestNewFortune()";
     getFortuneButton->setEnabled(false);
     blockSize = 0;
     if (!tcpSocket->isOpen()){
-        tcpSocket->abort();
-        tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
+        openConnection();
     } else {
         QString command = commandTextEdit->toPlainText();
         QByteArray byteArray = command.toUtf8();
         const char* cString = byteArray.constData();
         tcpSocket->write(cString);
+        qDebug() << cString << "written to socket";
         commandTextEdit->setText("");
+    }
+}
+
+void Dialog::openConnection() {
+    qDebug() << "In openConnection()";
+    if (!tcpSocket->isOpen()){
+        tcpSocket->abort();
+        tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
     }
 }
 
 void Dialog::readFortune()
 {
+    qDebug() << "In readFortune()";
     QDataStream in(tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
 
@@ -176,6 +182,7 @@ void Dialog::readFortune()
     if ( strlen(data) != blockSize )
         qDebug() << "DATA SIZE DOES NOT MATCH BLOCK SIZE";
     consoleTextEdit->append(data);
+    qDebug() << data;
     parseJson(QString(data));
     consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
     getFortuneButton->setEnabled(true);

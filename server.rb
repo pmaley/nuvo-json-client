@@ -33,6 +33,10 @@ EOF
 server = TCPServer.new 2000 # Server bind to port 2000
 loop do
   client = server.accept    # Wait for a client to connect
+  client.puts "Protocol: Tesla JSON 1.0"
+  client.gets
+  puts "Recv. #2"
   client.puts JSON.parse(response).to_json
+  puts "Closing client"
   client.close
 end

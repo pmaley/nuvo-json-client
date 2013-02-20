@@ -75,6 +75,7 @@ private slots:
     void readFortune();
     void displayError(QAbstractSocket::SocketError socketError);
     void enableGetFortuneButton();
+    void openConnection();
 
 };
 
