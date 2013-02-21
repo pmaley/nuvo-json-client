@@ -2,6 +2,9 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include <QTcpSocket>
+#include <QScriptEngine>
+#include <QHash>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -13,6 +16,9 @@ class QMenu;
 class QMenuBar;
 class QPushButton;
 class QTextEdit;
+class QGridLayout;
+class QTcpSocket;
+class QNetworkSession;
 QT_END_NAMESPACE
 
 class Dialog : public QDialog
@@ -21,11 +27,12 @@ class Dialog : public QDialog
 
 public:
     Dialog();
+    void parseJson(QString json);
 
 private:
     void createMenu();
     void createTransportControlsBox();
-    void createConsoleWindow();
+    void createConsoleBox();
     void createMetadataBox(QStringList trackMetadata);
     void createNowPlayingBox();
 
@@ -35,17 +42,40 @@ private:
     QGroupBox *transportControlsBox;
     QGroupBox *metadataBox;
     QGroupBox *nowPlayingBox;
+    QGroupBox *consoleBox;
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
     QPushButton *buttons[NumButtons];
     QDialogButtonBox *buttonBox;
     bool paused = false;
+    QLabel *hostLabel;
+    QLabel *portLabel;
+    QLineEdit *hostCombo;
+    QLineEdit *portLineEdit;
+    QTextEdit *commandTextEdit;
+    QTextEdit *consoleTextEdit;
+    QPushButton *getFortuneButton;
+    QPushButton *quitButton;
+    QDialogButtonBox *buttonBox2;
 
     QMenu *fileMenu;
     QAction *exitAction;
 
+    QTcpSocket *tcpSocket;
+    QString currentFortune;
+    quint16 blockSize;
+
+    QNetworkSession *networkSession;
+
 public slots:
     void testFunction();
+
+private slots:
+    void requestNewFortune();
+    void readFortune();
+    void displayError(QAbstractSocket::SocketError socketError);
+    void enableGetFortuneButton();
+    void openConnection();
 
 };
 

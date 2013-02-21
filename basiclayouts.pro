@@ -1,4 +1,4 @@
-QT += widgets
+QT += widgets network script
 
 HEADERS     = dialog.h
 SOURCES     = dialog.cpp \
