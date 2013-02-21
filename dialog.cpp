@@ -12,6 +12,9 @@ Dialog::Dialog()
     createNowPlayingBox();
     createConsoleBox();
 
+    m_netwManager = new QNetworkAccessManager(this);
+    connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox);
@@ -39,9 +42,7 @@ void Dialog::createTransportControlsBox()
     transportControlsBox = new QGroupBox();
     QHBoxLayout *layout = new QHBoxLayout;
 
-    QStringList transportControls = QStringList() << "dislike_normal@2x.png" << "like_normal@2x.png"
-                                                  << "prev_normal@2x.png" << "play_normal@2x.png" << "next_normal@2x.png";
-    QStringList transportNames = QStringList() << "dislike" << "like" << "prev" << "play" << "next";
+    QStringList transportControls = QStringList() << "dislike_normal@2x.png" << "like_normal@2x.png" << "prev_normal@2x.png" << "play_normal@2x.png" << "next_normal@2x.png";
 
     for (int i = 0; i < transportControls.length(); ++i) {
         buttons[i] = new QPushButton();
@@ -74,7 +75,7 @@ void Dialog::createNowPlayingBox()
     QGridLayout *layout = new QGridLayout;
     QPixmap *image = new QPixmap(":/images/aom.jpg");
     image = new QPixmap(image->scaledToHeight(100));
-    QLabel *imageLabel = new QLabel();
+    imageLabel = new QLabel();
     imageLabel->setPixmap(*image);
     layout->addWidget(imageLabel,0,0);
     QStringList trackMetadata = QStringList() << "Fear Before the March of Flames Radio" << "<b>Dog Sized Bird</b>"
@@ -87,6 +88,7 @@ void Dialog::createNowPlayingBox()
 }
 
 void Dialog::testFunction(){
+    qDebug() << "ENTERING" << __func__;
     QPixmap* pixmap;
     if (paused == false){
         pixmap = new QPixmap(":/images/player_icons/pause_normal@2x.png");
@@ -128,7 +130,7 @@ void Dialog::createConsoleBox(){
 
     connect(getFortuneButton, SIGNAL(clicked()), this, SLOT(requestNewFortune()));
     connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
-    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readFortune()));
+    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -145,13 +147,15 @@ void Dialog::createConsoleBox(){
 }
 
 void Dialog::requestNewFortune() {
-    qDebug() << "In requestNewFortune()";
+    qDebug() << "ENTERING" << __func__;
     getFortuneButton->setEnabled(false);
     blockSize = 0;
     if (!tcpSocket->isOpen()){
         openConnection();
     } else {
         QString command = commandTextEdit->toPlainText();
+        QString alertHtml  = tr("<font color=\"Red\">%1</font><br>").arg(command);
+        consoleTextEdit->append(alertHtml);
         QByteArray byteArray = command.toUtf8();
         const char* cString = byteArray.constData();
         tcpSocket->write(cString);
@@ -161,16 +165,16 @@ void Dialog::requestNewFortune() {
 }
 
 void Dialog::openConnection() {
-    qDebug() << "In openConnection()";
+    qDebug() << "ENTERING" << __func__;
     if (!tcpSocket->isOpen()){
         tcpSocket->abort();
         tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
     }
 }
 
-void Dialog::readFortune()
+void Dialog::messageReceived()
 {
-    qDebug() << "In readFortune()";
+    qDebug() << "ENTERING" << __func__;
     QDataStream in(tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
 
@@ -181,8 +185,8 @@ void Dialog::readFortune()
     if ( strlen(data) != blockSize )
         qDebug() << "DATA SIZE DOES NOT MATCH BLOCK SIZE";
     consoleTextEdit->append(data);
-    qDebug() << data;
-    parseJson(QString(data));
+    //qDebug() << data;
+    parseJsonResponse(QString(data));
     consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
     getFortuneButton->setEnabled(true);
     delete(data);
@@ -219,15 +223,83 @@ void Dialog::enableGetFortuneButton()
     getFortuneButton->setEnabled((!networkSession || networkSession->isOpen()) && !hostCombo->text().isEmpty() && !portLineEdit->text().isEmpty());
 }
 
-void Dialog::parseJson(QString result){
+void Dialog::parseJsonResponse(QString result){
+    qDebug() << "ENTERING" << __func__;
     QScriptValue sc;
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
-//    QScriptValueIterator it(sc);
-//    while (it.hasNext()) {
-//        it.next();
-//        qDebug() << it.name() << ": " << it.value().toString();
-//    }
     qDebug() << "Recv. on channel " << sc.property("channel").toString();
-    qDebug() << "Result: " << endl << sc.property("result").toString();
+    qDebug() << "Message type:" << sc.property("type").toString();
+//    if (sc.property("result").property("children").isArray() ){
+//        QScriptValueIterator it(sc.property("result").property("children"));
+//        while (it.hasNext()) {
+//            it.next();
+//            qDebug() << it.name() << ": " << it.value().property("id").toString();
+//        }
+//    }
+    QString type = sc.property("type").toString();
+    if (type == "reply") {
+        updateNowPlayingInfo(sc);
+    } else if ( type == "event"){
+        parseEventMessage(sc);
+    }
+
+}
+
+void Dialog::updateNowPlayingInfo(QScriptValue sc){
+    qDebug() << "ENTERING" << __func__;
+    if (sc.property("result").property("children").isArray() ){
+        qDebug() << "IS ARRAY";
+        QScriptValueIterator it(sc.property("result").property("children"));
+        while (it.hasNext()) {
+            it.next();
+            QScriptValue current = it.value();
+            if (current.property("id").toString() == "info"){
+                parseTrackMetadata(current);
+            }
+        }
+    }
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::parseEventMessage(QScriptValue sc){
+    qDebug() << "ENTERING" << __func__;
+    if (sc.property("event").isArray() ){
+        qDebug() << "IS ARRAY";
+        QScriptValueIterator it(sc.property("event"));
+        while (it.hasNext()) {
+            it.next();
+            QScriptValue current = it.value();
+            if (current.property("id").toString() == "info"){
+                parseTrackMetadata(current);
+            }
+        }
+    }
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::parseTrackMetadata(QScriptValue value){
+    QScriptValue item = value.property("item");
+    qDebug() << item.property("title").toString();
+    qDebug() << item.property("longDescription").toString();
+    qDebug() << item.property("description").toString();
+    labels[0]->setText(item.property("title").toString());
+    labels[1]->setText(tr("<b>%1</b>").arg(item.property("description").toString()));
+    labels[2]->setText(item.property("longDescription").toString());
+    QUrl url(item.property("icon").toString());
+    QNetworkRequest request(url);
+    m_netwManager->get(request);
+}
+
+void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
+{
+    if (reply->error() != QNetworkReply::NoError) {
+        qDebug() << "Error in" << reply->url() << ":" << reply->errorString();
+        return;
+    }
+
+    QByteArray jpegData = reply->readAll();
+    QPixmap pixmap;
+    pixmap.loadFromData(jpegData);
+    imageLabel->setPixmap(pixmap.scaledToHeight(100)); // or whatever your labels name is
 }

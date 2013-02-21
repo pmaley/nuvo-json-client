@@ -21,6 +21,8 @@ class QTextEdit;
 class QGridLayout;
 class QTcpSocket;
 class QNetworkSession;
+class QNetworkAccessManager;
+class QNetworkReply;
 QT_END_NAMESPACE
 
 class Dialog : public QDialog
@@ -29,7 +31,7 @@ class Dialog : public QDialog
 
 public:
     Dialog();
-    void parseJson(QString json);
+    void parseJsonResponse(QString json);
 
 private:
     void createMenu();
@@ -37,6 +39,9 @@ private:
     void createConsoleBox();
     void createMetadataBox(QStringList trackMetadata);
     void createNowPlayingBox();
+    void updateNowPlayingInfo(QScriptValue sc);
+    void parseEventMessage(QScriptValue sc);
+    void parseTrackMetadata(QScriptValue value);
 
     enum { NumGridRows = 3, NumButtons = 5 };
 
@@ -54,6 +59,7 @@ private:
     bool paused = false;
     QLabel *hostLabel;
     QLabel *portLabel;
+    QLabel *imageLabel;
     QLineEdit *hostCombo;
     QLineEdit *portLineEdit;
     QTextEdit *commandTextEdit;
@@ -70,16 +76,18 @@ private:
     quint16 blockSize;
 
     QNetworkSession *networkSession;
+    QNetworkAccessManager *m_netwManager;
 
 public slots:
     void testFunction();
 
 private slots:
     void requestNewFortune();
-    void readFortune();
+    void messageReceived();
     void displayError(QAbstractSocket::SocketError socketError);
     void enableGetFortuneButton();
     void openConnection();
+    void slot_netwManagerFinished(QNetworkReply *reply);
 
 };
 

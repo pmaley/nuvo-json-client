@@ -1,10 +1,12 @@
 QT += widgets network script
 
 HEADERS     = dialog.h \
-    nuvogroup.h
+    nuvogroup.h \
+    nuvotransportcontrol.h
 SOURCES     = dialog.cpp \
               main.cpp \
-    nuvogroup.cpp
+    nuvogroup.cpp \
+    nuvotransportcontrol.cpp
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/widgets/layouts/basiclayouts

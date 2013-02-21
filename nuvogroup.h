@@ -6,6 +6,8 @@
 #include <QScriptEngine>
 #include <QHash>
 
+#include "nuvotransportcontrol.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QDialogButtonBox;
