@@ -1,8 +1,9 @@
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QScriptValueIterator>
-#include "dialog.h"
 
+#include "dialog.h"
+#include "nuvogroup.h"
 
 Dialog::Dialog()
 {
@@ -10,7 +11,6 @@ Dialog::Dialog()
     createTransportControlsBox();
     createNowPlayingBox();
     createConsoleBox();
-
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
@@ -20,6 +20,9 @@ Dialog::Dialog()
     setLayout(mainLayout);
 
     setWindowTitle(tr("NWAS API Controller"));
+    resize(1000,1000);
+
+    group = new NuvoGroup();
 }
 
 void Dialog::createMenu()
@@ -84,7 +87,6 @@ void Dialog::createNowPlayingBox()
 }
 
 void Dialog::testFunction(){
-    consoleWindow->append(tr("PRESSED BUTTON. paused = %2").arg(paused));
     QPixmap* pixmap;
     if (paused == false){
         pixmap = new QPixmap(":/images/player_icons/pause_normal@2x.png");
@@ -96,7 +98,6 @@ void Dialog::testFunction(){
     QIcon ButtonIcon(*pixmap);
     buttons[3]->setIcon(ButtonIcon);
     buttons[3]->setIconSize(pixmap->rect().size());
-    consoleWindow->repaint();
 }
 
 void Dialog::createConsoleBox(){
@@ -104,10 +105,8 @@ void Dialog::createConsoleBox(){
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    //hostCombo = new QLineEdit("mps4e.nuvotechnologies.com");
-    hostCombo = new QLineEdit("127.0.0.1");
-    //portLineEdit = new QLineEdit("23");
-    portLineEdit = new QLineEdit("2000");
+    hostCombo = new QLineEdit("192.168.1.122");
+    portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
     commandTextEdit = new QTextEdit;
     commandTextEdit->setFixedHeight(50);
@@ -224,9 +223,11 @@ void Dialog::parseJson(QString result){
     QScriptValue sc;
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
-    QScriptValueIterator it(sc);
-    while (it.hasNext()) {
-        it.next();
-        qDebug() << it.name() << ": " << it.value().toString();
-    }
+//    QScriptValueIterator it(sc);
+//    while (it.hasNext()) {
+//        it.next();
+//        qDebug() << it.name() << ": " << it.value().toString();
+//    }
+    qDebug() << "Recv. on channel " << sc.property("channel").toString();
+    qDebug() << "Result: " << endl << sc.property("result").toString();
 }

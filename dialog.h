@@ -6,6 +6,8 @@
 #include <QScriptEngine>
 #include <QHash>
 
+#include "nuvogroup.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QDialogButtonBox;
@@ -37,6 +39,8 @@ private:
     void createNowPlayingBox();
 
     enum { NumGridRows = 3, NumButtons = 5 };
+
+    NuvoGroup* group;
 
     QMenuBar *menuBar;
     QGroupBox *transportControlsBox;
