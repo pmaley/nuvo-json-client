@@ -39,7 +39,7 @@ private:
     void createConsoleBox();
     void createMetadataBox(QStringList trackMetadata);
     void createNowPlayingBox();
-    void updateNowPlayingInfo(QScriptValue sc);
+    void parseReplyMessage(QScriptValue sc);
     void parseEventMessage(QScriptValue sc);
     void parseTrackMetadata(QScriptValue value);
 

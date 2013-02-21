@@ -177,7 +177,6 @@ void Dialog::messageReceived()
     qDebug() << "ENTERING" << __func__;
     QDataStream in(tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
-
     blockSize = tcpSocket->bytesAvailable()/sizeof(char);
     char * data = new char[blockSize];
     in.readRawData(data,blockSize);
@@ -229,24 +228,18 @@ void Dialog::parseJsonResponse(QString result){
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
     qDebug() << "Recv. on channel " << sc.property("channel").toString();
-    qDebug() << "Message type:" << sc.property("type").toString();
-//    if (sc.property("result").property("children").isArray() ){
-//        QScriptValueIterator it(sc.property("result").property("children"));
-//        while (it.hasNext()) {
-//            it.next();
-//            qDebug() << it.name() << ": " << it.value().property("id").toString();
-//        }
-//    }
+
     QString type = sc.property("type").toString();
+    qDebug() << "Message type:" << type;
     if (type == "reply") {
-        updateNowPlayingInfo(sc);
+        parseReplyMessage(sc);
     } else if ( type == "event"){
         parseEventMessage(sc);
     }
 
 }
 
-void Dialog::updateNowPlayingInfo(QScriptValue sc){
+void Dialog::parseReplyMessage(QScriptValue sc){
     qDebug() << "ENTERING" << __func__;
     if (sc.property("result").property("children").isArray() ){
         qDebug() << "IS ARRAY";
@@ -271,7 +264,7 @@ void Dialog::parseEventMessage(QScriptValue sc){
             it.next();
             QScriptValue current = it.value();
             if (current.property("id").toString() == "info"){
-                parseTrackMetadata(current);
+                parseTrackMetadata(current.property("item"));
             }
         }
     }
@@ -279,7 +272,8 @@ void Dialog::parseEventMessage(QScriptValue sc){
 }
 
 void Dialog::parseTrackMetadata(QScriptValue value){
-    QScriptValue item = value.property("item");
+    qDebug() << "ENTERING" << __func__;
+    QScriptValue item = value;
     qDebug() << item.property("title").toString();
     qDebug() << item.property("longDescription").toString();
     qDebug() << item.property("description").toString();
@@ -289,6 +283,7 @@ void Dialog::parseTrackMetadata(QScriptValue value){
     QUrl url(item.property("icon").toString());
     QNetworkRequest request(url);
     m_netwManager->get(request);
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
