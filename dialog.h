@@ -47,6 +47,7 @@ private:
     void parseChildValueChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);
     void parseChildRemovedMessage(QScriptValue value);
+    void invokeAction(NuvoTransportControl *action);
 
     enum { NumGridRows = 3, NumButtons = 5 };
 
@@ -101,6 +102,7 @@ private slots:
     void enableSendButton();
     void openConnection();
     void slot_netwManagerFinished(QNetworkReply *reply);
+    void prevButtonPressed();
     void nextButtonPressed();
     void playButtonPressed();
     void pauseButtonPressed();

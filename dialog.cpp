@@ -79,7 +79,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon4(pixmap4);
     prevButton->setIcon(buttonIcon4);
     prevButton->setIconSize(pixmap4.rect().size());
-    connect(pauseButton,SIGNAL(clicked()),this,SLOT(prevButtonPressed()));
+    connect(prevButton,SIGNAL(clicked()),this,SLOT(prevButtonPressed()));
 
 
     for (int i = 0; i < transportControls.length(); ++i) {
@@ -145,6 +145,15 @@ void Dialog::testFunction(){
     buttons[3]->setIconSize(pixmap->rect().size());
 }
 
+void Dialog::prevButtonPressed(){
+    qDebug() << "ENTERING" << __func__;
+    QString url(prevActionItem->property("url").toString());
+    QString name(prevActionItem->property("name").toString());
+    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
 void Dialog::nextButtonPressed(){
     qDebug() << "ENTERING" << __func__;
     QString url(nextActionItem->property("url").toString());
@@ -169,6 +178,13 @@ void Dialog::pauseButtonPressed(){
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
+
+void Dialog::invokeAction(NuvoTransportControl *action){
+    qDebug() << "ENTERING" << __func__;
+
+    qDebug() << "EXITING" << __func__;
+}
+
 
 void Dialog::createConsoleBox()
 {
@@ -392,6 +408,8 @@ void Dialog::parseActionItem(QScriptValue value)
         playActionItem->setProperty("url",url);
     } else if ( value.property("id").toString() == "pause"){
         pauseActionItem->setProperty("url",url);
+    } else if ( value.property("id").toString() == "previous"){
+        prevActionItem->setProperty("url",url);
     }
     qDebug() << "EXITING" << __func__;
 }
