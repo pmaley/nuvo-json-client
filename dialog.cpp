@@ -29,6 +29,7 @@ Dialog::Dialog()
 
     group = new NuvoGroup();
     prevActionItem = new NuvoTransportControl("prev","");
+    stopActionItem = new NuvoTransportControl("stop","");
     pauseActionItem = new NuvoTransportControl("pause","");
     playActionItem = new NuvoTransportControl("play","");
     nextActionItem = new NuvoTransportControl("next","");
@@ -82,7 +83,16 @@ void Dialog::createTransportControlsBox()
     prevButton->setIconSize(pixmap4.rect().size());
     connect(prevButton,SIGNAL(clicked()),this,SLOT(prevButtonPressed()));
 
+    // Create stop button
+    stopButton = new QPushButton();
+    QPixmap pixmap5(":/images/player_icons/stop_normal.png");
+    QIcon buttonIcon5(pixmap5);
+    stopButton->setIcon(buttonIcon5);
+    stopButton->setIconSize(pixmap5.rect().size());
+    connect(stopButton,SIGNAL(clicked()),this,SLOT(stopButtonPressed()));
+
     layout->addWidget(prevButton);
+    layout->addWidget(stopButton);
     layout->addWidget(pauseButton);
     layout->addWidget(playButton);
     layout->addWidget(nextButton);
@@ -169,9 +179,21 @@ void Dialog::pauseButtonPressed(){
     qDebug() << "EXITING" << __func__;
 }
 
-void Dialog::invokeAction(NuvoTransportControl *action){
+void Dialog::stopButtonPressed(){
     qDebug() << "ENTERING" << __func__;
+    QString url(stopActionItem->property("url").toString());
+    QString name(stopActionItem->property("name").toString());
+    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
 
+void Dialog::invokeAction(NuvoTransportControl *actionItem){
+    qDebug() << "ENTERING" << __func__;
+    QString url(actionItem->property("url").toString());
+    QString name(actionItem->property("name").toString());
+    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
+    sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
 
@@ -266,21 +288,18 @@ void Dialog::messageReceived()
     data[blockSize] = '\0';
 
     consoleTextEdit->append(data);
-    currentMessage.append(QString(data));
+    consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
+
+    currentMessage.append(QString(data));    
 
     if (currentMessage.contains('\n')){
-        lastMessage = QString(currentMessage);
-        qDebug() << lastMessage;
-        QRegExp rx("\n");
-        QStringList query = lastMessage.split(rx);
+        QStringList query = currentMessage.split(QRegExp("\n"));
         for (int i = 0; i < query.length()-1; i++){
             qDebug() << "message" << i+1 << ":" << QString(query.at(i));
-            //messageQueue.enqueue(lastMessage);
+            //messageQueue.enqueue(QString(query.at(i)));
             parseJsonResponse(QString(query.at(i)));
         }
         currentMessage = QString(query.last());
-
-        consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
         sendButton->setEnabled(true);
     }
     delete(data);
@@ -410,6 +429,8 @@ void Dialog::parseActionItem(QScriptValue value)
         pauseActionItem->setProperty("url",url);
     } else if ( value.property("id").toString() == "previous"){
         prevActionItem->setProperty("url",url);
+    } else if ( value.property("id").toString() == "stop"){
+        stopActionItem->setProperty("url",url);
     }
     qDebug() << "EXITING" << __func__;
 }

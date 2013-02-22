@@ -63,7 +63,7 @@ private:
     QLabel *labels[NumGridRows];
 
     QPushButton *buttons[NumButtons];
-    QPushButton *nextButton, *playButton, *pauseButton, *prevButton;
+    QPushButton *nextButton, *playButton, *pauseButton, *prevButton, *stopButton;
 
     QDialogButtonBox *buttonBox;
     bool paused = false;
@@ -91,7 +91,7 @@ private:
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
 
-    NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem, *prevActionItem;
+    NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem, *prevActionItem, *stopActionItem;
 
     QQueue<QString> messageQueue;
 
@@ -109,6 +109,7 @@ private slots:
     void nextButtonPressed();
     void playButtonPressed();
     void pauseButtonPressed();
+    void stopButtonPressed();
     void sendRequest(QString request);
 };
 

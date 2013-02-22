@@ -1,11 +1,9 @@
 QT += widgets network script
 
 HEADERS     = dialog.h \
-    nuvogroup.h \
     nuvotransportcontrol.h
 SOURCES     = dialog.cpp \
               main.cpp \
-    nuvogroup.cpp \
     nuvotransportcontrol.cpp
 
 # install
