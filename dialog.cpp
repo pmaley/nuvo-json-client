@@ -4,7 +4,6 @@
 #include <QQueue>
 
 #include "dialog.h"
-#include "nuvogroup.h"
 #include "nuvotransportcontrol.h"
 
 Dialog::Dialog()
@@ -27,7 +26,6 @@ Dialog::Dialog()
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
 
-    group = new NuvoGroup();
     prevActionItem = new NuvoTransportControl("prev","");
     stopActionItem = new NuvoTransportControl("stop","");
     pauseActionItem = new NuvoTransportControl("pause","");
@@ -48,8 +46,6 @@ void Dialog::createTransportControlsBox()
 {
     transportControlsBox = new QGroupBox();
     QHBoxLayout *layout = new QHBoxLayout;
-
-    //QStringList transportControls = QStringList() << "dislike_normal.png" << "like_normal.png";
 
     // Create next button
     nextButton = new QPushButton();
@@ -146,46 +142,19 @@ void Dialog::testFunction(){
 }
 
 void Dialog::prevButtonPressed(){
-    qDebug() << "ENTERING" << __func__;
-    QString url(prevActionItem->property("url").toString());
-    QString name(prevActionItem->property("name").toString());
-    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
-    sendRequest(request);
-    qDebug() << "EXITING" << __func__;
+    invokeAction(prevActionItem);
 }
-
 void Dialog::nextButtonPressed(){
-    qDebug() << "ENTERING" << __func__;
-    QString url(nextActionItem->property("url").toString());
-    QString request(tr(" { \"id\":\"next\", \"url\":\"%1\", \"method\":\"invoke\" }").arg(url));
-    sendRequest(request);
-    qDebug() << "EXITING" << __func__;
+    invokeAction(nextActionItem);
 }
-
 void Dialog::playButtonPressed(){
-    qDebug() << "ENTERING" << __func__;
-    QString url(playActionItem->property("url").toString());
-    QString request(tr(" { \"id\":\"play\", \"url\":\"%1\", \"method\":\"invoke\" }").arg(url));
-    sendRequest(request);
-    qDebug() << "EXITING" << __func__;
+    invokeAction(playActionItem);
 }
-
 void Dialog::pauseButtonPressed(){
-    qDebug() << "ENTERING" << __func__;
-    QString url(pauseActionItem->property("url").toString());
-    QString name(pauseActionItem->property("name").toString());
-    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
-    sendRequest(request);
-    qDebug() << "EXITING" << __func__;
+    invokeAction(pauseActionItem);
 }
-
 void Dialog::stopButtonPressed(){
-    qDebug() << "ENTERING" << __func__;
-    QString url(stopActionItem->property("url").toString());
-    QString name(stopActionItem->property("name").toString());
-    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
-    sendRequest(request);
-    qDebug() << "EXITING" << __func__;
+    invokeAction(stopActionItem);
 }
 
 void Dialog::invokeAction(NuvoTransportControl *actionItem){
@@ -444,6 +413,21 @@ void Dialog::parseTrackMetadata(QScriptValue value){
     QNetworkRequest request(url);
     m_netwManager->get(request);
     qDebug() << "EXITING" << __func__;
+}
+
+NuvoTransportControl* Dialog::findActionItem(QString id)
+{
+    if ( id == "next"){
+        return nextActionItem;
+    } else if ( id == "play"){
+        return playActionItem;
+    } else if ( id == "pause"){
+        return pauseActionItem;
+    } else if ( id == "previous"){
+        return prevActionItem;
+    } else if ( id == "stop"){
+        return stopActionItem;
+    }
 }
 
 void Dialog::slot_netwManagerFinished(QNetworkReply *reply)

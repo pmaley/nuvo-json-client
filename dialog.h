@@ -7,7 +7,6 @@
 #include <QHash>
 #include <QQueue>
 
-#include "nuvogroup.h"
 #include "nuvotransportcontrol.h"
 
 QT_BEGIN_NAMESPACE
@@ -49,10 +48,9 @@ private:
     void parseChildInsertedMessage(QScriptValue value);
     void parseChildRemovedMessage(QScriptValue value);
     void invokeAction(NuvoTransportControl *action);
+    NuvoTransportControl* findActionItem(QString id);
 
     enum { NumGridRows = 3, NumButtons = 5 };
-
-    NuvoGroup* group;
 
     QMenuBar *menuBar;
     QGroupBox *transportControlsBox;
