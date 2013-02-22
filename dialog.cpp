@@ -141,21 +141,11 @@ void Dialog::testFunction(){
     buttons[3]->setIconSize(pixmap->rect().size());
 }
 
-void Dialog::prevButtonPressed(){
-    invokeAction(prevActionItem);
-}
-void Dialog::nextButtonPressed(){
-    invokeAction(nextActionItem);
-}
-void Dialog::playButtonPressed(){
-    invokeAction(playActionItem);
-}
-void Dialog::pauseButtonPressed(){
-    invokeAction(pauseActionItem);
-}
-void Dialog::stopButtonPressed(){
-    invokeAction(stopActionItem);
-}
+void Dialog::prevButtonPressed(){ invokeAction(prevActionItem); }
+void Dialog::nextButtonPressed(){ invokeAction(nextActionItem); }
+void Dialog::playButtonPressed(){  invokeAction(playActionItem); }
+void Dialog::pauseButtonPressed(){ invokeAction(pauseActionItem); }
+void Dialog::stopButtonPressed(){ invokeAction(stopActionItem); }
 
 void Dialog::invokeAction(NuvoTransportControl *actionItem){
     qDebug() << "ENTERING" << __func__;
@@ -321,6 +311,7 @@ void Dialog::parseJsonResponse(QString result)
     } else if ( type == "event"){
         parseEventMessage(sc);
     }
+    qDebug() << "EXITING" << __func__;
 
 }
 
@@ -374,8 +365,8 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
 void Dialog::parseChildInsertedMessage(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
     qDebug() << value.property("id").toString();
-    qDebug() << "EXITING" << __func__;
     parseActionItem(value.property("item"));
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::parseChildRemovedMessage(QScriptValue value){
@@ -388,19 +379,11 @@ void Dialog::parseActionItem(QScriptValue value)
 {
     qDebug() << "ENTERING" << __func__;
     QString url(value.property("url").toString());
-    qDebug() << value.property("id").toString();
-    qDebug() << url;
-    if ( value.property("id").toString() == "next"){
-        nextActionItem->setProperty("url",url);
-    } else if ( value.property("id").toString() == "play"){
-        playActionItem->setProperty("url",url);
-    } else if ( value.property("id").toString() == "pause"){
-        pauseActionItem->setProperty("url",url);
-    } else if ( value.property("id").toString() == "previous"){
-        prevActionItem->setProperty("url",url);
-    } else if ( value.property("id").toString() == "stop"){
-        stopActionItem->setProperty("url",url);
-    }
+    QString id(value.property("id").toString());
+    qDebug() << id << ":" << url;
+    NuvoTransportControl *actionItem = findActionItem(id);
+    if (actionItem)
+        actionItem->setProperty("url",url);
     qDebug() << "EXITING" << __func__;
 }
 
@@ -427,6 +410,8 @@ NuvoTransportControl* Dialog::findActionItem(QString id)
         return prevActionItem;
     } else if ( id == "stop"){
         return stopActionItem;
+    } else {
+        return NULL;
     }
 }
 
