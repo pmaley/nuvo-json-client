@@ -44,7 +44,9 @@ private:
     void parseEventMessage(QScriptValue sc);
     void parseTrackMetadata(QScriptValue value);
     void parseActionItem(QScriptValue value);
-
+    void parseChildValueChangedMessage(QScriptValue value);
+    void parseChildInsertedMessage(QScriptValue value);
+    void parseChildRemovedMessage(QScriptValue value);
 
     enum { NumGridRows = 3, NumButtons = 5 };
 
@@ -59,7 +61,7 @@ private:
     QLabel *labels[NumGridRows];
 
     QPushButton *buttons[NumButtons];
-    QPushButton *nextButton, *playButton, *pauseButton;
+    QPushButton *nextButton, *playButton, *pauseButton, *prevButton;
 
     QDialogButtonBox *buttonBox;
     bool paused = false;
@@ -70,7 +72,7 @@ private:
     QLineEdit *portLineEdit;
     QTextEdit *commandTextEdit;
     QTextEdit *consoleTextEdit;
-    QPushButton *getFortuneButton;
+    QPushButton *sendButton;
     QPushButton *quitButton;
     QDialogButtonBox *buttonBox2;
 
@@ -87,7 +89,7 @@ private:
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
 
-    NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem;
+    NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem, *prevActionItem;
 
 public slots:
     void testFunction();
@@ -96,11 +98,12 @@ private slots:
     void requestNewFortune();
     void messageReceived();
     void displayError(QAbstractSocket::SocketError socketError);
-    void enableGetFortuneButton();
+    void enableSendButton();
     void openConnection();
     void slot_netwManagerFinished(QNetworkReply *reply);
     void nextButtonPressed();
     void playButtonPressed();
+    void pauseButtonPressed();
     void sendRequest(QString request);
 };
 
