@@ -47,7 +47,7 @@ void Dialog::createTransportControlsBox()
     transportControlsBox = new QGroupBox();
     QHBoxLayout *layout = new QHBoxLayout;
 
-    QStringList transportControls = QStringList() << "dislike_normal.png" << "like_normal.png";
+    //QStringList transportControls = QStringList() << "dislike_normal.png" << "like_normal.png";
 
     // Create next button
     nextButton = new QPushButton();
@@ -80,17 +80,6 @@ void Dialog::createTransportControlsBox()
     prevButton->setIcon(buttonIcon4);
     prevButton->setIconSize(pixmap4.rect().size());
     connect(prevButton,SIGNAL(clicked()),this,SLOT(prevButtonPressed()));
-
-
-    for (int i = 0; i < transportControls.length(); ++i) {
-        buttons[i] = new QPushButton();
-        QPixmap pixmap(tr(":/images/player_icons/%1").arg(transportControls[i]));
-        QIcon buttonIcon(pixmap);
-        buttons[i]->setIcon(buttonIcon);
-        buttons[i]->setIconSize(pixmap.rect().size());
-        connect(buttons[i],SIGNAL(clicked()),this,SLOT(testFunction()));
-        layout->addWidget(buttons[i]);
-    }
 
     layout->addWidget(prevButton);
     layout->addWidget(pauseButton);
@@ -280,6 +269,7 @@ void Dialog::messageReceived()
 
     if (currentMessage.contains('\n')){
         lastMessage = QString(currentMessage);
+        qDebug() << lastMessage;
         currentMessage = QString("");
         parseJsonResponse(QString(lastMessage));
         consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
@@ -388,6 +378,7 @@ void Dialog::parseChildInsertedMessage(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
     qDebug() << value.property("id").toString();
     qDebug() << "EXITING" << __func__;
+    parseActionItem(value.property("item"));
 }
 
 void Dialog::parseChildRemovedMessage(QScriptValue value){
