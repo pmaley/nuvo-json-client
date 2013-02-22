@@ -8,7 +8,8 @@ class NuvoTransportControl : public QObject
     Q_OBJECT
 public:
     explicit NuvoTransportControl(QObject *parent = 0);
-    
+    explicit NuvoTransportControl(QString _name, QString _url);
+
 signals:
     
 public slots:

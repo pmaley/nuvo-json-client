@@ -7,6 +7,7 @@
 #include <QHash>
 
 #include "nuvogroup.h"
+#include "nuvotransportcontrol.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -42,6 +43,8 @@ private:
     void parseReplyMessage(QScriptValue sc);
     void parseEventMessage(QScriptValue sc);
     void parseTrackMetadata(QScriptValue value);
+    void parseActionItem(QScriptValue value);
+
 
     enum { NumGridRows = 3, NumButtons = 5 };
 
@@ -54,7 +57,10 @@ private:
     QGroupBox *consoleBox;
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
+
     QPushButton *buttons[NumButtons];
+    QPushButton *nextButton, *playButton, *pauseButton;
+
     QDialogButtonBox *buttonBox;
     bool paused = false;
     QLabel *hostLabel;
@@ -75,8 +81,13 @@ private:
     QString currentFortune;
     quint16 blockSize;
 
+    QString currentMessage;
+    QString lastMessage;
+
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
+
+    NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem;
 
 public slots:
     void testFunction();
@@ -88,7 +99,9 @@ private slots:
     void enableGetFortuneButton();
     void openConnection();
     void slot_netwManagerFinished(QNetworkReply *reply);
-
+    void nextButtonPressed();
+    void playButtonPressed();
+    void sendRequest(QString request);
 };
 
 #endif // DIALOG_H

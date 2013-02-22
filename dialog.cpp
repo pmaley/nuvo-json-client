@@ -4,6 +4,7 @@
 
 #include "dialog.h"
 #include "nuvogroup.h"
+#include "nuvotransportcontrol.h"
 
 Dialog::Dialog()
 {
@@ -26,6 +27,8 @@ Dialog::Dialog()
     resize(1000,1000);
 
     group = new NuvoGroup();
+    playActionItem = new NuvoTransportControl("play","");
+    nextActionItem = new NuvoTransportControl("next","");
 }
 
 void Dialog::createMenu()
@@ -42,17 +45,44 @@ void Dialog::createTransportControlsBox()
     transportControlsBox = new QGroupBox();
     QHBoxLayout *layout = new QHBoxLayout;
 
-    QStringList transportControls = QStringList() << "dislike_normal@2x.png" << "like_normal@2x.png" << "prev_normal@2x.png" << "play_normal@2x.png" << "next_normal@2x.png";
+    QStringList transportControls = QStringList() << "dislike_normal@2x.png" << "like_normal@2x.png" << "prev_normal@2x.png";
+
+    // Create next button
+    nextButton = new QPushButton();
+    QPixmap pixmap1(":/images/player_icons/next_normal@2x.png");
+    QIcon buttonIcon1(pixmap1);
+    nextButton->setIcon(buttonIcon1);
+    nextButton->setIconSize(pixmap1.rect().size());
+    connect(nextButton,SIGNAL(clicked()),this,SLOT(nextButtonPressed()));
+
+    // Create play button
+    playButton = new QPushButton();
+    QPixmap pixmap2(":/images/player_icons/play_normal@2x.png");
+    QIcon buttonIcon2(pixmap2);
+    playButton->setIcon(buttonIcon2);
+    playButton->setIconSize(pixmap2.rect().size());
+    connect(playButton,SIGNAL(clicked()),this,SLOT(playButtonPressed()));
+
+    // Create pause button
+//    pauseButton = new QPushButton();
+//    QPixmap pixmap3(":/images/player_icons/pause_normal@2x.png");
+//    QIcon buttonIcon3(pixmap3);
+//    pauseButton->setIcon(buttonIcon3);
+//    pauseButton->setIconSize(pixmap3.rect().size());
+//    connect(pauseButton,SIGNAL(clicked()),this,SLOT(pauseButtonPressed()));
+
 
     for (int i = 0; i < transportControls.length(); ++i) {
         buttons[i] = new QPushButton();
         QPixmap pixmap(tr(":/images/player_icons/%1").arg(transportControls[i]));
-        QIcon ButtonIcon(pixmap);
-        buttons[i]->setIcon(ButtonIcon);
+        QIcon buttonIcon(pixmap);
+        buttons[i]->setIcon(buttonIcon);
         buttons[i]->setIconSize(pixmap.rect().size());
         connect(buttons[i],SIGNAL(clicked()),this,SLOT(testFunction()));
         layout->addWidget(buttons[i]);
     }
+    layout->addWidget(playButton);
+    layout->addWidget(nextButton);
     transportControlsBox->setLayout(layout);
 }
 
@@ -102,15 +132,32 @@ void Dialog::testFunction(){
     buttons[3]->setIconSize(pixmap->rect().size());
 }
 
-void Dialog::createConsoleBox(){
+void Dialog::nextButtonPressed(){
+    qDebug() << "ENTERING" << __func__;
+    QString url(nextActionItem->property("url").toString());
+    QString request(tr(" { \"id\":\"next\", \"url\":\"%1\", \"method\":\"invoke\" }").arg(url));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::playButtonPressed(){
+    qDebug() << "ENTERING" << __func__;
+    QString url(playActionItem->property("url").toString());
+    QString request(tr(" { \"id\":\"play\", \"url\":\"%1\", \"method\":\"invoke\" }").arg(url));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::createConsoleBox()
+{
     consoleBox = new QGroupBox();
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.122");
+    hostCombo = new QLineEdit("192.168.1.21");
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
-    commandTextEdit = new QTextEdit;
+    commandTextEdit = new QTextEdit("{ \"id\" : \"req-1\", \"url\" : \"/stable/av/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }");
     commandTextEdit->setFixedHeight(50);
     consoleTextEdit = new QTextEdit;
     consoleTextEdit->setReadOnly(true);
@@ -146,7 +193,8 @@ void Dialog::createConsoleBox(){
     consoleBox->setLayout(mainLayout);
 }
 
-void Dialog::requestNewFortune() {
+void Dialog::requestNewFortune()
+{
     qDebug() << "ENTERING" << __func__;
     getFortuneButton->setEnabled(false);
     blockSize = 0;
@@ -156,15 +204,21 @@ void Dialog::requestNewFortune() {
         QString command = commandTextEdit->toPlainText();
         QString alertHtml  = tr("<font color=\"Red\">%1</font><br>").arg(command);
         consoleTextEdit->append(alertHtml);
-        QByteArray byteArray = command.toUtf8();
-        const char* cString = byteArray.constData();
-        tcpSocket->write(cString);
-        qDebug() << cString << "written to socket";
+        sendRequest(command);
         commandTextEdit->setText("");
     }
 }
 
-void Dialog::openConnection() {
+void Dialog::sendRequest(QString request)
+{
+    QByteArray byteArray = request.toUtf8();
+    const char* cString = byteArray.constData();
+    tcpSocket->write(cString);
+    qDebug() << cString << "written to socket";
+}
+
+void Dialog::openConnection()
+{
     qDebug() << "ENTERING" << __func__;
     if (!tcpSocket->isOpen()){
         tcpSocket->abort();
@@ -177,17 +231,22 @@ void Dialog::messageReceived()
     qDebug() << "ENTERING" << __func__;
     QDataStream in(tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
+
     blockSize = tcpSocket->bytesAvailable()/sizeof(char);
     char * data = new char[blockSize];
     in.readRawData(data,blockSize);
     data[blockSize] = '\0';
-    if ( strlen(data) != blockSize )
-        qDebug() << "DATA SIZE DOES NOT MATCH BLOCK SIZE";
+
     consoleTextEdit->append(data);
-    //qDebug() << data;
-    parseJsonResponse(QString(data));
-    consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
-    getFortuneButton->setEnabled(true);
+    currentMessage.append(QString(data));
+
+    if (currentMessage.contains('\n')){
+        lastMessage = QString(currentMessage);
+        currentMessage = QString("");
+        parseJsonResponse(QString(lastMessage));
+        consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
+        getFortuneButton->setEnabled(true);
+    }
     delete(data);
 }
 
@@ -222,7 +281,8 @@ void Dialog::enableGetFortuneButton()
     getFortuneButton->setEnabled((!networkSession || networkSession->isOpen()) && !hostCombo->text().isEmpty() && !portLineEdit->text().isEmpty());
 }
 
-void Dialog::parseJsonResponse(QString result){
+void Dialog::parseJsonResponse(QString result)
+{
     qDebug() << "ENTERING" << __func__;
     QScriptValue sc;
     QScriptEngine engine;
@@ -239,23 +299,26 @@ void Dialog::parseJsonResponse(QString result){
 
 }
 
-void Dialog::parseReplyMessage(QScriptValue sc){
+void Dialog::parseReplyMessage(QScriptValue sc)
+{
     qDebug() << "ENTERING" << __func__;
     if (sc.property("result").property("children").isArray() ){
-        qDebug() << "IS ARRAY";
         QScriptValueIterator it(sc.property("result").property("children"));
         while (it.hasNext()) {
             it.next();
             QScriptValue current = it.value();
             if (current.property("id").toString() == "info"){
                 parseTrackMetadata(current);
+            } else if ( current.property("type").toString() == "action"){
+                parseActionItem(current);
             }
         }
     }
     qDebug() << "EXITING" << __func__;
 }
 
-void Dialog::parseEventMessage(QScriptValue sc){
+void Dialog::parseEventMessage(QScriptValue sc)
+{
     qDebug() << "ENTERING" << __func__;
     if (sc.property("event").isArray() ){
         qDebug() << "IS ARRAY";
@@ -267,6 +330,21 @@ void Dialog::parseEventMessage(QScriptValue sc){
                 parseTrackMetadata(current.property("item"));
             }
         }
+    }
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::parseActionItem(QScriptValue value)
+{
+    qDebug() << "ENTERING" << __func__;
+    qDebug() << value.property("id").toString();
+    qDebug() << value.property("url").toString();
+    if ( value.property("id").toString() == "next"){
+        nextActionItem->setProperty("url",value.property("url").toString());
+    } else if ( value.property("id").toString() == "play"){
+        playActionItem->setProperty("url",value.property("url").toString());
+    } else if ( value.property("id").toString() == "pause"){
+       // pauseActionItem->setProperty("url",value.property("url").toString());
     }
     qDebug() << "EXITING" << __func__;
 }
