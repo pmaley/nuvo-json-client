@@ -1,6 +1,7 @@
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QScriptValueIterator>
+#include <QQueue>
 
 #include "dialog.h"
 #include "nuvogroup.h"
@@ -270,12 +271,20 @@ void Dialog::messageReceived()
     if (currentMessage.contains('\n')){
         lastMessage = QString(currentMessage);
         qDebug() << lastMessage;
-        currentMessage = QString("");
-        parseJsonResponse(QString(lastMessage));
+        QRegExp rx("\n");
+        QStringList query = lastMessage.split(rx);
+        for (int i = 0; i < query.length()-1; i++){
+            qDebug() << "message" << i+1 << ":" << QString(query.at(i));
+            //messageQueue.enqueue(lastMessage);
+            parseJsonResponse(QString(query.at(i)));
+        }
+        currentMessage = QString(query.last());
+
         consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
         sendButton->setEnabled(true);
     }
     delete(data);
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::displayError(QAbstractSocket::SocketError socketError)

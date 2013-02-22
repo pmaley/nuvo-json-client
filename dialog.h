@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 #include <QScriptEngine>
 #include <QHash>
+#include <QQueue>
 
 #include "nuvogroup.h"
 #include "nuvotransportcontrol.h"
@@ -91,6 +92,8 @@ private:
     QNetworkAccessManager *m_netwManager;
 
     NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem, *prevActionItem;
+
+    QQueue<QString> messageQueue;
 
 public slots:
     void testFunction();
