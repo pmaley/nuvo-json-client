@@ -7,7 +7,7 @@
 #include <QHash>
 #include <QQueue>
 
-#include "nuvotransportcontrol.h"
+#include "nuvoactionitem.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -47,8 +47,8 @@ private:
     void parseChildValueChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);
     void parseChildRemovedMessage(QScriptValue value);
-    void invokeAction(NuvoTransportControl *action);
-    NuvoTransportControl* findActionItem(QString id);
+    void invokeAction(NuvoActionItem *action);
+    NuvoActionItem* findActionItem(QString id);
 
     enum { NumGridRows = 3, NumButtons = 5 };
 
@@ -61,7 +61,7 @@ private:
     QLabel *labels[NumGridRows];
 
     QPushButton *buttons[NumButtons];
-    QPushButton *nextButton, *playButton, *pauseButton, *prevButton, *stopButton;
+    QPushButton *nextButton, *playButton, *pauseButton, *prevButton, *stopButton, *likeButton, *dislikeButton;
 
     QDialogButtonBox *buttonBox;
     bool paused = false;
@@ -89,7 +89,9 @@ private:
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
 
-    NuvoTransportControl *nextActionItem, *playActionItem, *pauseActionItem, *prevActionItem, *stopActionItem;
+    NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
+                            *prevActionItem, *stopActionItem, *likeActionItem,
+                            *dislikeActionItem;
 
     QQueue<QString> messageQueue;
 
@@ -108,6 +110,8 @@ private slots:
     void playButtonPressed();
     void pauseButtonPressed();
     void stopButtonPressed();
+    void likeButtonPressed();
+    void dislikeButtonPressed();
     void sendRequest(QString request);
 };
 

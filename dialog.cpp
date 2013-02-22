@@ -4,7 +4,7 @@
 #include <QQueue>
 
 #include "dialog.h"
-#include "nuvotransportcontrol.h"
+#include "NuvoActionItem.h"
 
 Dialog::Dialog()
 {
@@ -26,11 +26,13 @@ Dialog::Dialog()
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
 
-    prevActionItem = new NuvoTransportControl("prev","");
-    stopActionItem = new NuvoTransportControl("stop","");
-    pauseActionItem = new NuvoTransportControl("pause","");
-    playActionItem = new NuvoTransportControl("play","");
-    nextActionItem = new NuvoTransportControl("next","");
+    prevActionItem = new NuvoActionItem("prev","");
+    stopActionItem = new NuvoActionItem("stop","");
+    pauseActionItem = new NuvoActionItem("pause","");
+    playActionItem = new NuvoActionItem("play","");
+    nextActionItem = new NuvoActionItem("next","");
+    likeActionItem = new NuvoActionItem("like","");
+    dislikeActionItem = new NuvoActionItem("dislike","");
 }
 
 void Dialog::createMenu()
@@ -87,6 +89,24 @@ void Dialog::createTransportControlsBox()
     stopButton->setIconSize(pixmap5.rect().size());
     connect(stopButton,SIGNAL(clicked()),this,SLOT(stopButtonPressed()));
 
+    // Create thumbs up button
+    likeButton = new QPushButton();
+    QPixmap pixmap6(":/images/player_icons/like_normal.png");
+    QIcon buttonIcon6(pixmap6);
+    likeButton->setIcon(buttonIcon6);
+    likeButton->setIconSize(pixmap6.rect().size());
+    connect(likeButton,SIGNAL(clicked()),this,SLOT(likeButtonPressed()));
+
+    // Create thumbsdown button
+    dislikeButton = new QPushButton();
+    QPixmap pixmap7(":/images/player_icons/dislike_normal.png");
+    QIcon buttonIcon7(pixmap7);
+    dislikeButton->setIcon(buttonIcon7);
+    dislikeButton->setIconSize(pixmap7.rect().size());
+    connect(dislikeButton,SIGNAL(clicked()),this,SLOT(dislikeButtonPressed()));
+
+    layout->addWidget(likeButton);
+    layout->addWidget(dislikeButton);
     layout->addWidget(prevButton);
     layout->addWidget(stopButton);
     layout->addWidget(pauseButton);
@@ -146,8 +166,10 @@ void Dialog::nextButtonPressed(){ invokeAction(nextActionItem); }
 void Dialog::playButtonPressed(){  invokeAction(playActionItem); }
 void Dialog::pauseButtonPressed(){ invokeAction(pauseActionItem); }
 void Dialog::stopButtonPressed(){ invokeAction(stopActionItem); }
+void Dialog::likeButtonPressed(){ invokeAction(likeActionItem); }
+void Dialog::dislikeButtonPressed(){ invokeAction(dislikeActionItem); }
 
-void Dialog::invokeAction(NuvoTransportControl *actionItem){
+void Dialog::invokeAction(NuvoActionItem *actionItem){
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
     QString name(actionItem->property("name").toString());
@@ -381,7 +403,7 @@ void Dialog::parseActionItem(QScriptValue value)
     QString url(value.property("url").toString());
     QString id(value.property("id").toString());
     qDebug() << id << ":" << url;
-    NuvoTransportControl *actionItem = findActionItem(id);
+    NuvoActionItem *actionItem = findActionItem(id);
     if (actionItem)
         actionItem->setProperty("url",url);
     qDebug() << "EXITING" << __func__;
@@ -398,7 +420,7 @@ void Dialog::parseTrackMetadata(QScriptValue value){
     qDebug() << "EXITING" << __func__;
 }
 
-NuvoTransportControl* Dialog::findActionItem(QString id)
+NuvoActionItem* Dialog::findActionItem(QString id)
 {
     if ( id == "next"){
         return nextActionItem;
@@ -410,6 +432,10 @@ NuvoTransportControl* Dialog::findActionItem(QString id)
         return prevActionItem;
     } else if ( id == "stop"){
         return stopActionItem;
+    } else if ( id == "like"){
+        return likeActionItem;
+    } else if ( id == "dislike"){
+        return dislikeActionItem;
     } else {
         return NULL;
     }
