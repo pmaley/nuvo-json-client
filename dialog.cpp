@@ -16,16 +16,23 @@ Dialog::Dialog()
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
+    volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setMaximum(100);
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox);
     mainLayout->addWidget(transportControlsBox);
+    mainLayout->addWidget(volumeSlider);
     mainLayout->addWidget(consoleBox);
     setLayout(mainLayout);
 
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
 
+
+    volumeActionItem = new NuvoActionItem("volume","");
+    muteActionItem = new NuvoActionItem("mute","");
     prevActionItem = new NuvoActionItem("prev","");
     stopActionItem = new NuvoActionItem("stop","");
     pauseActionItem = new NuvoActionItem("pause","");
@@ -185,7 +192,7 @@ void Dialog::createConsoleBox()
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.21");
+    hostCombo = new QLineEdit("192.168.1.122");
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
     commandTextEdit = new QTextEdit("{ \"id\" : \"req-1\", \"url\" : \"/stable/av/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }");
@@ -325,7 +332,7 @@ void Dialog::parseJsonResponse(QString result)
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
     qDebug() << "Recv. on channel " << sc.property("channel").toString();
-
+    qDebug() << result;
     QString type = sc.property("type").toString();
     qDebug() << "Message type:" << type;
     if (type == "reply") {
@@ -349,6 +356,8 @@ void Dialog::parseReplyMessage(QScriptValue sc)
                 parseTrackMetadata(current);
             } else if ( current.property("type").toString() == "action"){
                 parseActionItem(current);
+            } else if ( current.property("type").toString() == "value"){
+                parseValueItem(current);
             }
         }
     }
@@ -377,11 +386,25 @@ void Dialog::parseEventMessage(QScriptValue value)
     qDebug() << "EXITING" << __func__;
 }
 
+void Dialog::parseValueItem(QScriptValue value){
+    qDebug() << "ENTERING" << __func__;
+    QString id = QString(value.property("id").toString());
+    qDebug() << id;
+    if ( id == "volume"){
+        volumeSlider->setMaximum(value.property("maxInt").toInt32());
+        volumeSlider->setValue(value.property("value").property("int").toInt32());
+    }
+    qDebug() << "EXITING" << __func__;
+}
+
 void Dialog::parseChildValueChangedMessage(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.property("id").toString();
+    QString id = QString(value.property("id").toString());
+    qDebug() << id;
+    if ( id == "volume"){
+        volumeSlider->setValue(value.property("value").property("int").toInt32());
+    }
     qDebug() << "EXITING" << __func__;
-
 }
 
 void Dialog::parseChildInsertedMessage(QScriptValue value){
@@ -422,23 +445,16 @@ void Dialog::parseTrackMetadata(QScriptValue value){
 
 NuvoActionItem* Dialog::findActionItem(QString id)
 {
-    if ( id == "next"){
-        return nextActionItem;
-    } else if ( id == "play"){
-        return playActionItem;
-    } else if ( id == "pause"){
-        return pauseActionItem;
-    } else if ( id == "previous"){
-        return prevActionItem;
-    } else if ( id == "stop"){
-        return stopActionItem;
-    } else if ( id == "like"){
-        return likeActionItem;
-    } else if ( id == "dislike"){
-        return dislikeActionItem;
-    } else {
-        return NULL;
-    }
+    if ( id == "next"){ return nextActionItem;  }
+    else if ( id == "play"){  return playActionItem; }
+    else if ( id == "pause"){ return pauseActionItem; }
+    else if ( id == "previous"){ return prevActionItem; }
+    else if ( id == "stop"){ return stopActionItem; }
+    else if ( id == "like"){ return likeActionItem; }
+    else if ( id == "dislike"){ return dislikeActionItem; }
+    else if ( id == "volume"){ return volumeActionItem; }
+    else if ( id == "mute"){ return muteActionItem; }
+    else { return NULL; }
 }
 
 void Dialog::slot_netwManagerFinished(QNetworkReply *reply)

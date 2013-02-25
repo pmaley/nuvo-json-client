@@ -24,6 +24,7 @@ class QTcpSocket;
 class QNetworkSession;
 class QNetworkAccessManager;
 class QNetworkReply;
+class QSlider;
 QT_END_NAMESPACE
 
 class Dialog : public QDialog
@@ -44,6 +45,7 @@ private:
     void parseEventMessage(QScriptValue sc);
     void parseTrackMetadata(QScriptValue value);
     void parseActionItem(QScriptValue value);
+    void parseValueItem(QScriptValue value);
     void parseChildValueChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);
     void parseChildRemovedMessage(QScriptValue value);
@@ -75,6 +77,7 @@ private:
     QPushButton *sendButton;
     QPushButton *quitButton;
     QDialogButtonBox *buttonBox2;
+    QSlider *volumeSlider;
 
     QMenu *fileMenu;
     QAction *exitAction;
@@ -91,7 +94,7 @@ private:
 
     NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
                             *prevActionItem, *stopActionItem, *likeActionItem,
-                            *dislikeActionItem;
+                            *dislikeActionItem, *volumeActionItem, *muteActionItem;
 
     QQueue<QString> messageQueue;
 
