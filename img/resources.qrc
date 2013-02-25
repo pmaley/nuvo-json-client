@@ -22,5 +22,13 @@
         <file>player_icons/stop_normal@2x.png</file>
         <file>player_icons/transport_glow.png</file>
         <file>player_icons/transport_glow@2x.png</file>
+        <file>player_icons/player_icon_repeat_off_normal.png</file>
+        <file>player_icons/player_icon_repeat_on_normal.png</file>
+        <file>player_icons/player_icon_shuffle_off_normal.png</file>
+        <file>player_icons/player_icon_shuffle_on_normal.png</file>
+        <file>player_icons/player_seeker_muted.png</file>
+        <file>player_icons/player_seeker_muted@2x.png</file>
+        <file>player_icons/player_seeker.png</file>
+        <file>player_icons/player_seeker@2x.png</file>
     </qresource>
 </RCC>

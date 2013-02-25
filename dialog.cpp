@@ -16,6 +16,8 @@ Dialog::Dialog()
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
+    trackProgressBar = new QProgressBar();
+
     volumeSlider = new QSlider(Qt::Horizontal);
     volumeSlider->setMaximum(100);
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
@@ -24,13 +26,13 @@ Dialog::Dialog()
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox);
     mainLayout->addWidget(transportControlsBox);
+    mainLayout->addWidget(trackProgressBar);
     mainLayout->addWidget(volumeSlider);
     mainLayout->addWidget(consoleBox);
     setLayout(mainLayout);
 
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
-
 
     volumeActionItem = new NuvoActionItem("volume","");
     muteActionItem = new NuvoActionItem("mute","");
@@ -41,6 +43,9 @@ Dialog::Dialog()
     nextActionItem = new NuvoActionItem("next","");
     likeActionItem = new NuvoActionItem("like","");
     dislikeActionItem = new NuvoActionItem("dislike","");
+    muteActionItem = new NuvoActionItem("mute","");
+    shuffleActionItem = new NuvoActionItem("shuffle","");
+    repeatActionItem = new NuvoActionItem("repeat","");
 }
 
 void Dialog::createMenu()
@@ -114,6 +119,27 @@ void Dialog::createTransportControlsBox()
     connect(dislikeButton,SIGNAL(clicked()),this,SLOT(dislikeButtonPressed()));
     dislikeButton->setEnabled(false);
 
+    // Create mute button
+    muteButton = new QPushButton();
+    QPixmap pixmap8(":/images/player_icons/player_seeker.png");
+    QIcon buttonIcon8(pixmap8);
+    muteButton->setIcon(buttonIcon8);
+    connect(muteButton,SIGNAL(clicked()),this,SLOT(muteButtonPressed()));
+
+    // Create shuffle button
+    shuffleButton = new QPushButton();
+    QPixmap pixmap9(":/images/player_icons/player_icon_shuffle_off_normal.png");
+    QIcon buttonIcon9(pixmap9);
+    shuffleButton->setIcon(buttonIcon9);
+    connect(shuffleButton,SIGNAL(clicked()),this,SLOT(shuffleButtonPressed()));
+
+    // Create repeat button
+    repeatButton = new QPushButton();
+    QPixmap pixmap10(":/images/player_icons/player_icon_repeat_off_normal.png");
+    QIcon buttonIcon10(pixmap10);
+    repeatButton->setIcon(buttonIcon10);
+    connect(repeatButton,SIGNAL(clicked()),this,SLOT(repeatButtonPressed()));
+
     layout->addWidget(likeButton);
     layout->addWidget(dislikeButton);
     layout->addWidget(prevButton);
@@ -121,6 +147,9 @@ void Dialog::createTransportControlsBox()
     layout->addWidget(pauseButton);
     layout->addWidget(playButton);
     layout->addWidget(nextButton);
+    layout->addWidget(muteButton);
+    layout->addWidget(shuffleButton);
+    layout->addWidget(repeatButton);
     transportControlsBox->setLayout(layout);
 }
 
@@ -155,11 +184,6 @@ void Dialog::createNowPlayingBox()
     nowPlayingBox->setLayout(layout);
 }
 
-void Dialog::testFunction(){
-    qDebug() << "ENTERING" << __func__;
-    qDebug() << "EXITING" << __func__;
-}
-
 void Dialog::prevButtonPressed(){ invokeAction(prevActionItem); }
 void Dialog::nextButtonPressed(){ invokeAction(nextActionItem); }
 void Dialog::playButtonPressed(){  invokeAction(playActionItem); }
@@ -167,17 +191,24 @@ void Dialog::pauseButtonPressed(){ invokeAction(pauseActionItem); }
 void Dialog::stopButtonPressed(){ invokeAction(stopActionItem); }
 void Dialog::likeButtonPressed(){ invokeAction(likeActionItem); }
 void Dialog::dislikeButtonPressed(){ invokeAction(dislikeActionItem); }
-void Dialog::volumeSliderAdjusted(){
-    qDebug() << "ENTERING" << __func__;
-    updateValue(volumeActionItem, volumeSlider->value());
-    qDebug() << "EXITING" << __func__;
-}
+void Dialog::volumeSliderAdjusted(){ updateValue(volumeActionItem, volumeSlider->value()); }
+void Dialog::muteButtonPressed(){ toggleValue(muteActionItem); }
+void Dialog::shuffleButtonPressed(){}
+void Dialog::repeatButtonPressed(){}
 
 void Dialog::updateValue(NuvoActionItem *actionItem, int value){
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
     QString params( tr("{ \"value\" : { \"int\" : %1 } } }").arg(value));
     QString request(tr(" { \"id\" : \"req-3\", \"url\" : \"%1\", \"method\" : \"setValue\", \"params\" : %2 ").arg(url,params));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::toggleValue(NuvoActionItem *actionItem){
+    qDebug() << "ENTERING" << __func__;
+    QString url(actionItem->property("url").toString());
+    QString request(tr("{ \"id\" : \"req-7\", \"url\" : \"%1\", \"method\" : \"toggleValue\" }").arg(url));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -382,6 +413,8 @@ void Dialog::parseEventMessage(QScriptValue value)
                 parseTrackMetadata(current.property("item"));
             } else if (current.property("type").toString() == "childValueChanged"){
                 parseChildValueChangedMessage(current);
+            } else if (current.property("type").toString() == "childItemChanged"){
+                parseChildItemChangedMessage(current);
             } else if (current.property("type").toString() == "childInserted"){
                 parseChildInsertedMessage(current);
             } else if (current.property("type").toString() == "childRemoved"){
@@ -400,6 +433,11 @@ void Dialog::parseValueItem(QScriptValue value){
         volumeSlider->setMaximum(value.property("maxInt").toInt32());
         volumeSlider->setValue(value.property("value").property("int").toInt32());
         volumeActionItem->setProperty("url",value.property("url").toString());
+    } else if (id == "time") {
+        trackProgressBar->setMaximum(value.property("maxDouble").toInt32());
+        trackProgressBar->setValue(value.property("value").property("double").toInt32());
+    } else if (id == "mute") {
+        muteActionItem->setProperty("url",value.property("url").toString());
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -410,6 +448,33 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
     qDebug() << id;
     if ( id == "volume"){
         volumeSlider->setValue(value.property("value").property("int").toInt32());
+    } else if (id == "time") {
+        trackProgressBar->setValue(value.property("value").property("double").toInt32());
+    } else if (id == "mute") {
+        // TODO set skin based on state
+        bool state = value.property("value").property("bool").toBool();
+        if (state) {
+            QPixmap pixmap8(":/images/player_icons/player_seeker_muted.png");
+            QIcon buttonIcon8(pixmap8);
+            muteButton->setIcon(buttonIcon8);
+        } else {
+            QPixmap pixmap8(":/images/player_icons/player_seeker.png");
+            QIcon buttonIcon8(pixmap8);
+            muteButton->setIcon(buttonIcon8);
+        }
+    }
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::parseChildItemChangedMessage(QScriptValue value){
+    qDebug() << "ENTERING" << __func__;
+    QString id = QString(value.property("id").toString());
+    qDebug() << id;
+    if ( id == "volume"){
+        volumeSlider->setValue(value.property("value").property("int").toInt32());
+    } else if (id == "time") {
+        trackProgressBar->setMaximum(value.property("item").property("maxDouble").toInt32());
+        trackProgressBar->setValue(value.property("item").property("value").property("int").toInt32());
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -461,6 +526,8 @@ NuvoActionItem* Dialog::findActionItem(QString id)
     else if ( id == "dislike"){ return dislikeActionItem; }
     else if ( id == "volume"){ return volumeActionItem; }
     else if ( id == "mute"){ return muteActionItem; }
+    else if ( id == "repeat"){ return repeatActionItem; }
+    else if ( id == "shuffle"){ return shuffleActionItem; }
     else { return NULL; }
 }
 

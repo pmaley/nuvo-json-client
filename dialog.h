@@ -6,6 +6,7 @@
 #include <QScriptEngine>
 #include <QHash>
 #include <QQueue>
+#include <QProgressBar>
 
 #include "nuvoactionitem.h"
 
@@ -47,10 +48,12 @@ private:
     void parseActionItem(QScriptValue value);
     void parseValueItem(QScriptValue value);
     void parseChildValueChangedMessage(QScriptValue value);
+    void parseChildItemChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);
     void parseChildRemovedMessage(QScriptValue value);
     void invokeAction(NuvoActionItem *action);
     void updateValue(NuvoActionItem *actionItem, int value);
+    void toggleValue(NuvoActionItem *actionItem);
     NuvoActionItem* findActionItem(QString id);
 
     enum { NumGridRows = 3, NumButtons = 5 };
@@ -64,7 +67,10 @@ private:
     QLabel *labels[NumGridRows];
 
     QPushButton *buttons[NumButtons];
-    QPushButton *nextButton, *playButton, *pauseButton, *prevButton, *stopButton, *likeButton, *dislikeButton;
+    QPushButton *nextButton, *playButton, *pauseButton,
+                *prevButton, *stopButton, *likeButton,
+                *dislikeButton, *shuffleButton, *repeatButton,
+                *muteButton;
 
     QDialogButtonBox *buttonBox;
     QLabel *hostLabel;
@@ -78,6 +84,7 @@ private:
     QPushButton *quitButton;
     QDialogButtonBox *buttonBox2;
     QSlider *volumeSlider;
+    QProgressBar *trackProgressBar;
 
     QMenu *fileMenu;
     QAction *exitAction;
@@ -94,12 +101,12 @@ private:
 
     NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
                             *prevActionItem, *stopActionItem, *likeActionItem,
-                            *dislikeActionItem, *volumeActionItem, *muteActionItem;
+                            *dislikeActionItem, *volumeActionItem, *muteActionItem,
+                            *shuffleActionItem, *repeatActionItem;
 
     QQueue<QString> messageQueue;
 
 public slots:
-    void testFunction();
 
 private slots:
     void requestNewFortune();
@@ -116,6 +123,9 @@ private slots:
     void likeButtonPressed();
     void dislikeButtonPressed();
     void volumeSliderAdjusted();
+    void shuffleButtonPressed();
+    void repeatButtonPressed();
+    void muteButtonPressed();
     void sendRequest(QString request);
 };
 
