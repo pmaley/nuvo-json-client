@@ -18,6 +18,7 @@ Dialog::Dialog()
 
     volumeSlider = new QSlider(Qt::Horizontal);
     volumeSlider->setMaximum(100);
+    connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setMenuBar(menuBar);
@@ -111,6 +112,7 @@ void Dialog::createTransportControlsBox()
     dislikeButton->setIcon(buttonIcon7);
     dislikeButton->setIconSize(pixmap7.rect().size());
     connect(dislikeButton,SIGNAL(clicked()),this,SLOT(dislikeButtonPressed()));
+    dislikeButton->setEnabled(false);
 
     layout->addWidget(likeButton);
     layout->addWidget(dislikeButton);
@@ -155,17 +157,7 @@ void Dialog::createNowPlayingBox()
 
 void Dialog::testFunction(){
     qDebug() << "ENTERING" << __func__;
-    QPixmap* pixmap;
-    if (paused == false){
-        pixmap = new QPixmap(":/images/player_icons/pause_normal@2x.png");
-        paused = true;
-    } else {
-        pixmap = new QPixmap(":/images/player_icons/play_normal@2x.png");
-        paused = false;
-    }
-    QIcon ButtonIcon(*pixmap);
-    buttons[3]->setIcon(ButtonIcon);
-    buttons[3]->setIconSize(pixmap->rect().size());
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::prevButtonPressed(){ invokeAction(prevActionItem); }
@@ -175,6 +167,20 @@ void Dialog::pauseButtonPressed(){ invokeAction(pauseActionItem); }
 void Dialog::stopButtonPressed(){ invokeAction(stopActionItem); }
 void Dialog::likeButtonPressed(){ invokeAction(likeActionItem); }
 void Dialog::dislikeButtonPressed(){ invokeAction(dislikeActionItem); }
+void Dialog::volumeSliderAdjusted(){
+    qDebug() << "ENTERING" << __func__;
+    updateValue(volumeActionItem, volumeSlider->value());
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::updateValue(NuvoActionItem *actionItem, int value){
+    qDebug() << "ENTERING" << __func__;
+    QString url(actionItem->property("url").toString());
+    QString params( tr("{ \"value\" : { \"int\" : %2 } } }").arg(value));
+    QString request(tr(" { \"id\" : \"req-3\", \"url\" : \"%1\", \"method\" : \"setValue\", \"params\" : %2 ").arg(url,params));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
 
 void Dialog::invokeAction(NuvoActionItem *actionItem){
     qDebug() << "ENTERING" << __func__;
@@ -393,6 +399,7 @@ void Dialog::parseValueItem(QScriptValue value){
     if ( id == "volume"){
         volumeSlider->setMaximum(value.property("maxInt").toInt32());
         volumeSlider->setValue(value.property("value").property("int").toInt32());
+        volumeActionItem->setProperty("url",value.property("url").toString());
     }
     qDebug() << "EXITING" << __func__;
 }

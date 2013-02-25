@@ -50,6 +50,7 @@ private:
     void parseChildInsertedMessage(QScriptValue value);
     void parseChildRemovedMessage(QScriptValue value);
     void invokeAction(NuvoActionItem *action);
+    void updateValue(NuvoActionItem *actionItem, int value);
     NuvoActionItem* findActionItem(QString id);
 
     enum { NumGridRows = 3, NumButtons = 5 };
@@ -66,7 +67,6 @@ private:
     QPushButton *nextButton, *playButton, *pauseButton, *prevButton, *stopButton, *likeButton, *dislikeButton;
 
     QDialogButtonBox *buttonBox;
-    bool paused = false;
     QLabel *hostLabel;
     QLabel *portLabel;
     QLabel *imageLabel;
@@ -115,6 +115,7 @@ private slots:
     void stopButtonPressed();
     void likeButtonPressed();
     void dislikeButtonPressed();
+    void volumeSliderAdjusted();
     void sendRequest(QString request);
 };
 
