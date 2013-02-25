@@ -176,7 +176,7 @@ void Dialog::volumeSliderAdjusted(){
 void Dialog::updateValue(NuvoActionItem *actionItem, int value){
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
-    QString params( tr("{ \"value\" : { \"int\" : %2 } } }").arg(value));
+    QString params( tr("{ \"value\" : { \"int\" : %1 } } }").arg(value));
     QString request(tr(" { \"id\" : \"req-3\", \"url\" : \"%1\", \"method\" : \"setValue\", \"params\" : %2 ").arg(url,params));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
