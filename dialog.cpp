@@ -193,8 +193,8 @@ void Dialog::likeButtonPressed(){ invokeAction(likeActionItem); }
 void Dialog::dislikeButtonPressed(){ invokeAction(dislikeActionItem); }
 void Dialog::volumeSliderAdjusted(){ updateValue(volumeActionItem, volumeSlider->value()); }
 void Dialog::muteButtonPressed(){ toggleValue(muteActionItem); }
-void Dialog::shuffleButtonPressed(){}
-void Dialog::repeatButtonPressed(){}
+void Dialog::shuffleButtonPressed(){ toggleValue(shuffleActionItem); }
+void Dialog::repeatButtonPressed(){ toggleValue(repeatActionItem); }
 
 void Dialog::updateValue(NuvoActionItem *actionItem, int value){
     qDebug() << "ENTERING" << __func__;
@@ -438,6 +438,10 @@ void Dialog::parseValueItem(QScriptValue value){
         trackProgressBar->setValue(value.property("value").property("double").toInt32());
     } else if (id == "mute") {
         muteActionItem->setProperty("url",value.property("url").toString());
+    } else if (id == "shuffle") {
+        shuffleActionItem->setProperty("url",value.property("url").toString());
+    } else if (id == "repeat") {
+        repeatActionItem->setProperty("url",value.property("url").toString());
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -451,7 +455,6 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
     } else if (id == "time") {
         trackProgressBar->setValue(value.property("value").property("double").toInt32());
     } else if (id == "mute") {
-        // TODO set skin based on state
         bool state = value.property("value").property("bool").toBool();
         if (state) {
             QPixmap pixmap8(":/images/player_icons/player_seeker_muted.png");
@@ -461,6 +464,28 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
             QPixmap pixmap8(":/images/player_icons/player_seeker.png");
             QIcon buttonIcon8(pixmap8);
             muteButton->setIcon(buttonIcon8);
+        }
+    } else if (id == "shuffle") {
+        bool state = value.property("value").property("bool").toBool();
+        if (state) {
+            QPixmap pixmap8(":/images/player_icons/player_icon_shuffle_on_normal.png");
+            QIcon buttonIcon8(pixmap8);
+            shuffleButton->setIcon(buttonIcon8);
+        } else {
+            QPixmap pixmap8(":/images/player_icons/player_icon_shuffle_off_normal.png");
+            QIcon buttonIcon8(pixmap8);
+            shuffleButton->setIcon(buttonIcon8);
+        }
+    } else if (id == "repeat") {
+        QString state(value.property("value").property("avRepeatMode").toString());
+        if (state == "all") {
+            QPixmap pixmap8(":/images/player_icons/player_icon_repeat_on_normal.png");
+            QIcon buttonIcon8(pixmap8);
+            repeatButton->setIcon(buttonIcon8);
+        } else {
+            QPixmap pixmap8(":/images/player_icons/player_icon_repeat_off_normal.png");
+            QIcon buttonIcon8(pixmap8);
+            repeatButton->setIcon(buttonIcon8);
         }
     }
     qDebug() << "EXITING" << __func__;
