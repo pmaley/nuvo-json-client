@@ -68,6 +68,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon1(pixmap1);
     nextButton->setIcon(buttonIcon1);
     nextButton->setIconSize(pixmap1.rect().size());
+    nextButton->setEnabled(false);
     connect(nextButton,SIGNAL(clicked()),this,SLOT(nextButtonPressed()));
 
     // Create play button
@@ -76,6 +77,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon2(pixmap2);
     playButton->setIcon(buttonIcon2);
     playButton->setIconSize(pixmap2.rect().size());
+    playButton->setEnabled(false);
     connect(playButton,SIGNAL(clicked()),this,SLOT(playButtonPressed()));
 
     // Create pause button
@@ -84,6 +86,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon3(pixmap3);
     pauseButton->setIcon(buttonIcon3);
     pauseButton->setIconSize(pixmap3.rect().size());
+    pauseButton->setEnabled(false);
     connect(pauseButton,SIGNAL(clicked()),this,SLOT(pauseButtonPressed()));
 
     // Create prev button
@@ -92,6 +95,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon4(pixmap4);
     prevButton->setIcon(buttonIcon4);
     prevButton->setIconSize(pixmap4.rect().size());
+    prevButton->setEnabled(false);
     connect(prevButton,SIGNAL(clicked()),this,SLOT(prevButtonPressed()));
 
     // Create stop button
@@ -100,6 +104,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon5(pixmap5);
     stopButton->setIcon(buttonIcon5);
     stopButton->setIconSize(pixmap5.rect().size());
+    stopButton->setEnabled(false);
     connect(stopButton,SIGNAL(clicked()),this,SLOT(stopButtonPressed()));
 
     // Create thumbs up button
@@ -117,7 +122,6 @@ void Dialog::createTransportControlsBox()
     dislikeButton->setIcon(buttonIcon7);
     dislikeButton->setIconSize(pixmap7.rect().size());
     connect(dislikeButton,SIGNAL(clicked()),this,SLOT(dislikeButtonPressed()));
-    dislikeButton->setEnabled(false);
 
     // Create mute button
     muteButton = new QPushButton();
@@ -526,6 +530,18 @@ void Dialog::parseActionItem(QScriptValue value)
     NuvoActionItem *actionItem = findActionItem(id);
     if (actionItem)
         actionItem->setProperty("url",url);
+    if ( id == "next"){ nextButton->setEnabled(true);  }
+    else if ( id == "play"){  playButton->setEnabled(true); }
+    else if ( id == "pause"){ pauseButton->setEnabled(true); }
+    else if ( id == "previous"){ prevButton->setEnabled(true); }
+    else if ( id == "stop"){ stopButton->setEnabled(true); }
+//    else if ( id == "like"){ return likeActionItem; }
+//    else if ( id == "dislike"){ return dislikeActionItem; }
+//    else if ( id == "volume"){ return volumeActionItem; }
+//    else if ( id == "mute"){ return muteActionItem; }
+//    else if ( id == "repeat"){ return repeatActionItem; }
+//    else if ( id == "shuffle"){ return shuffleActionItem; }
+//    else { return NULL; }
     qDebug() << "EXITING" << __func__;
 }
 
