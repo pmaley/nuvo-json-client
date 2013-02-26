@@ -388,13 +388,12 @@ void Dialog::parseJsonResponse(QString result)
     qDebug() << result;
     QString type = sc.property("type").toString();
     qDebug() << "Message type:" << type;
-    if (type == "reply") {
-        parseReplyMessage(sc);
-    } else if ( type == "event"){
-        parseEventMessage(sc);
-    } else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
-    qDebug() << "EXITING" << __func__;
 
+    if (type == "reply") { parseReplyMessage(sc); }
+    else if ( type == "event"){  parseEventMessage(sc); }
+    else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
+
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::parseReplyMessage(QScriptValue sc)
@@ -407,15 +406,11 @@ void Dialog::parseReplyMessage(QScriptValue sc)
             QScriptValue current = it.value();
             QString id(current.property("id").toString());
             QString type(current.property("type").toString());
-            if (id == "info"){
-                parseTrackMetadata(current);
-            } else if ( type == "action"){
-                parseActionItem(current);
-            } else if ( type == "value"){
-                parseValueItem(current);
-            } else {
-                qDebug() << "ITEM NOT PROCESSED:" << id << current.toString();
-            }
+
+            if (id == "info"){  parseTrackMetadata(current);  }
+            else if ( type == "action"){  parseActionItem(current); }
+            else if ( type == "value"){ parseValueItem(current); }
+            else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }
     qDebug() << "EXITING" << __func__;
@@ -431,17 +426,12 @@ void Dialog::parseEventMessage(QScriptValue value)
             QScriptValue current = it.value();
             QString type = QString(current.property("type").toString());
             QString id = QString(current.property("id").toString());
-            if ( id == "info"){
-                parseTrackMetadata(current.property("item"));
-            } else if (type == "childValueChanged"){
-                parseChildValueChangedMessage(current);
-            } else if (type == "childItemChanged"){
-                parseChildItemChangedMessage(current);
-            } else if (type == "childInserted"){
-                parseChildInsertedMessage(current);
-            } else if (type == "childRemoved"){
-                parseChildRemovedMessage(current);
-            } else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
+            if ( id == "info"){  parseTrackMetadata(current.property("item"));}
+            else if (type == "childValueChanged"){  parseChildValueChangedMessage(current);}
+            else if (type == "childItemChanged"){ parseChildItemChangedMessage(current);}
+            else if (type == "childInserted"){ parseChildInsertedMessage(current);}
+            else if (type == "childRemoved"){  parseChildRemovedMessage(current); }
+            else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }
     qDebug() << "EXITING" << __func__;
@@ -539,7 +529,6 @@ void Dialog::parseChildItemChangedMessage(QScriptValue value){
 
 void Dialog::parseChildInsertedMessage(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.property("id").toString();
     parseActionItem(value.property("item"));
     qDebug() << "EXITING" << __func__;
 }
@@ -549,8 +538,10 @@ void Dialog::parseChildRemovedMessage(QScriptValue value){
     QString id(value.property("id").toString());
     qDebug() << id;
     NuvoActionItem *actionItem = findActionItem(id);
+
     if (actionItem)
         actionItem->setProperty("url","");
+
     if ( id == "next"){ nextButton->setEnabled(false); }
     else if ( id == "play"){  playButton->setEnabled(false); }
     else if ( id == "pause"){ pauseButton->setEnabled(false); }
@@ -621,9 +612,7 @@ void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
 }
 
 void Dialog::onAvStateChange(){
-    qDebug() << "ENTERING" << __func__;
-    qDebug() << avState;
-    qDebug() << "EXITING" << __func__;
+    qDebug() << "AvState Change:" << avState;
 }
 
 void Dialog::updateProgressBar(){
