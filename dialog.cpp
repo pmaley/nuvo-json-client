@@ -407,7 +407,6 @@ void Dialog::parseJsonResponse(QString result)
     qDebug() << "Recv. on channel " << sc.property("channel").toString();
     qDebug() << result;
     QString type = sc.property("type").toString();
-    qDebug() << "Message type:" << type;
 
     if (type == "reply") { parseReplyMessage(sc); }
     else if ( type == "event"){  parseEventMessage(sc); }
@@ -640,10 +639,14 @@ void Dialog::onConnectionStateChange(){
         connectButton->setEnabled(true);
         sendButton->setEnabled(false);
         disconnectButton->setEnabled(false);
+        portLineEdit->setEnabled(true);
+        hostCombo->setEnabled(true);
     } else {
         connectButton->setEnabled(false);
         sendButton->setEnabled(true);
         disconnectButton->setEnabled(true);
+        portLineEdit->setEnabled(false);
+        hostCombo->setEnabled(false);
     }
 }
 
