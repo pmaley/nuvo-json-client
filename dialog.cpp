@@ -13,9 +13,9 @@ Dialog::Dialog()
     createNowPlayingBox();
     createConsoleBox();
 
-    sourceView = new QTreeView;
-    sourceView->setRootIsDecorated(false);
-    sourceView->setAlternatingRowColors(true);
+    browseView = new QTreeView;
+    browseView->setRootIsDecorated(false);
+    browseView->setAlternatingRowColors(true);
 
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
@@ -39,8 +39,9 @@ Dialog::Dialog()
 
 
 
-    mainLayout->addWidget(consoleBox);
-    mainLayout->addWidget(sourceView,0,1,3,1);
+    mainLayout->addWidget(consoleBox,1,0,1,2);
+    mainLayout->addWidget(browseView,0,1,1,1);
+    mainLayout->setRowStretch(1,1000);
     setLayout(mainLayout);
 
     setWindowTitle(tr("NWAS API Controller"));
@@ -279,8 +280,10 @@ void Dialog::createConsoleBox()
     portLabel = new QLabel(tr("S&erver port:"));
 
     hostCombo = new QLineEdit("192.168.1.102");
+    hostCombo->setFixedWidth(100);
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
+    portLineEdit->setFixedWidth(50);
     commandTextEdit = new QTextEdit("{ \"id\" : \"req-1\", \"url\" : \"/stable/av/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }");
     commandTextEdit->setFixedHeight(50);
     consoleTextEdit = new QTextEdit;
@@ -289,9 +292,11 @@ void Dialog::createConsoleBox()
     hostLabel->setBuddy(hostCombo);
     portLabel->setBuddy(portLineEdit);
 
-    sendButton = new QPushButton(tr("send"));
+    sendButton = new QPushButton(tr("Send"));
     sendButton->setDefault(true);
-    quitButton = new QPushButton(tr("quit"));
+    quitButton = new QPushButton(tr("Quit"));
+    connectButton = new QPushButton(tr("Connect"));
+    disconnectButton = new QPushButton(tr("Disconnect"));
 
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
@@ -305,14 +310,14 @@ void Dialog::createConsoleBox()
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
 
     QGridLayout *mainLayout = new QGridLayout;
-    mainLayout->addWidget(hostLabel, 0, 0);
-    mainLayout->addWidget(hostCombo, 0, 1);
-    mainLayout->addWidget(portLabel, 1, 0);
-    mainLayout->addWidget(portLineEdit, 1, 1);
-    mainLayout->addWidget(commandTextEdit, 2, 0, 1, 2);
-    mainLayout->addWidget(consoleTextEdit, 3, 0, 1, 2);
-    mainLayout->addWidget(buttonBox2, 4, 0, 1, 2);
-
+    mainLayout->addWidget(hostLabel, 0, 0, Qt::AlignLeft);
+    mainLayout->addWidget(hostCombo, 0, 1, Qt::AlignLeft);
+    mainLayout->addWidget(portLabel, 0, 2, Qt::AlignLeft);
+    mainLayout->addWidget(portLineEdit, 0, 3, Qt::AlignLeft);
+    mainLayout->addWidget(commandTextEdit, 1, 0, 1, 8);
+    mainLayout->addWidget(consoleTextEdit, 2, 0, 1, 8);
+    mainLayout->addWidget(buttonBox2, 0, 4, 1, 4);
+    mainLayout->setRowStretch(2,1000);
     portLineEdit->setFocus();
     consoleBox->setLayout(mainLayout);
 }

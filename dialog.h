@@ -85,13 +85,13 @@ private:
     QLineEdit *portLineEdit;
     QTextEdit *commandTextEdit;
     QTextEdit *consoleTextEdit;
-    QPushButton *sendButton;
-    QPushButton *quitButton;
+    QPushButton *sendButton, *quitButton, *connectButton,
+                *disconnectButton;
     QDialogButtonBox *buttonBox2;
     QSlider *volumeSlider;
     QProgressBar *trackProgressBar;
     QTimer *progressBarTimer;
-    QTreeView *sourceView;
+    QTreeView *browseView;
 
 
     QMenu *fileMenu;
