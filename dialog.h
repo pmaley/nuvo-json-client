@@ -40,6 +40,7 @@ public:
 
 signals:
      void avStateChanged();
+     void connectionStateChanged();
 
 private:
     void createMenu();
@@ -118,7 +119,9 @@ private:
 public slots:
 
 private slots:
-    void requestNewFortune();
+    void generateNewRequest();
+    void connectToHost();
+    void disconnectFromHost();
     void messageReceived();
     void displayError(QAbstractSocket::SocketError socketError);
     void enableSendButton();
@@ -137,6 +140,7 @@ private slots:
     void muteButtonPressed();
     void sendRequest(QString request);
     void onAvStateChange();
+    void onConnectionStateChange();
     void updateProgressBar();
 };
 

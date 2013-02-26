@@ -294,20 +294,28 @@ void Dialog::createConsoleBox()
 
     sendButton = new QPushButton(tr("Send"));
     sendButton->setDefault(true);
+    sendButton->setEnabled(false);
     quitButton = new QPushButton(tr("Quit"));
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
+    disconnectButton->setEnabled(false);
 
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
+    buttonBox2->addButton(connectButton, QDialogButtonBox::ActionRole);
+    buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
 
     tcpSocket = new QTcpSocket(this);
 
-    connect(sendButton, SIGNAL(clicked()), this, SLOT(requestNewFortune()));
+    connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost()));
+    connect(disconnectButton, SIGNAL(clicked()), this, SLOT(disconnectFromHost()));
+    connect(sendButton, SIGNAL(clicked()), this, SLOT(generateNewRequest()));
     connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
+    connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));
+    //connect(this, SIGNAL(connectionStateChanged()), this, SLOT(onConnectionStateChange()));
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->addWidget(hostLabel, 0, 0, Qt::AlignLeft);
@@ -322,7 +330,7 @@ void Dialog::createConsoleBox()
     consoleBox->setLayout(mainLayout);
 }
 
-void Dialog::requestNewFortune()
+void Dialog::generateNewRequest()
 {
     qDebug() << "ENTERING" << __func__;
     sendButton->setEnabled(false);
@@ -352,7 +360,25 @@ void Dialog::openConnection()
     {
         tcpSocket->abort();
         tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
+        emit connectionStateChanged();
     }
+}
+
+
+void Dialog::connectToHost()
+{
+    qDebug() << "ENTERING" << __func__;
+    if (!tcpSocket->isOpen())
+    {
+        tcpSocket->abort();
+        tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
+        emit connectionStateChanged();
+    }
+}
+
+void Dialog::disconnectFromHost()
+{
+    tcpSocket->abort();
 }
 
 void Dialog::messageReceived()
@@ -502,7 +528,8 @@ void Dialog::parseValueItem(QScriptValue value){
     qDebug() << "EXITING" << __func__;
 }
 
-void Dialog::parseChildValueChangedMessage(QScriptValue value){
+void Dialog::parseChildValueChangedMessage(QScriptValue value)
+{
     qDebug() << "ENTERING" << __func__;
     QString id = QString(value.property("id").toString());
     qDebug() << id;
@@ -545,9 +572,7 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
         }
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
-        qDebug() << avState;
         emit avStateChanged();
-
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
@@ -651,6 +676,19 @@ void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
 
 void Dialog::onAvStateChange(){
     qDebug() << "AvState Change:" << avState;
+}
+
+void Dialog::onConnectionStateChange(){
+    qDebug() << "Connection State Change";
+    if (!tcpSocket->isOpen()){
+        connectButton->setEnabled(true);
+        sendButton->setEnabled(false);
+        disconnectButton->setEnabled(false);
+    } else {
+        connectButton->setEnabled(false);
+        sendButton->setEnabled(true);
+        disconnectButton->setEnabled(true);
+    }
 }
 
 void Dialog::updateProgressBar(){
