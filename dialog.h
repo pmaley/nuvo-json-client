@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QQueue>
 #include <QProgressBar>
+#include <QTimer>
 
 #include "nuvoactionitem.h"
 
@@ -88,6 +89,7 @@ private:
     QDialogButtonBox *buttonBox2;
     QSlider *volumeSlider;
     QProgressBar *trackProgressBar;
+    QTimer *progressBarTimer;
 
     QMenu *fileMenu;
     QAction *exitAction;
@@ -132,6 +134,7 @@ private slots:
     void muteButtonPressed();
     void sendRequest(QString request);
     void onAvStateChange();
+    void updateProgressBar();
 };
 
 #endif // DIALOG_H

@@ -16,9 +16,14 @@ Dialog::Dialog()
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
+    trackProgressBar = new QProgressBar();
+
+    avState = "";
     connect(this, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
 
-    trackProgressBar = new QProgressBar();
+    progressBarTimer = new QTimer(this);
+    connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressBar()));
+    progressBarTimer->start(1000);
 
     volumeSlider = new QSlider(Qt::Horizontal);
     volumeSlider->setMaximum(100);
@@ -115,6 +120,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon6(pixmap6);
     likeButton->setIcon(buttonIcon6);
     likeButton->setIconSize(pixmap6.rect().size());
+    likeButton->setEnabled(false);
     connect(likeButton,SIGNAL(clicked()),this,SLOT(likeButtonPressed()));
 
     // Create thumbsdown button
@@ -123,6 +129,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon7(pixmap7);
     dislikeButton->setIcon(buttonIcon7);
     dislikeButton->setIconSize(pixmap7.rect().size());
+    dislikeButton->setEnabled(false);
     connect(dislikeButton,SIGNAL(clicked()),this,SLOT(dislikeButtonPressed()));
 
     // Create mute button
@@ -130,6 +137,7 @@ void Dialog::createTransportControlsBox()
     QPixmap pixmap8(":/images/player_icons/player_seeker.png");
     QIcon buttonIcon8(pixmap8);
     muteButton->setIcon(buttonIcon8);
+    muteButton->setEnabled(false);
     connect(muteButton,SIGNAL(clicked()),this,SLOT(muteButtonPressed()));
 
     // Create shuffle button
@@ -137,6 +145,7 @@ void Dialog::createTransportControlsBox()
     QPixmap pixmap9(":/images/player_icons/player_icon_shuffle_off_normal.png");
     QIcon buttonIcon9(pixmap9);
     shuffleButton->setIcon(buttonIcon9);
+    shuffleButton->setEnabled(false);
     connect(shuffleButton,SIGNAL(clicked()),this,SLOT(shuffleButtonPressed()));
 
     // Create repeat button
@@ -144,6 +153,7 @@ void Dialog::createTransportControlsBox()
     QPixmap pixmap10(":/images/player_icons/player_icon_repeat_off_normal.png");
     QIcon buttonIcon10(pixmap10);
     repeatButton->setIcon(buttonIcon10);
+    repeatButton->setEnabled(false);
     connect(repeatButton,SIGNAL(clicked()),this,SLOT(repeatButtonPressed()));
 
     layout->addWidget(likeButton);
@@ -415,15 +425,16 @@ void Dialog::parseEventMessage(QScriptValue value)
         while (it.hasNext()) {
             it.next();
             QScriptValue current = it.value();
+            QString type = QString(current.property("type").toString());
             if (current.property("id").toString() == "info"){
                 parseTrackMetadata(current.property("item"));
-            } else if (current.property("type").toString() == "childValueChanged"){
+            } else if (type == "childValueChanged"){
                 parseChildValueChangedMessage(current);
-            } else if (current.property("type").toString() == "childItemChanged"){
+            } else if (type == "childItemChanged"){
                 parseChildItemChangedMessage(current);
-            } else if (current.property("type").toString() == "childInserted"){
+            } else if (type == "childInserted"){
                 parseChildInsertedMessage(current);
-            } else if (current.property("type").toString() == "childRemoved"){
+            } else if (type == "childRemoved"){
                 parseChildRemovedMessage(current);
             }
         }
@@ -435,19 +446,19 @@ void Dialog::parseValueItem(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
     QString id = QString(value.property("id").toString());
     qDebug() << id;
+
+    NuvoActionItem *actionItem = findActionItem(id);
+    if (actionItem != NULL)
+        actionItem->setProperty("url",value.property("url").toString());
+
     if ( id == "volume"){
         volumeSlider->setMaximum(value.property("maxInt").toInt32());
         volumeSlider->setValue(value.property("value").property("int").toInt32());
-        volumeActionItem->setProperty("url",value.property("url").toString());
     } else if (id == "time") {
         trackProgressBar->setMaximum(value.property("maxDouble").toInt32());
         trackProgressBar->setValue(value.property("value").property("double").toInt32());
-    } else if (id == "mute") {
-        muteActionItem->setProperty("url",value.property("url").toString());
-    } else if (id == "shuffle") {
-        shuffleActionItem->setProperty("url",value.property("url").toString());
-    } else if (id == "repeat") {
-        repeatActionItem->setProperty("url",value.property("url").toString());
+    } else if (id == "state") {
+        avState = QString(value.property("value").property("avState").toString());
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -551,13 +562,11 @@ void Dialog::parseActionItem(QScriptValue value)
     else if ( id == "pause"){ pauseButton->setEnabled(true); }
     else if ( id == "previous"){ prevButton->setEnabled(true); }
     else if ( id == "stop"){ stopButton->setEnabled(true); }
-//    else if ( id == "like"){ return likeActionItem; }
-//    else if ( id == "dislike"){ return dislikeActionItem; }
-//    else if ( id == "volume"){ return volumeActionItem; }
-//    else if ( id == "mute"){ return muteActionItem; }
-//    else if ( id == "repeat"){ return repeatActionItem; }
-//    else if ( id == "shuffle"){ return shuffleActionItem; }
-//    else { return NULL; }
+    else if ( id == "like"){ likeButton->setEnabled(true); }
+    else if ( id == "dislike"){ dislikeButton->setEnabled(true); }
+//    else if ( id == "mute"){ muteButton->setEnabled(true); }
+//    else if ( id == "repeat"){ repeatButton->setEnabled(true); }
+//    else if ( id == "shuffle"){ shuffleButton->setEnabled(true); }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -605,6 +614,12 @@ void Dialog::onAvStateChange(){
     qDebug() << "ENTERING" << __func__;
     qDebug() << avState;
     qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::updateProgressBar(){
+    if (avState == "playing" && trackProgressBar->maximum() > 0) {
+        trackProgressBar->setValue(trackProgressBar->value()+1);
+    }
 }
 
 
