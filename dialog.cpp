@@ -16,6 +16,8 @@ Dialog::Dialog()
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
+    connect(this, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
+
     trackProgressBar = new QProgressBar();
 
     volumeSlider = new QSlider(Qt::Horizontal);
@@ -491,6 +493,11 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
             QIcon buttonIcon8(pixmap8);
             repeatButton->setIcon(buttonIcon8);
         }
+    } else if (id == "state") {
+        avState = QString(value.property("value").property("avState").toString());
+        qDebug() << avState;
+        emit avStateChanged();
+
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -593,3 +600,12 @@ void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
     pixmap.loadFromData(jpegData);
     imageLabel->setPixmap(pixmap.scaledToHeight(100)); // or whatever your labels name is
 }
+
+void Dialog::onAvStateChange(){
+    qDebug() << "ENTERING" << __func__;
+    qDebug() << avState;
+    qDebug() << "EXITING" << __func__;
+}
+
+
+

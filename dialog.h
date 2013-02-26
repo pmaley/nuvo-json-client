@@ -36,6 +36,9 @@ public:
     Dialog();
     void parseJsonResponse(QString json);
 
+signals:
+     void avStateChanged();
+
 private:
     void createMenu();
     void createTransportControlsBox();
@@ -95,6 +98,7 @@ private:
 
     QString currentMessage;
     QString lastMessage;
+    QString avState;
 
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
@@ -127,6 +131,7 @@ private slots:
     void repeatButtonPressed();
     void muteButtonPressed();
     void sendRequest(QString request);
+    void onAvStateChange();
 };
 
 #endif // DIALOG_H
