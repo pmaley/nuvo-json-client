@@ -392,7 +392,7 @@ void Dialog::parseJsonResponse(QString result)
         parseReplyMessage(sc);
     } else if ( type == "event"){
         parseEventMessage(sc);
-    }
+    } else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
     qDebug() << "EXITING" << __func__;
 
 }
@@ -405,12 +405,16 @@ void Dialog::parseReplyMessage(QScriptValue sc)
         while (it.hasNext()) {
             it.next();
             QScriptValue current = it.value();
-            if (current.property("id").toString() == "info"){
+            QString id(current.property("id").toString());
+            QString type(current.property("type").toString());
+            if (id == "info"){
                 parseTrackMetadata(current);
-            } else if ( current.property("type").toString() == "action"){
+            } else if ( type == "action"){
                 parseActionItem(current);
-            } else if ( current.property("type").toString() == "value"){
+            } else if ( type == "value"){
                 parseValueItem(current);
+            } else {
+                qDebug() << "ITEM NOT PROCESSED:" << id << current.toString();
             }
         }
     }
@@ -426,7 +430,8 @@ void Dialog::parseEventMessage(QScriptValue value)
             it.next();
             QScriptValue current = it.value();
             QString type = QString(current.property("type").toString());
-            if (current.property("id").toString() == "info"){
+            QString id = QString(current.property("id").toString());
+            if ( id == "info"){
                 parseTrackMetadata(current.property("item"));
             } else if (type == "childValueChanged"){
                 parseChildValueChangedMessage(current);
@@ -436,7 +441,7 @@ void Dialog::parseEventMessage(QScriptValue value)
                 parseChildInsertedMessage(current);
             } else if (type == "childRemoved"){
                 parseChildRemovedMessage(current);
-            }
+            } else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }
     qDebug() << "EXITING" << __func__;
@@ -465,7 +470,7 @@ void Dialog::parseValueItem(QScriptValue value){
         shuffleButton->setEnabled(value.property("modifiable").toBool());
     } else if (id == "repeat") {
         repeatButton->setEnabled(value.property("modifiable").toBool());
-    }
+    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -515,7 +520,7 @@ void Dialog::parseChildValueChangedMessage(QScriptValue value){
         qDebug() << avState;
         emit avStateChanged();
 
-    }
+    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -528,7 +533,7 @@ void Dialog::parseChildItemChangedMessage(QScriptValue value){
     } else if (id == "time") {
         trackProgressBar->setMaximum(value.property("item").property("maxDouble").toInt32());
         trackProgressBar->setValue(value.property("item").property("value").property("int").toInt32());
-    }
+    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -551,6 +556,7 @@ void Dialog::parseChildRemovedMessage(QScriptValue value){
     else if ( id == "pause"){ pauseButton->setEnabled(false); }
     else if ( id == "previous"){ prevButton->setEnabled(false); }
     else if ( id == "stop"){ stopButton->setEnabled(false); }
+    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -570,9 +576,7 @@ void Dialog::parseActionItem(QScriptValue value)
     else if ( id == "stop"){ stopButton->setEnabled(true); }
     else if ( id == "like"){ likeButton->setEnabled(true); }
     else if ( id == "dislike"){ dislikeButton->setEnabled(true); }
-//    else if ( id == "mute"){ muteButton->setEnabled(true); }
-//    else if ( id == "repeat"){ repeatButton->setEnabled(true); }
-//    else if ( id == "shuffle"){ shuffleButton->setEnabled(true); }
+    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
