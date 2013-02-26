@@ -8,6 +8,7 @@
 #include <QQueue>
 #include <QProgressBar>
 #include <QTimer>
+#include <QStandardItemModel>
 
 #include "nuvoactionitem.h"
 
@@ -28,6 +29,8 @@ class QNetworkAccessManager;
 class QNetworkReply;
 class QSlider;
 class QTreeView;
+class QTreeWidgetItem;
+class QStandardItemModel;
 QT_END_NAMESPACE
 
 class Dialog : public QDialog
@@ -53,6 +56,7 @@ private:
     void parseTrackMetadata(QScriptValue value);
     void parseActionItem(QScriptValue value);
     void parseValueItem(QScriptValue value);
+    void parseContainerItem(QScriptValue value);
     void parseChildValueChangedMessage(QScriptValue value);
     void parseChildItemChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);
@@ -93,6 +97,7 @@ private:
     QProgressBar *trackProgressBar;
     QTimer *progressBarTimer;
     QTreeView *browseView;
+    QStandardItemModel *browseModel;
 
 
     QMenu *fileMenu;

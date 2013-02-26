@@ -2,6 +2,7 @@
 #include <QtNetwork>
 #include <QScriptValueIterator>
 #include <QQueue>
+#include <QStandardItemModel>
 
 #include "dialog.h"
 #include "NuvoActionItem.h"
@@ -16,6 +17,9 @@ Dialog::Dialog()
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
     browseView->setAlternatingRowColors(true);
+
+    browseModel = new QStandardItemModel(0, 1);
+    browseView->setModel(browseModel);
 
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
@@ -428,9 +432,25 @@ void Dialog::parseReplyMessage(QScriptValue sc)
             if (id == "info"){  parseTrackMetadata(current);  }
             else if ( type == "action"){  parseActionItem(current); }
             else if ( type == "value"){ parseValueItem(current); }
+            else if ( type == "container"){ parseContainerItem(current); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::parseContainerItem(QScriptValue value){
+    qDebug() << "ENTERING" << __func__;
+    QScriptValue current(value);
+    QString type(current.property("type").toString());
+    QString id(current.property("id").toString());
+    QString title(current.property("title").toString());
+    qDebug() << title << id << type;
+
+    int row = browseModel->rowCount();
+    browseModel->insertRow(row);
+    browseModel->setData(browseModel->index(row, 0), title);
+
     qDebug() << "EXITING" << __func__;
 }
 
