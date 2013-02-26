@@ -245,7 +245,7 @@ void Dialog::createConsoleBox()
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.122");
+    hostCombo = new QLineEdit("192.168.1.102");
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
     commandTextEdit = new QTextEdit("{ \"id\" : \"req-1\", \"url\" : \"/stable/av/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }");
@@ -459,6 +459,12 @@ void Dialog::parseValueItem(QScriptValue value){
         trackProgressBar->setValue(value.property("value").property("double").toInt32());
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
+    } else if (id == "mute") {
+        muteButton->setEnabled(value.property("modifiable").toBool());
+    } else if (id == "shuffle") {
+        shuffleButton->setEnabled(value.property("modifiable").toBool());
+    } else if (id == "repeat") {
+        repeatButton->setEnabled(value.property("modifiable").toBool());
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -540,7 +546,7 @@ void Dialog::parseChildRemovedMessage(QScriptValue value){
     NuvoActionItem *actionItem = findActionItem(id);
     if (actionItem)
         actionItem->setProperty("url","");
-    if ( id == "next"){ nextButton->setEnabled(false);  }
+    if ( id == "next"){ nextButton->setEnabled(false); }
     else if ( id == "play"){  playButton->setEnabled(false); }
     else if ( id == "pause"){ pauseButton->setEnabled(false); }
     else if ( id == "previous"){ prevButton->setEnabled(false); }
