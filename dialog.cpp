@@ -48,7 +48,6 @@ Dialog::Dialog()
     nextActionItem = new NuvoActionItem("next","");
     likeActionItem = new NuvoActionItem("like","");
     dislikeActionItem = new NuvoActionItem("dislike","");
-    muteActionItem = new NuvoActionItem("mute","");
     shuffleActionItem = new NuvoActionItem("shuffle","");
     repeatActionItem = new NuvoActionItem("repeat","");
 }
