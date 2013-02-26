@@ -125,7 +125,6 @@ private slots:
     void messageReceived();
     void displayError(QAbstractSocket::SocketError socketError);
     void enableSendButton();
-    void openConnection();
     void slot_netwManagerFinished(QNetworkReply *reply);
     void prevButtonPressed();
     void nextButtonPressed();

@@ -20,25 +20,17 @@ Dialog::Dialog()
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
-
-
     avState = "";
     connect(this, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
 
     progressBarTimer = new QTimer(this);
-    connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressBar()));
     progressBarTimer->start(1000);
-
-
+    connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressBar()));
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
 
-    //QVBoxLayout *mainLayout = new QVBoxLayout;
     QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox,0,0);
-
-
-
     mainLayout->addWidget(consoleBox,1,0,1,2);
     mainLayout->addWidget(browseView,0,1,1,1);
     mainLayout->setRowStretch(1,1000);
@@ -188,24 +180,6 @@ void Dialog::createMetadataBox(QStringList trackMetadata)
     metadataBox->setLayout(layout);
 }
 
-//void Dialog::createNowPlayingBox2()
-//{
-//    nowPlayingBox = new QGroupBox();
-//    QGridLayout *layout = new QGridLayout;
-//    QPixmap *image = new QPixmap(":/images/aom.jpg");
-//    image = new QPixmap(image->scaledToHeight(100));
-//    imageLabel = new QLabel();
-//    imageLabel->setPixmap(*image);
-//    layout->addWidget(imageLabel,0,0);
-//    QStringList trackMetadata = QStringList() << "Fear Before the March of Flames Radio" << "<b>Dog Sized Bird</b>"
-//                                                  << "Fear Before the March of Flames - The Always Open Mouth";
-//    createMetadataBox(trackMetadata);
-//    layout->addWidget(metadataBox,0,1);
-//    layout->setColumnStretch(1, 10);
-//    layout->setColumnStretch(2, 10);
-//    nowPlayingBox->setLayout(layout);
-//}
-
 void Dialog::createNowPlayingBox()
 {
     nowPlayingBox = new QGroupBox();
@@ -315,7 +289,6 @@ void Dialog::createConsoleBox()
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
     connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));
-    //connect(this, SIGNAL(connectionStateChanged()), this, SLOT(onConnectionStateChange()));
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->addWidget(hostLabel, 0, 0, Qt::AlignLeft);
@@ -335,12 +308,8 @@ void Dialog::generateNewRequest()
     qDebug() << "ENTERING" << __func__;
     sendButton->setEnabled(false);
     blockSize = 0;
-    if (!tcpSocket->isOpen()){
-        openConnection();
-    } else {
-        sendRequest(QString(commandTextEdit->toPlainText()));
-        commandTextEdit->setText("");
-    }
+    sendRequest(QString(commandTextEdit->toPlainText()));
+    commandTextEdit->setText("");
 }
 
 void Dialog::sendRequest(QString request)
@@ -353,18 +322,6 @@ void Dialog::sendRequest(QString request)
     qDebug() << cString << "written to socket";
 }
 
-void Dialog::openConnection()
-{
-    qDebug() << "ENTERING" << __func__;
-    if (!tcpSocket->isOpen())
-    {
-        tcpSocket->abort();
-        tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
-        emit connectionStateChanged();
-    }
-}
-
-
 void Dialog::connectToHost()
 {
     qDebug() << "ENTERING" << __func__;
@@ -372,7 +329,6 @@ void Dialog::connectToHost()
     {
         tcpSocket->abort();
         tcpSocket->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
-        emit connectionStateChanged();
     }
 }
 
