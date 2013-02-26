@@ -517,7 +517,16 @@ void Dialog::parseChildInsertedMessage(QScriptValue value){
 
 void Dialog::parseChildRemovedMessage(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.property("id").toString();
+    QString id(value.property("id").toString());
+    qDebug() << id;
+    NuvoActionItem *actionItem = findActionItem(id);
+    if (actionItem)
+        actionItem->setProperty("url","");
+    if ( id == "next"){ nextButton->setEnabled(false);  }
+    else if ( id == "play"){  playButton->setEnabled(false); }
+    else if ( id == "pause"){ pauseButton->setEnabled(false); }
+    else if ( id == "previous"){ prevButton->setEnabled(false); }
+    else if ( id == "stop"){ stopButton->setEnabled(false); }
     qDebug() << "EXITING" << __func__;
 }
 
