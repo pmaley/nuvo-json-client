@@ -13,10 +13,14 @@ Dialog::Dialog()
     createNowPlayingBox();
     createConsoleBox();
 
+    sourceView = new QTreeView;
+    sourceView->setRootIsDecorated(false);
+    sourceView->setAlternatingRowColors(true);
+
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
-    trackProgressBar = new QProgressBar();
+
 
     avState = "";
     connect(this, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
@@ -25,17 +29,18 @@ Dialog::Dialog()
     connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressBar()));
     progressBarTimer->start(1000);
 
-    volumeSlider = new QSlider(Qt::Horizontal);
-    volumeSlider->setMaximum(100);
+
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
 
-    QVBoxLayout *mainLayout = new QVBoxLayout;
+    //QVBoxLayout *mainLayout = new QVBoxLayout;
+    QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
-    mainLayout->addWidget(nowPlayingBox);
-    mainLayout->addWidget(transportControlsBox);
-    mainLayout->addWidget(trackProgressBar);
-    mainLayout->addWidget(volumeSlider);
+    mainLayout->addWidget(nowPlayingBox,0,0);
+
+
+
     mainLayout->addWidget(consoleBox);
+    mainLayout->addWidget(sourceView,0,1,3,1);
     setLayout(mainLayout);
 
     setWindowTitle(tr("NWAS API Controller"));
@@ -163,9 +168,9 @@ void Dialog::createTransportControlsBox()
     layout->addWidget(pauseButton);
     layout->addWidget(playButton);
     layout->addWidget(nextButton);
-    layout->addWidget(muteButton);
-    layout->addWidget(shuffleButton);
-    layout->addWidget(repeatButton);
+//    layout->addWidget(muteButton);
+//    layout->addWidget(shuffleButton);
+//    layout->addWidget(repeatButton);
     transportControlsBox->setLayout(layout);
 }
 
@@ -182,6 +187,24 @@ void Dialog::createMetadataBox(QStringList trackMetadata)
     metadataBox->setLayout(layout);
 }
 
+//void Dialog::createNowPlayingBox2()
+//{
+//    nowPlayingBox = new QGroupBox();
+//    QGridLayout *layout = new QGridLayout;
+//    QPixmap *image = new QPixmap(":/images/aom.jpg");
+//    image = new QPixmap(image->scaledToHeight(100));
+//    imageLabel = new QLabel();
+//    imageLabel->setPixmap(*image);
+//    layout->addWidget(imageLabel,0,0);
+//    QStringList trackMetadata = QStringList() << "Fear Before the March of Flames Radio" << "<b>Dog Sized Bird</b>"
+//                                                  << "Fear Before the March of Flames - The Always Open Mouth";
+//    createMetadataBox(trackMetadata);
+//    layout->addWidget(metadataBox,0,1);
+//    layout->setColumnStretch(1, 10);
+//    layout->setColumnStretch(2, 10);
+//    nowPlayingBox->setLayout(layout);
+//}
+
 void Dialog::createNowPlayingBox()
 {
     nowPlayingBox = new QGroupBox();
@@ -190,11 +213,21 @@ void Dialog::createNowPlayingBox()
     image = new QPixmap(image->scaledToHeight(100));
     imageLabel = new QLabel();
     imageLabel->setPixmap(*image);
-    layout->addWidget(imageLabel,0,0);
     QStringList trackMetadata = QStringList() << "Fear Before the March of Flames Radio" << "<b>Dog Sized Bird</b>"
                                                   << "Fear Before the March of Flames - The Always Open Mouth";
     createMetadataBox(trackMetadata);
+
+    trackProgressBar = new QProgressBar();
+    volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setMaximum(100);
+
+
+    layout->addWidget(imageLabel,0,0);
     layout->addWidget(metadataBox,0,1);
+    layout->addWidget(trackProgressBar,1,0,1,2);
+    layout->addWidget(volumeSlider,2,0,1,2);
+    layout->addWidget(transportControlsBox,4,0,1,2);
+
     layout->setColumnStretch(1, 10);
     layout->setColumnStretch(2, 10);
     nowPlayingBox->setLayout(layout);

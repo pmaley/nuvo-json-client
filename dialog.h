@@ -27,6 +27,7 @@ class QNetworkSession;
 class QNetworkAccessManager;
 class QNetworkReply;
 class QSlider;
+class QTreeView;
 QT_END_NAMESPACE
 
 class Dialog : public QDialog
@@ -90,6 +91,8 @@ private:
     QSlider *volumeSlider;
     QProgressBar *trackProgressBar;
     QTimer *progressBarTimer;
+    QTreeView *sourceView;
+
 
     QMenu *fileMenu;
     QAction *exitAction;
