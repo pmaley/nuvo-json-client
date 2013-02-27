@@ -132,6 +132,7 @@ private slots:
     void onConnectionStateChange();
     void updateProgressBar();
     void connectToHost2();
+    void redisplay();
 };
 
 #endif // DIALOG_H

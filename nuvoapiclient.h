@@ -21,7 +21,6 @@ public:
     explicit NuvoApiClient(QObject *parent = 0);
 
     void connectToHost();
-    void disconnectFromHost();
     void sendRequest(QString request);
     void invokeAction(NuvoActionItem *action);
     void updateValue(NuvoActionItem *actionItem, int value);
@@ -46,8 +45,10 @@ public:
                             *shuffleActionItem, *repeatActionItem;
     
 signals:
+    void avChanged();
     
 public slots:
+    void disconnectFromHost();
     void messageReceived();
     void displayError(QAbstractSocket::SocketError socketError);
 

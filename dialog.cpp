@@ -10,6 +10,7 @@
 Dialog::Dialog()
 {
     nuvo = new NuvoApiClient();
+    connect(nuvo, SIGNAL(avChanged()), this, SLOT(redisplay()));
 
     createMenu();
     createTransportControlsBox();
@@ -68,7 +69,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon1(pixmap1);
     nextButton->setIcon(buttonIcon1);
     nextButton->setIconSize(pixmap1.rect().size());
-    nextButton->setEnabled(false);
+    //nextButton->setEnabled(false);
     connect(nextButton,SIGNAL(clicked()),this,SLOT(nextButtonPressed()));
 
     // Create play button
@@ -77,7 +78,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon2(pixmap2);
     playButton->setIcon(buttonIcon2);
     playButton->setIconSize(pixmap2.rect().size());
-    playButton->setEnabled(false);
+    //playButton->setEnabled(false);
     connect(playButton,SIGNAL(clicked()),this,SLOT(playButtonPressed()));
 
     // Create pause button
@@ -86,7 +87,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon3(pixmap3);
     pauseButton->setIcon(buttonIcon3);
     pauseButton->setIconSize(pixmap3.rect().size());
-    pauseButton->setEnabled(false);
+    //pauseButton->setEnabled(false);
     connect(pauseButton,SIGNAL(clicked()),this,SLOT(pauseButtonPressed()));
 
     // Create prev button
@@ -95,7 +96,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon4(pixmap4);
     prevButton->setIcon(buttonIcon4);
     prevButton->setIconSize(pixmap4.rect().size());
-    prevButton->setEnabled(false);
+    //prevButton->setEnabled(false);
     connect(prevButton,SIGNAL(clicked()),this,SLOT(prevButtonPressed()));
 
     // Create stop button
@@ -104,7 +105,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon5(pixmap5);
     stopButton->setIcon(buttonIcon5);
     stopButton->setIconSize(pixmap5.rect().size());
-    stopButton->setEnabled(false);
+   // stopButton->setEnabled(false);
     connect(stopButton,SIGNAL(clicked()),this,SLOT(stopButtonPressed()));
 
     // Create thumbs up button
@@ -113,7 +114,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon6(pixmap6);
     likeButton->setIcon(buttonIcon6);
     likeButton->setIconSize(pixmap6.rect().size());
-    likeButton->setEnabled(false);
+    //likeButton->setEnabled(false);
     connect(likeButton,SIGNAL(clicked()),this,SLOT(likeButtonPressed()));
 
     // Create thumbsdown button
@@ -122,7 +123,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon7(pixmap7);
     dislikeButton->setIcon(buttonIcon7);
     dislikeButton->setIconSize(pixmap7.rect().size());
-    dislikeButton->setEnabled(false);
+    //dislikeButton->setEnabled(false);
     connect(dislikeButton,SIGNAL(clicked()),this,SLOT(dislikeButtonPressed()));
 
     // Create mute button
@@ -130,7 +131,7 @@ void Dialog::createTransportControlsBox()
     QPixmap pixmap8(":/images/player_icons/player_seeker.png");
     QIcon buttonIcon8(pixmap8);
     muteButton->setIcon(buttonIcon8);
-    muteButton->setEnabled(false);
+    //muteButton->setEnabled(false);
     connect(muteButton,SIGNAL(clicked()),this,SLOT(muteButtonPressed()));
 
     // Create shuffle button
@@ -138,7 +139,7 @@ void Dialog::createTransportControlsBox()
     QPixmap pixmap9(":/images/player_icons/player_icon_shuffle_off_normal.png");
     QIcon buttonIcon9(pixmap9);
     shuffleButton->setIcon(buttonIcon9);
-    shuffleButton->setEnabled(false);
+    //shuffleButton->setEnabled(false);
     connect(shuffleButton,SIGNAL(clicked()),this,SLOT(shuffleButtonPressed()));
 
     // Create repeat button
@@ -146,7 +147,7 @@ void Dialog::createTransportControlsBox()
     QPixmap pixmap10(":/images/player_icons/player_icon_repeat_off_normal.png");
     QIcon buttonIcon10(pixmap10);
     repeatButton->setIcon(buttonIcon10);
-    repeatButton->setEnabled(false);
+    //repeatButton->setEnabled(false);
     connect(repeatButton,SIGNAL(clicked()),this,SLOT(repeatButtonPressed()));
 
     layout->addWidget(likeButton);
@@ -239,11 +240,11 @@ void Dialog::createConsoleBox()
 
     sendButton = new QPushButton(tr("Send"));
     sendButton->setDefault(true);
-    sendButton->setEnabled(false);
+    //sendButton->setEnabled(false);
     quitButton = new QPushButton(tr("Quit"));
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
-    disconnectButton->setEnabled(false);
+    //disconnectButton->setEnabled(false);
 
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
@@ -275,7 +276,7 @@ void Dialog::createConsoleBox()
 void Dialog::generateNewRequest()
 {
     qDebug() << "ENTERING" << __func__;
-    sendButton->setEnabled(false);
+    //sendButton->setEnabled(false);
     nuvo->sendRequest(QString(commandTextEdit->toPlainText()));
     commandTextEdit->setText("");
 }
@@ -318,25 +319,29 @@ void Dialog::onAvStateChange(){
 
 void Dialog::onConnectionStateChange(){
     qDebug() << "Connection State Change";
-    if (!nuvo->tcpSocket->isOpen()){
-        connectButton->setEnabled(true);
-        sendButton->setEnabled(false);
-        disconnectButton->setEnabled(false);
-        portLineEdit->setEnabled(true);
-        hostCombo->setEnabled(true);
-    } else {
-        connectButton->setEnabled(false);
-        sendButton->setEnabled(true);
-        disconnectButton->setEnabled(true);
-        portLineEdit->setEnabled(false);
-        hostCombo->setEnabled(false);
-    }
+//    if (!nuvo->tcpSocket->isOpen()){
+//        connectButton->setEnabled(true);
+//        sendButton->setEnabled(false);
+//        disconnectButton->setEnabled(false);
+//        portLineEdit->setEnabled(true);
+//        hostCombo->setEnabled(true);
+//    } else {
+//        connectButton->setEnabled(false);
+//        sendButton->setEnabled(true);
+//        disconnectButton->setEnabled(true);
+//        portLineEdit->setEnabled(false);
+//        hostCombo->setEnabled(false);
+//    }
 }
 
 void Dialog::updateProgressBar(){
     if (avState == "playing" && trackProgressBar->maximum() > 0) {
         trackProgressBar->setValue(trackProgressBar->value()+1);
     }
+}
+
+void Dialog::redisplay(){
+    //TODO update screen w/ current client's info
 }
 
 
