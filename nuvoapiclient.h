@@ -1,0 +1,64 @@
+#ifndef NUVOAPICLIENT_H
+#define NUVOAPICLIENT_H
+
+#include <QObject>
+#include <QTcpSocket>
+#include <QtNetwork>
+#include <QScriptEngine>
+#include <QScriptValueIterator>
+
+#include <nuvoactionitem.h>
+
+QT_BEGIN_NAMESPACE
+class QTcpSocket;
+QT_END_NAMESPACE
+
+class NuvoApiClient : public QObject
+{
+    Q_OBJECT
+public:
+    QTcpSocket *tcpSocket;
+    explicit NuvoApiClient(QObject *parent = 0);
+
+    void connectToHost();
+    void disconnectFromHost();
+    void sendRequest(QString request);
+    void invokeAction(NuvoActionItem *action);
+    void updateValue(NuvoActionItem *actionItem, int value);
+    void toggleValue(NuvoActionItem *actionItem);
+    void connectToHost(QString host, int port);
+    void parseJsonResponse(QString json);
+    void parseReplyMessage(QScriptValue sc);
+    void parseEventMessage(QScriptValue sc);
+    void parseTrackMetadata(QScriptValue value);
+    void parseActionItem(QScriptValue value);
+    void parseValueItem(QScriptValue value);
+    void parseContainerItem(QScriptValue value);
+    void parseChildValueChangedMessage(QScriptValue value);
+    void parseChildItemChangedMessage(QScriptValue value);
+    void parseChildInsertedMessage(QScriptValue value);
+    void parseChildRemovedMessage(QScriptValue value);
+    NuvoActionItem* findActionItem(QString id);
+
+    NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
+                            *prevActionItem, *stopActionItem, *likeActionItem,
+                            *dislikeActionItem, *volumeActionItem, *muteActionItem,
+                            *shuffleActionItem, *repeatActionItem;
+    
+signals:
+    
+public slots:
+    void messageReceived();
+    void displayError(QAbstractSocket::SocketError socketError);
+
+
+private:
+    QString currentMessage;
+
+
+
+
+    
+};
+
+#endif // NUVOAPICLIENT_H

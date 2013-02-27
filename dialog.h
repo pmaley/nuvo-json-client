@@ -11,6 +11,7 @@
 #include <QStandardItemModel>
 
 #include "nuvoactionitem.h"
+#include "nuvoapiclient.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -39,7 +40,7 @@ class Dialog : public QDialog
 
 public:
     Dialog();
-    void parseJsonResponse(QString json);
+
 
 signals:
      void avStateChanged();
@@ -51,23 +52,14 @@ private:
     void createConsoleBox();
     void createMetadataBox(QStringList trackMetadata);
     void createNowPlayingBox();
-    void parseReplyMessage(QScriptValue sc);
-    void parseEventMessage(QScriptValue sc);
-    void parseTrackMetadata(QScriptValue value);
-    void parseActionItem(QScriptValue value);
-    void parseValueItem(QScriptValue value);
-    void parseContainerItem(QScriptValue value);
-    void parseChildValueChangedMessage(QScriptValue value);
-    void parseChildItemChangedMessage(QScriptValue value);
-    void parseChildInsertedMessage(QScriptValue value);
-    void parseChildRemovedMessage(QScriptValue value);
-    void invokeAction(NuvoActionItem *action);
-    void updateValue(NuvoActionItem *actionItem, int value);
-    void toggleValue(NuvoActionItem *actionItem);
-    NuvoActionItem* findActionItem(QString id);
+
+
+
+
+
 
     enum { NumGridRows = 3, NumButtons = 5 };
-
+    NuvoApiClient* nuvo;
     QMenuBar *menuBar;
     QGroupBox *transportControlsBox;
     QGroupBox *metadataBox;
@@ -103,21 +95,18 @@ private:
     QMenu *fileMenu;
     QAction *exitAction;
 
-    QTcpSocket *tcpSocket;
+
     QString currentFortune;
     quint16 blockSize;
 
-    QString currentMessage;
+
     QString lastMessage;
     QString avState;
 
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
 
-    NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
-                            *prevActionItem, *stopActionItem, *likeActionItem,
-                            *dislikeActionItem, *volumeActionItem, *muteActionItem,
-                            *shuffleActionItem, *repeatActionItem;
+
 
     QQueue<QString> messageQueue;
 
@@ -125,10 +114,6 @@ public slots:
 
 private slots:
     void generateNewRequest();
-    void connectToHost();
-    void disconnectFromHost();
-    void messageReceived();
-    void displayError(QAbstractSocket::SocketError socketError);
     void enableSendButton();
     void slot_netwManagerFinished(QNetworkReply *reply);
     void prevButtonPressed();
@@ -142,10 +127,11 @@ private slots:
     void shuffleButtonPressed();
     void repeatButtonPressed();
     void muteButtonPressed();
-    void sendRequest(QString request);
+
     void onAvStateChange();
     void onConnectionStateChange();
     void updateProgressBar();
+    void connectToHost2();
 };
 
 #endif // DIALOG_H
