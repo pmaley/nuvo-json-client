@@ -256,7 +256,7 @@ void Dialog::createConsoleBox()
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.102");
+    hostCombo = new QLineEdit("192.168.1.21");
     hostCombo->setFixedWidth(100);
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
@@ -310,7 +310,6 @@ void Dialog::generateNewRequest()
 {
     qDebug() << "ENTERING" << __func__;
     sendButton->setEnabled(false);
-    blockSize = 0;
     sendRequest(QString(commandTextEdit->toPlainText()));
     commandTextEdit->setText("");
 }
@@ -376,19 +375,19 @@ void Dialog::displayError(QAbstractSocket::SocketError socketError)
     case QAbstractSocket::RemoteHostClosedError:
         break;
     case QAbstractSocket::HostNotFoundError:
-        QMessageBox::information(this, tr("Fortune Client"),
+        QMessageBox::information(this, tr("NuVo API"),
                                  tr("The host was not found. Please check the "
                                     "host name and port settings."));
         break;
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::information(this, tr("Fortune Client"),
+        QMessageBox::information(this, tr("NuVo API"),
                                  tr("The connection was refused by the peer. "
                                     "Make sure the fortune server is running, "
                                     "and check that the host name and port "
                                     "settings are correct."));
         break;
     default:
-        QMessageBox::information(this, tr("Fortune Client"),
+        QMessageBox::information(this, tr("NuVo API"),
                                  tr("The following error occurred: %1.")
                                  .arg(tcpSocket->errorString()));
     }
@@ -421,6 +420,7 @@ void Dialog::parseJsonResponse(QString result)
 void Dialog::parseReplyMessage(QScriptValue sc)
 {
     qDebug() << "ENTERING" << __func__;
+
     if (sc.property("result").property("children").isArray() ){
         QScriptValueIterator it(sc.property("result").property("children"));
         while (it.hasNext()) {
@@ -465,7 +465,7 @@ void Dialog::parseEventMessage(QScriptValue value)
             QString type = QString(current.property("type").toString());
             QString id = QString(current.property("id").toString());
             if ( id == "info"){  parseTrackMetadata(current.property("item"));}
-            else if (type == "childValueChanged"){  parseChildValueChangedMessage(current);}
+            else if (type == "childValueChanged"){ parseChildValueChangedMessage(current);}
             else if (type == "childItemChanged"){ parseChildItemChangedMessage(current);}
             else if (type == "childInserted"){ parseChildInsertedMessage(current);}
             else if (type == "childRemoved"){  parseChildRemovedMessage(current); }
