@@ -43,9 +43,13 @@ public:
                             *prevActionItem, *stopActionItem, *likeActionItem,
                             *dislikeActionItem, *volumeActionItem, *muteActionItem,
                             *shuffleActionItem, *repeatActionItem;
+    int volumeMax, volume, progressMax, progressPos;
+    QString avState;
+    QString metadata1, metadata2, metadata3;
     
 signals:
     void avChanged();
+    void avStateChanged();
     
 public slots:
     void disconnectFromHost();

@@ -6,6 +6,7 @@
 NuvoApiClient::NuvoApiClient(QObject *parent) :
     QObject(parent)
 {
+    avState = "";
     volumeActionItem = new NuvoActionItem("volume","");
     muteActionItem = new NuvoActionItem("mute","");
     prevActionItem = new NuvoActionItem("prev","");
@@ -75,6 +76,7 @@ void NuvoApiClient::messageReceived()
         //sendButton->setEnabled(true);
     }
     delete(data);
+    emit avChanged();
     qDebug() << "EXITING" << __func__;
 }
 
@@ -207,21 +209,15 @@ void NuvoApiClient::parseValueItem(QScriptValue value){
     if (actionItem != NULL)
         actionItem->setProperty("url",value.property("url").toString());
 
-//    if ( id == "volume"){
-//        volumeSlider->setMaximum(value.property("maxInt").toInt32());
-//        volumeSlider->setValue(value.property("value").property("int").toInt32());
-//    } else if (id == "time") {
-//        trackProgressBar->setMaximum(value.property("maxDouble").toInt32());
-//        trackProgressBar->setValue(value.property("value").property("double").toInt32());
-//    } else if (id == "state") {
-//        avState = QString(value.property("value").property("avState").toString());
-//    } else if (id == "mute") {
-//        muteButton->setEnabled(value.property("modifiable").toBool());
-//    } else if (id == "shuffle") {
-//        shuffleButton->setEnabled(value.property("modifiable").toBool());
-//    } else if (id == "repeat") {
-//        repeatButton->setEnabled(value.property("modifiable").toBool());
-//    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    if ( id == "volume"){
+        volumeMax = value.property("maxInt").toInt32();
+        volume = value.property("value").property("int").toInt32();
+    } else if (id == "time") {
+        progressMax = value.property("maxDouble").toInt32();
+        progressPos = value.property("value").property("double").toInt32();
+    } else if (id == "state") {
+        avState = QString(value.property("value").property("avState").toString());
+    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -230,47 +226,17 @@ void NuvoApiClient::parseChildValueChangedMessage(QScriptValue value)
     qDebug() << "ENTERING" << __func__;
     QString id = QString(value.property("id").toString());
     qDebug() << id;
-//    if ( id == "volume"){
-//        volumeSlider->setValue(value.property("value").property("int").toInt32());
-//    } else if (id == "time") {
-//        trackProgressBar->setValue(value.property("value").property("double").toInt32());
-//    } else if (id == "mute") {
-//        bool state = value.property("value").property("bool").toBool();
-//        if (state) {
-//            QPixmap pixmap8(":/images/player_icons/player_seeker_muted.png");
-//            QIcon buttonIcon8(pixmap8);
-//            muteButton->setIcon(buttonIcon8);
-//        } else {
-//            QPixmap pixmap8(":/images/player_icons/player_seeker.png");
-//            QIcon buttonIcon8(pixmap8);
-//            muteButton->setIcon(buttonIcon8);
-//        }
-//    } else if (id == "shuffle") {
-//        bool state = value.property("value").property("bool").toBool();
-//        if (state) {
-//            QPixmap pixmap8(":/images/player_icons/player_icon_shuffle_on_normal.png");
-//            QIcon buttonIcon8(pixmap8);
-//            shuffleButton->setIcon(buttonIcon8);
-//        } else {
-//            QPixmap pixmap8(":/images/player_icons/player_icon_shuffle_off_normal.png");
-//            QIcon buttonIcon8(pixmap8);
-//            shuffleButton->setIcon(buttonIcon8);
-//        }
-//    } else if (id == "repeat") {
-//        QString state(value.property("value").property("avRepeatMode").toString());
-//        if (state == "all") {
-//            QPixmap pixmap8(":/images/player_icons/player_icon_repeat_on_normal.png");
-//            QIcon buttonIcon8(pixmap8);
-//            repeatButton->setIcon(buttonIcon8);
-//        } else {
-//            QPixmap pixmap8(":/images/player_icons/player_icon_repeat_off_normal.png");
-//            QIcon buttonIcon8(pixmap8);
-//            repeatButton->setIcon(buttonIcon8);
-//        }
-//    } else if (id == "state") {
-//        avState = QString(value.property("value").property("avState").toString());
-//        emit avStateChanged();
-//    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    if ( id == "volume"){
+        volumeMax = value.property("value").property("int").toInt32();
+        volume = value.property("value").property("int").toInt32();
+    } else if (id == "time") {
+        progressPos = value.property("value").property("double").toInt32();
+    } else if (id == "state") {
+        avState = QString(value.property("value").property("avState").toString());
+        emit avStateChanged();
+    } else {
+        qDebug() << "ITEM NOT PROCESSED:" << id;
+    }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -278,12 +244,12 @@ void NuvoApiClient::parseChildItemChangedMessage(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
     QString id = QString(value.property("id").toString());
     qDebug() << id;
-//    if ( id == "volume"){
-//        volumeSlider->setValue(value.property("value").property("int").toInt32());
-//    } else if (id == "time") {
-//        trackProgressBar->setMaximum(value.property("item").property("maxDouble").toInt32());
-//        trackProgressBar->setValue(value.property("item").property("value").property("int").toInt32());
-//    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    if ( id == "volume"){
+        volume = value.property("value").property("int").toInt32();
+    } else if (id == "time") {
+        progressMax = value.property("item").property("maxDouble").toInt32();
+        progressPos = value.property("item").property("value").property("int").toInt32();
+    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -333,6 +299,9 @@ void NuvoApiClient::parseActionItem(QScriptValue value)
 
 void NuvoApiClient::parseTrackMetadata(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
+    metadata1 = QString(value.property("title").toString());
+    metadata2 = QString(tr("<b>%1</b>").arg(value.property("description").toString()));
+    metadata3 = QString(value.property("longDescription").toString());
 //    labels[0]->setText(value.property("title").toString());
 //    labels[1]->setText(tr("<b>%1</b>").arg(value.property("description").toString()));
 //    labels[2]->setText(value.property("longDescription").toString());

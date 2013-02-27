@@ -27,7 +27,7 @@ Dialog::Dialog()
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
-    avState = "";
+
     connect(this, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
 
     progressBarTimer = new QTimer(this);
@@ -314,34 +314,42 @@ void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
 }
 
 void Dialog::onAvStateChange(){
-    qDebug() << "AvState Change:" << avState;
+    qDebug() << "AvState Change:" << nuvo->avState;
 }
 
 void Dialog::onConnectionStateChange(){
     qDebug() << "Connection State Change";
-//    if (!nuvo->tcpSocket->isOpen()){
-//        connectButton->setEnabled(true);
-//        sendButton->setEnabled(false);
-//        disconnectButton->setEnabled(false);
-//        portLineEdit->setEnabled(true);
-//        hostCombo->setEnabled(true);
-//    } else {
-//        connectButton->setEnabled(false);
-//        sendButton->setEnabled(true);
-//        disconnectButton->setEnabled(true);
-//        portLineEdit->setEnabled(false);
-//        hostCombo->setEnabled(false);
-//    }
+    if (!nuvo->tcpSocket->isOpen()){
+        connectButton->setEnabled(true);
+        sendButton->setEnabled(false);
+        disconnectButton->setEnabled(false);
+        portLineEdit->setEnabled(true);
+        hostCombo->setEnabled(true);
+    } else {
+        connectButton->setEnabled(false);
+        sendButton->setEnabled(true);
+        disconnectButton->setEnabled(true);
+        portLineEdit->setEnabled(false);
+        hostCombo->setEnabled(false);
+    }
 }
 
 void Dialog::updateProgressBar(){
-    if (avState == "playing" && trackProgressBar->maximum() > 0) {
+    if (nuvo->avState == "playing" && trackProgressBar->maximum() > 0) {
         trackProgressBar->setValue(trackProgressBar->value()+1);
     }
 }
 
 void Dialog::redisplay(){
     //TODO update screen w/ current client's info
+    qDebug() << "REDISPLAY";
+    volumeSlider->setMaximum(nuvo->volumeMax);
+    volumeSlider->setValue(nuvo->volume);
+    trackProgressBar->setMaximum(nuvo->progressMax);
+    trackProgressBar->setValue(nuvo->progressPos);
+    labels[0]->setText(nuvo->metadata1);
+    labels[1]->setText(nuvo->metadata2);
+    labels[2]->setText(nuvo->metadata3);
 }
 
 

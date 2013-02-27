@@ -43,7 +43,7 @@ public:
 
 
 signals:
-     void avStateChanged();
+
      void connectionStateChanged();
 
 private:
@@ -101,7 +101,6 @@ private:
 
 
     QString lastMessage;
-    QString avState;
 
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
