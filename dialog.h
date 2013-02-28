@@ -41,9 +41,7 @@ class Dialog : public QDialog
 public:
     Dialog();
 
-
 signals:
-
      void connectionStateChanged();
 
 private:

@@ -70,14 +70,8 @@ public slots:
     void tcpError(QAbstractSocket::SocketError socketError);
     void slot_netwManagerFinished(QNetworkReply *reply);
 
-
-
 private:
     QString currentMessage;
-
-
-
-
     
 };
 

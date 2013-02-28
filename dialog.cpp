@@ -14,6 +14,7 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(transportChanged()), this, SLOT(updateTransportControls()));
     connect(nuvo, SIGNAL(volumeChanged()), this, SLOT(updateVolume()));
     connect(nuvo, SIGNAL(metadataChanged()), this, SLOT(updateMetadata()));
+    connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
 
     createMenu();
     createTransportControlsBox();
@@ -23,11 +24,8 @@ Dialog::Dialog()
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
     browseView->setAlternatingRowColors(true);
-
     browseModel = new QStandardItemModel(0, 1);
     browseView->setModel(browseModel);
-
-    connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
