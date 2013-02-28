@@ -1,8 +1,3 @@
-#include <QtWidgets>
-#include <QtNetwork>
-#include <QScriptValueIterator>
-#include <QQueue>
-#include <QStandardItemModel>
 
 #include "dialog.h"
 #include "NuvoActionItem.h"
@@ -11,6 +6,7 @@ Dialog::Dialog()
 {
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(avChanged()), this, SLOT(redisplay()));
+    connect(nuvo, SIGNAL(raiseError()), this, SLOT(displayErrorMessage()));
 
     createMenu();
     createTransportControlsBox();
@@ -24,11 +20,7 @@ Dialog::Dialog()
     browseModel = new QStandardItemModel(0, 1);
     browseView->setModel(browseModel);
 
-    m_netwManager = new QNetworkAccessManager(this);
-    connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
-
-
-    connect(this, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
+    connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
@@ -167,9 +159,8 @@ void Dialog::createMetadataBox(QStringList trackMetadata)
 {
     metadataBox = new QGroupBox();
     QVBoxLayout *layout = new QVBoxLayout;
-
-    for (int i = 0; i < trackMetadata.length(); ++i) {
-        labels[i] = new QLabel(trackMetadata[i]);
+    for (int i = 0; i < NumGridRows; ++i) {
+        labels[i] = new QLabel();
         labels[i]->setTextFormat(Qt::RichText);
         layout->addWidget(labels[i]);
     }
@@ -216,16 +207,13 @@ void Dialog::muteButtonPressed(){ nuvo->toggleValue(nuvo->muteActionItem); }
 void Dialog::shuffleButtonPressed(){ nuvo->toggleValue(nuvo->shuffleActionItem); }
 void Dialog::repeatButtonPressed(){ nuvo->toggleValue(nuvo->repeatActionItem); }
 
-
-
-
 void Dialog::createConsoleBox()
 {
     consoleBox = new QGroupBox();
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.21");
+    hostCombo = new QLineEdit("192.168.1.102");
     hostCombo->setFixedWidth(100);
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
@@ -252,13 +240,10 @@ void Dialog::createConsoleBox()
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
 
-
-
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));
     connect(disconnectButton, SIGNAL(clicked()), nuvo, SLOT(disconnectFromHost()));
     connect(sendButton, SIGNAL(clicked()), this, SLOT(generateNewRequest()));
     connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
-
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->addWidget(hostLabel, 0, 0, Qt::AlignLeft);
@@ -283,34 +268,6 @@ void Dialog::generateNewRequest()
 
 void Dialog::connectToHost2(){
     nuvo->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
-}
-
-
-
-
-
-void Dialog::enableSendButton()
-{
-    sendButton->setEnabled((!networkSession || networkSession->isOpen()) && !hostCombo->text().isEmpty() && !portLineEdit->text().isEmpty());
-}
-
-
-
-
-
-
-
-void Dialog::slot_netwManagerFinished(QNetworkReply *reply)
-{
-    if (reply->error() != QNetworkReply::NoError) {
-        qDebug() << "Error in" << reply->url() << ":" << reply->errorString();
-        return;
-    }
-
-    QByteArray jpegData = reply->readAll();
-    QPixmap pixmap;
-    pixmap.loadFromData(jpegData);
-    imageLabel->setPixmap(pixmap.scaledToHeight(100)); // or whatever your labels name is
 }
 
 void Dialog::onAvStateChange(){
@@ -350,6 +307,12 @@ void Dialog::redisplay(){
     labels[0]->setText(nuvo->metadata1);
     labels[1]->setText(nuvo->metadata2);
     labels[2]->setText(nuvo->metadata3);
+}
+
+void Dialog::displayErrorMessage(){
+    QString err = QString(nuvo->errorMessage);
+    QMessageBox::information(this, tr("NuVo API"),tr("The following error occurred: %1.").arg(err));
+
 }
 
 

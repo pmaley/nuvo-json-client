@@ -6,6 +6,8 @@
 #include <QtNetwork>
 #include <QScriptEngine>
 #include <QScriptValueIterator>
+#include <QtWidgets>
+
 
 #include <nuvoactionitem.h>
 
@@ -18,6 +20,10 @@ class NuvoApiClient : public QObject
     Q_OBJECT
 public:
     QTcpSocket *tcpSocket;
+    QNetworkSession *networkSession;
+    QNetworkAccessManager *m_netwManager;
+    QString errorMessage;
+
     explicit NuvoApiClient(QObject *parent = 0);
 
     void connectToHost();
@@ -50,11 +56,14 @@ public:
 signals:
     void avChanged();
     void avStateChanged();
+    void raiseError();
     
 public slots:
     void disconnectFromHost();
     void messageReceived();
-    void displayError(QAbstractSocket::SocketError socketError);
+    void tcpError(QAbstractSocket::SocketError socketError);
+    void slot_netwManagerFinished(QNetworkReply *reply);
+
 
 
 private:

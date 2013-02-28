@@ -102,8 +102,7 @@ private:
 
     QString lastMessage;
 
-    QNetworkSession *networkSession;
-    QNetworkAccessManager *m_netwManager;
+
 
 
 
@@ -113,8 +112,6 @@ public slots:
 
 private slots:
     void generateNewRequest();
-    void enableSendButton();
-    void slot_netwManagerFinished(QNetworkReply *reply);
     void prevButtonPressed();
     void nextButtonPressed();
     void playButtonPressed();
@@ -132,6 +129,7 @@ private slots:
     void updateProgressBar();
     void connectToHost2();
     void redisplay();
+    void displayErrorMessage();
 };
 
 #endif // DIALOG_H

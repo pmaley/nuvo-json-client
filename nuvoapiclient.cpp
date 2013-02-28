@@ -1,3 +1,4 @@
+#include <QtWidgets>
 
 
 
@@ -7,6 +8,12 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     QObject(parent)
 {
     avState = "";
+    volume = volumeMax = 0;
+
+
+    m_netwManager = new QNetworkAccessManager(this);
+    connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
+
     volumeActionItem = new NuvoActionItem("volume","");
     muteActionItem = new NuvoActionItem("mute","");
     prevActionItem = new NuvoActionItem("prev","");
@@ -20,7 +27,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     repeatActionItem = new NuvoActionItem("repeat","");
     tcpSocket = new QTcpSocket(this);
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
-    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(displayError(QAbstractSocket::SocketError)));
+    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpError(QAbstractSocket::SocketError)));
     //connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));
 }
 
@@ -210,8 +217,10 @@ void NuvoApiClient::parseValueItem(QScriptValue value){
         actionItem->setProperty("url",value.property("url").toString());
 
     if ( id == "volume"){
+        qDebug() << volume << "/" << volumeMax;
         volumeMax = value.property("maxInt").toInt32();
         volume = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
     } else if (id == "time") {
         progressMax = value.property("maxDouble").toInt32();
         progressPos = value.property("value").property("double").toInt32();
@@ -227,8 +236,9 @@ void NuvoApiClient::parseChildValueChangedMessage(QScriptValue value)
     QString id = QString(value.property("id").toString());
     qDebug() << id;
     if ( id == "volume"){
-        volumeMax = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
         volume = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
     } else if (id == "time") {
         progressPos = value.property("value").property("double").toInt32();
     } else if (id == "state") {
@@ -245,7 +255,9 @@ void NuvoApiClient::parseChildItemChangedMessage(QScriptValue value){
     QString id = QString(value.property("id").toString());
     qDebug() << id;
     if ( id == "volume"){
+        qDebug() << volume << "/" << volumeMax;
         volume = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
     } else if (id == "time") {
         progressMax = value.property("item").property("maxDouble").toInt32();
         progressPos = value.property("item").property("value").property("int").toInt32();
@@ -302,37 +314,48 @@ void NuvoApiClient::parseTrackMetadata(QScriptValue value){
     metadata1 = QString(value.property("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(value.property("description").toString()));
     metadata3 = QString(value.property("longDescription").toString());
-//    labels[0]->setText(value.property("title").toString());
-//    labels[1]->setText(tr("<b>%1</b>").arg(value.property("description").toString()));
-//    labels[2]->setText(value.property("longDescription").toString());
-//    QUrl url(value.property("icon").toString());
-//    QNetworkRequest request(url);
-//    m_netwManager->get(request);
+    QUrl url(value.property("icon").toString());
+    QNetworkRequest request(url);
+    m_netwManager->get(request);
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::displayError(QAbstractSocket::SocketError socketError)
+
+void NuvoApiClient::slot_netwManagerFinished(QNetworkReply *reply)
 {
-//    switch (socketError) {
-//    case QAbstractSocket::RemoteHostClosedError:
-//        break;
-//    case QAbstractSocket::HostNotFoundError:
-//        QMessageBox::information(this, tr("NuVo API"),
-//                                 tr("The host was not found. Please check the "
-//                                    "host name and port settings."));
-//        break;
-//    case QAbstractSocket::ConnectionRefusedError:
-//        QMessageBox::information(this, tr("NuVo API"),
-//                                 tr("The connection was refused by the peer. "
-//                                    "Make sure the fortune server is running, "
-//                                    "and check that the host name and port "
-//                                    "settings are correct."));
-//        break;
-//    default:
-//        QMessageBox::information(this, tr("NuVo API"),
-//                                 tr("The following error occurred: %1.")
-//                                 .arg(tcpSocket->errorString()));
-//    }
+    if (reply->error() != QNetworkReply::NoError) {
+        qDebug() << "Error in" << reply->url() << ":" << reply->errorString();
+        return;
+    }
+
+    QByteArray jpegData = reply->readAll();
+    QPixmap pixmap;
+    pixmap.loadFromData(jpegData);
+    //imageLabel->setPixmap(pixmap.scaledToHeight(100)); // or whatever your labels name is
+}
+
+void NuvoApiClient::tcpError(QAbstractSocket::SocketError socketError)
+{
+    switch (socketError) {
+    case QAbstractSocket::RemoteHostClosedError:
+        break;
+    case QAbstractSocket::HostNotFoundError:
+        errorMessage = tr("The host was not found. Please check the "
+                          "host name and port settings.");
+        emit raiseError();
+        break;
+    case QAbstractSocket::ConnectionRefusedError:
+        errorMessage = tr("The connection was refused by the peer. "
+                          "Make sure the fortune server is running, "
+                          "and check that the host name and port "
+                          "settings are correct.");
+        emit raiseError();
+        break;
+    default:
+        errorMessage = tr("The following error occurred: %1.")
+                .arg(tcpSocket->errorString());
+        emit raiseError();
+    }
 
 //    sendButton->setEnabled(true);
 }
