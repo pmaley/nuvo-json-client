@@ -281,6 +281,8 @@ void NuvoApiClient::parseChildRemovedMessage(QScriptValue value){
     else if ( id == "pause"){ pauseActionItem->setProperty("active",false); }
     else if ( id == "previous"){ prevActionItem->setProperty("active",false); }
     else if ( id == "stop"){ stopActionItem->setProperty("active",false); }
+    else if ( id == "like"){ likeActionItem->setProperty("active",false); }
+    else if ( id == "dislike"){ dislikeActionItem->setProperty("active",false); }
     else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     emit transportChanged();
 
@@ -341,24 +343,16 @@ void NuvoApiClient::tcpError(QAbstractSocket::SocketError socketError)
     case QAbstractSocket::RemoteHostClosedError:
         break;
     case QAbstractSocket::HostNotFoundError:
-        errorMessage = tr("The host was not found. Please check the "
-                          "host name and port settings.");
         emit raiseError(tr("The host was not found. Please check the "
                            "host name and port settings."));
         break;
     case QAbstractSocket::ConnectionRefusedError:
-        errorMessage = tr("The connection was refused by the peer. "
-                          "Make sure the fortune server is running, "
-                          "and check that the host name and port "
-                          "settings are correct.");
         emit raiseError(tr("The connection was refused by the peer. "
                            "Make sure the fortune server is running, "
                            "and check that the host name and port "
                            "settings are correct."));
         break;
     default:
-        errorMessage = tr("The following error occurred: %1.")
-                .arg(tcpSocket->errorString());
         emit raiseError(tr("The following error occurred: %1.")
                         .arg(tcpSocket->errorString()));
     }

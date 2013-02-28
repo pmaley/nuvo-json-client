@@ -22,7 +22,6 @@ public:
     QTcpSocket *tcpSocket;
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
-    QString errorMessage;
     QPixmap albumArt;
 
     explicit NuvoApiClient(QObject *parent = 0);
