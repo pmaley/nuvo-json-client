@@ -7,6 +7,7 @@ Dialog::Dialog()
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(avChanged()), this, SLOT(redisplay()));
     connect(nuvo, SIGNAL(raiseError()), this, SLOT(displayErrorMessage()));
+    connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
 
     createMenu();
     createTransportControlsBox();
@@ -24,7 +25,7 @@ Dialog::Dialog()
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
-    connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(updateProgressBar()));
+    connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(incrementProgressBar()));
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
 
     QGridLayout *mainLayout = new QGridLayout();
@@ -291,7 +292,7 @@ void Dialog::onConnectionStateChange(){
     }
 }
 
-void Dialog::updateProgressBar(){
+void Dialog::incrementProgressBar(){
     if (nuvo->avState == "playing" && trackProgressBar->maximum() > 0) {
         trackProgressBar->setValue(trackProgressBar->value()+1);
     }
@@ -313,6 +314,10 @@ void Dialog::displayErrorMessage(){
     QString err = QString(nuvo->errorMessage);
     QMessageBox::information(this, tr("NuVo API"),tr("The following error occurred: %1.").arg(err));
 
+}
+
+void Dialog::updateAlbumArt(){
+    imageLabel->setPixmap(nuvo->albumArt.scaledToHeight(100));
 }
 
 

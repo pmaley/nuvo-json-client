@@ -222,8 +222,10 @@ void NuvoApiClient::parseValueItem(QScriptValue value){
         volume = value.property("value").property("int").toInt32();
         qDebug() << volume << "/" << volumeMax;
     } else if (id == "time") {
+        qDebug() << "Progress" << progressPos << "/" << progressMax;
         progressMax = value.property("maxDouble").toInt32();
         progressPos = value.property("value").property("double").toInt32();
+        qDebug() << "Progress" << progressPos << "/" << progressMax;
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
@@ -259,8 +261,10 @@ void NuvoApiClient::parseChildItemChangedMessage(QScriptValue value){
         volume = value.property("value").property("int").toInt32();
         qDebug() << volume << "/" << volumeMax;
     } else if (id == "time") {
+        qDebug() << "Progress" << progressPos << "/" << progressMax;
         progressMax = value.property("item").property("maxDouble").toInt32();
         progressPos = value.property("item").property("value").property("int").toInt32();
+        qDebug() << "Progress" << progressPos << "/" << progressMax;
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
@@ -329,9 +333,8 @@ void NuvoApiClient::slot_netwManagerFinished(QNetworkReply *reply)
     }
 
     QByteArray jpegData = reply->readAll();
-    QPixmap pixmap;
-    pixmap.loadFromData(jpegData);
-    //imageLabel->setPixmap(pixmap.scaledToHeight(100)); // or whatever your labels name is
+    albumArt.loadFromData(jpegData);
+    emit albumArtChanged();
 }
 
 void NuvoApiClient::tcpError(QAbstractSocket::SocketError socketError)

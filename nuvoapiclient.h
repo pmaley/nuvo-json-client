@@ -23,6 +23,7 @@ public:
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
     QString errorMessage;
+    QPixmap albumArt;
 
     explicit NuvoApiClient(QObject *parent = 0);
 
@@ -57,6 +58,7 @@ signals:
     void avChanged();
     void avStateChanged();
     void raiseError();
+    void albumArtChanged();
     
 public slots:
     void disconnectFromHost();

@@ -126,10 +126,11 @@ private slots:
 
     void onAvStateChange();
     void onConnectionStateChange();
-    void updateProgressBar();
+    void incrementProgressBar();
     void connectToHost2();
     void redisplay();
     void displayErrorMessage();
+    void updateAlbumArt();
 };
 
 #endif // DIALOG_H
