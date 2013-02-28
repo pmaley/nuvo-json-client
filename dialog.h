@@ -50,21 +50,13 @@ private:
     void createMenu();
     void createTransportControlsBox();
     void createConsoleBox();
-    void createMetadataBox(QStringList trackMetadata);
+    void createMetadataBox();
     void createNowPlayingBox();
-
-
-
-
-
 
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
     QMenuBar *menuBar;
-    QGroupBox *transportControlsBox;
-    QGroupBox *metadataBox;
-    QGroupBox *nowPlayingBox;
-    QGroupBox *consoleBox;
+    QGroupBox *transportControlsBox, *metadataBox, *nowPlayingBox, *consoleBox;
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
 
@@ -74,17 +66,13 @@ private:
                 *dislikeButton, *shuffleButton, *repeatButton,
                 *muteButton;
 
-    QDialogButtonBox *buttonBox;
-    QLabel *hostLabel;
-    QLabel *portLabel;
-    QLabel *imageLabel;
-    QLineEdit *hostCombo;
-    QLineEdit *portLineEdit;
-    QTextEdit *commandTextEdit;
-    QTextEdit *consoleTextEdit;
+    QDialogButtonBox *buttonBox, *buttonBox2;
+    QLabel *hostLabel, *portLabel, *imageLabel;
+    QLineEdit *hostCombo, *portLineEdit;
+    QTextEdit *commandTextEdit, *consoleTextEdit;
     QPushButton *sendButton, *quitButton, *connectButton,
                 *disconnectButton;
-    QDialogButtonBox *buttonBox2;
+
     QSlider *volumeSlider;
     QProgressBar *trackProgressBar;
     QTimer *progressBarTimer;
@@ -95,17 +83,8 @@ private:
     QMenu *fileMenu;
     QAction *exitAction;
 
-
-    QString currentFortune;
     quint16 blockSize;
-
-
     QString lastMessage;
-
-
-
-
-
     QQueue<QString> messageQueue;
 
 public slots:
@@ -129,8 +108,13 @@ private slots:
     void incrementProgressBar();
     void connectToHost2();
     void redisplay();
-    void displayErrorMessage();
+    void displayLog(const QString &err);
+    void displayErrorMessage(const QString &err);
     void updateAlbumArt();
+    void updateProgressBar();
+    void updateTransportControls();
+    void updateMetadata();
+    void updateVolume();
 };
 
 #endif // DIALOG_H

@@ -57,9 +57,14 @@ public:
 signals:
     void avChanged();
     void avStateChanged();
-    void raiseError();
+    void raiseError(const QString &err);
     void albumArtChanged();
-    
+    void progressBarChanged();
+    void displayText(const QString &err);
+    void transportChanged();
+    void volumeChanged();
+    void metadataChanged();
+
 public slots:
     void disconnectFromHost();
     void messageReceived();

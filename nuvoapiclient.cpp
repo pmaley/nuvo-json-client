@@ -28,16 +28,14 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     tcpSocket = new QTcpSocket(this);
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpError(QAbstractSocket::SocketError)));
-    //connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));
 }
 
 void NuvoApiClient::sendRequest(QString request)
 {
-    QString alertHtml  = tr("<font color=\"Red\">%1</font><br>").arg(request);
-    //consoleTextEdit->append(alertHtml);
     QByteArray byteArray = request.toUtf8();
     const char* cString = byteArray.constData();
     tcpSocket->write(cString);
+    emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(cString)));
     qDebug() << cString << "written to socket";
 }
 
@@ -67,9 +65,7 @@ void NuvoApiClient::messageReceived()
     in.readRawData(data,blockSize);
     data[blockSize] = '\0';
 
-//    consoleTextEdit->append(data);
-//    consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
-
+    emit displayText(QString(data));
     currentMessage.append(QString(data));
 
     if (currentMessage.contains('\n')){
@@ -80,7 +76,6 @@ void NuvoApiClient::messageReceived()
             parseJsonResponse(QString(query.at(i)));
         }
         currentMessage = QString(query.last());
-        //sendButton->setEnabled(true);
     }
     delete(data);
     emit avChanged();
@@ -217,17 +212,16 @@ void NuvoApiClient::parseValueItem(QScriptValue value){
         actionItem->setProperty("url",value.property("url").toString());
 
     if ( id == "volume"){
-        qDebug() << volume << "/" << volumeMax;
         volumeMax = value.property("maxInt").toInt32();
         volume = value.property("value").property("int").toInt32();
-        qDebug() << volume << "/" << volumeMax;
+        emit volumeChanged();
     } else if (id == "time") {
-        qDebug() << "Progress" << progressPos << "/" << progressMax;
         progressMax = value.property("maxDouble").toInt32();
         progressPos = value.property("value").property("double").toInt32();
-        qDebug() << "Progress" << progressPos << "/" << progressMax;
+        emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
+        emit avChanged();
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
@@ -238,11 +232,11 @@ void NuvoApiClient::parseChildValueChangedMessage(QScriptValue value)
     QString id = QString(value.property("id").toString());
     qDebug() << id;
     if ( id == "volume"){
-        qDebug() << volume << "/" << volumeMax;
         volume = value.property("value").property("int").toInt32();
-        qDebug() << volume << "/" << volumeMax;
+        emit volumeChanged();
     } else if (id == "time") {
         progressPos = value.property("value").property("double").toInt32();
+        emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
         emit avStateChanged();
@@ -257,14 +251,12 @@ void NuvoApiClient::parseChildItemChangedMessage(QScriptValue value){
     QString id = QString(value.property("id").toString());
     qDebug() << id;
     if ( id == "volume"){
-        qDebug() << volume << "/" << volumeMax;
         volume = value.property("value").property("int").toInt32();
-        qDebug() << volume << "/" << volumeMax;
+        emit volumeChanged();
     } else if (id == "time") {
-        qDebug() << "Progress" << progressPos << "/" << progressMax;
         progressMax = value.property("item").property("maxDouble").toInt32();
         progressPos = value.property("item").property("value").property("int").toInt32();
-        qDebug() << "Progress" << progressPos << "/" << progressMax;
+        emit progressBarChanged();
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
@@ -284,12 +276,14 @@ void NuvoApiClient::parseChildRemovedMessage(QScriptValue value){
     if (actionItem)
         actionItem->setProperty("url","");
 
-//    if ( id == "next"){ nextButton->setEnabled(false); }
-//    else if ( id == "play"){  playButton->setEnabled(false); }
-//    else if ( id == "pause"){ pauseButton->setEnabled(false); }
-//    else if ( id == "previous"){ prevButton->setEnabled(false); }
-//    else if ( id == "stop"){ stopButton->setEnabled(false); }
-//    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    if ( id == "next"){ nextActionItem->setProperty("active",false); }
+    else if ( id == "play"){  playActionItem->setProperty("active",false); }
+    else if ( id == "pause"){ pauseActionItem->setProperty("active",false); }
+    else if ( id == "previous"){ prevActionItem->setProperty("active",false); }
+    else if ( id == "stop"){ stopActionItem->setProperty("active",false); }
+    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    emit transportChanged();
+
     qDebug() << "EXITING" << __func__;
 }
 
@@ -302,14 +296,17 @@ void NuvoApiClient::parseActionItem(QScriptValue value)
     NuvoActionItem *actionItem = findActionItem(id);
     if (actionItem)
         actionItem->setProperty("url",url);
-//    if ( id == "next"){ nextButton->setEnabled(true);  }
-//    else if ( id == "play"){  playButton->setEnabled(true); }
-//    else if ( id == "pause"){ pauseButton->setEnabled(true); }
-//    else if ( id == "previous"){ prevButton->setEnabled(true); }
-//    else if ( id == "stop"){ stopButton->setEnabled(true); }
-//    else if ( id == "like"){ likeButton->setEnabled(true); }
-//    else if ( id == "dislike"){ dislikeButton->setEnabled(true); }
-//    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+
+    if ( id == "next"){ nextActionItem->setProperty("active",true); }
+    else if ( id == "play"){  playActionItem->setProperty("active",true); }
+    else if ( id == "pause"){ pauseActionItem->setProperty("active",true); }
+    else if ( id == "previous"){ prevActionItem->setProperty("active",true); }
+    else if ( id == "stop"){ stopActionItem->setProperty("active",true); }
+    else if ( id == "like"){ likeActionItem->setProperty("active",true); }
+    else if ( id == "dislike"){ dislikeActionItem->setProperty("active",true); }
+    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    emit transportChanged();
+
     qDebug() << "EXITING" << __func__;
 }
 
@@ -318,6 +315,7 @@ void NuvoApiClient::parseTrackMetadata(QScriptValue value){
     metadata1 = QString(value.property("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(value.property("description").toString()));
     metadata3 = QString(value.property("longDescription").toString());
+    emit metadataChanged();
     QUrl url(value.property("icon").toString());
     QNetworkRequest request(url);
     m_netwManager->get(request);
@@ -345,20 +343,23 @@ void NuvoApiClient::tcpError(QAbstractSocket::SocketError socketError)
     case QAbstractSocket::HostNotFoundError:
         errorMessage = tr("The host was not found. Please check the "
                           "host name and port settings.");
-        emit raiseError();
+        emit raiseError(tr("The host was not found. Please check the "
+                           "host name and port settings."));
         break;
     case QAbstractSocket::ConnectionRefusedError:
         errorMessage = tr("The connection was refused by the peer. "
                           "Make sure the fortune server is running, "
                           "and check that the host name and port "
                           "settings are correct.");
-        emit raiseError();
+        emit raiseError(tr("The connection was refused by the peer. "
+                           "Make sure the fortune server is running, "
+                           "and check that the host name and port "
+                           "settings are correct."));
         break;
     default:
         errorMessage = tr("The following error occurred: %1.")
                 .arg(tcpSocket->errorString());
-        emit raiseError();
+        emit raiseError(tr("The following error occurred: %1.")
+                        .arg(tcpSocket->errorString()));
     }
-
-//    sendButton->setEnabled(true);
 }
