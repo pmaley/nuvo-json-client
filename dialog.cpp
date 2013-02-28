@@ -234,11 +234,11 @@ void Dialog::createConsoleBox()
 
     sendButton = new QPushButton(tr("Send"));
     sendButton->setDefault(true);
-    //sendButton->setEnabled(false);
+    sendButton->setEnabled(false);
     quitButton = new QPushButton(tr("Quit"));
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
-    //disconnectButton->setEnabled(false);
+    disconnectButton->setEnabled(false);
 
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
@@ -346,6 +346,8 @@ void Dialog::updateAlbumArt(){
 
 void Dialog::updateTransportControls()
 {
+    likeButton->setEnabled(nuvo->likeActionItem->property("active").toBool());
+    dislikeButton->setEnabled(nuvo->dislikeActionItem->property("active").toBool());
     prevButton->setEnabled(nuvo->prevActionItem->property("active").toBool());
     nextButton->setEnabled(nuvo->nextActionItem->property("active").toBool());
     stopButton->setEnabled(nuvo->stopActionItem->property("active").toBool());
