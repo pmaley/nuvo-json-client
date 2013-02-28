@@ -317,10 +317,8 @@ void Dialog::redisplay(){
     qDebug() << "REDISPLAY";
     updateVolume();
     updateMetadata();
-//    updateAlbumArt();
-//    updateTransportControls();
-
-
+    updateAlbumArt();
+    updateTransportControls();
 }
 
 void Dialog::updateVolume()

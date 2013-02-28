@@ -9,7 +9,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
 {
     avState = "";
     volume = volumeMax = 0;
-
+    progressPos = progressMax = 0;
 
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
@@ -25,7 +25,9 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     dislikeActionItem = new NuvoActionItem("dislike","");
     shuffleActionItem = new NuvoActionItem("shuffle","");
     repeatActionItem = new NuvoActionItem("repeat","");
+
     tcpSocket = new QTcpSocket(this);
+
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpError(QAbstractSocket::SocketError)));
 }
@@ -212,12 +214,16 @@ void NuvoApiClient::parseValueItem(QScriptValue value){
         actionItem->setProperty("url",value.property("url").toString());
 
     if ( id == "volume"){
+        qDebug() << volume << "/" << volumeMax;
         volumeMax = value.property("maxInt").toInt32();
         volume = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
+        qDebug() << progressPos << "/" << progressMax;
         progressMax = value.property("maxDouble").toInt32();
         progressPos = value.property("value").property("double").toInt32();
+        qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
@@ -232,10 +238,14 @@ void NuvoApiClient::parseChildValueChangedMessage(QScriptValue value)
     QString id = QString(value.property("id").toString());
     qDebug() << id;
     if ( id == "volume"){
+        qDebug() << volume << "/" << volumeMax;
         volume = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
+        qDebug() << progressPos << "/" << progressMax;
         progressPos = value.property("value").property("double").toInt32();
+        qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(value.property("value").property("avState").toString());
@@ -251,11 +261,15 @@ void NuvoApiClient::parseChildItemChangedMessage(QScriptValue value){
     QString id = QString(value.property("id").toString());
     qDebug() << id;
     if ( id == "volume"){
+        qDebug() << volume << "/" << volumeMax;
         volume = value.property("value").property("int").toInt32();
+        qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
+        qDebug() << progressPos << "/" << progressMax;
         progressMax = value.property("item").property("maxDouble").toInt32();
-        progressPos = value.property("item").property("value").property("int").toInt32();
+        progressPos = value.property("item").property("value").property("double").toInt32();
+        qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
