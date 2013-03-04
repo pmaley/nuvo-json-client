@@ -115,6 +115,7 @@ private slots:
     void updateMetadata();
     void updateVolume();
     void updateBrowseWindow();
+    void browseItemClicked(QModelIndex index);
 };
 
 #endif // DIALOG_H

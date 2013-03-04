@@ -27,6 +27,8 @@ Dialog::Dialog()
     browseView->setAlternatingRowColors(true);
     browseModel = new QStandardItemModel(0, 1);
     browseView->setModel(browseModel);
+    connect(browseView, SIGNAL(clicked(QModelIndex)),
+            this, SLOT(browseItemClicked(QModelIndex)));
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
@@ -362,7 +364,7 @@ void Dialog::updateTransportControls()
 void Dialog::updateBrowseWindow()
 {
     qDebug() << "ENTERING" << __func__;
-   // browseModel->clear();
+    browseModel->setRowCount(0);
 //    int row = browseModel->rowCount();
     qDebug() << nuvo->browseList.size();
     qDebug() << browseModel->rowCount();
@@ -373,6 +375,14 @@ void Dialog::updateBrowseWindow()
         //browseModel->setData(browseModel->index(i, 0), i);
     }
     qDebug() << browseModel->rowCount();
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::browseItemClicked(QModelIndex index)
+{
+    qDebug() << "ENTERING" << __func__;
+    QStandardItem *item = browseModel->itemFromIndex(index);
+    qDebug() << item->text();
     qDebug() << "EXITING" << __func__;
 }
 
