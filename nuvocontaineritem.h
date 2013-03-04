@@ -2,16 +2,17 @@
 #define NUVOCONTAINERITEM_H
 
 #include <QObject>
+#include <QAbstractItemModel>
 
 class NuvoContainerItem : public QObject
 {
     Q_OBJECT
 public:
     explicit NuvoContainerItem(QObject *parent = 0);
-    NuvoContainerItem(NuvoContainerItem *item);
-    explicit NuvoContainerItem(QString _title, QString _url,
+    NuvoContainerItem(QString _title, QString _url,
                                QString _icon, QString _type,
-                               QString _id, QString _sortKey);
+                               QString _id, QString _sortKey,
+                                QObject *parent = 0);
     QString title;
     QString url;
     QString icon;

@@ -22,12 +22,25 @@ Dialog::Dialog()
     createNowPlayingBox();
     createConsoleBox();
 
+
+    QFile file("/Users/bradyaturner/Desktop/default.txt");
+    file.open(QIODevice::ReadOnly);
+    QString text = file.readAll();
+
+    TreeModel *model = new TreeModel(text);
+
+    qDebug() << model->rowCount();
+    file.close();
+
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
     browseView->setAlternatingRowColors(true);
     //browseModel = new QStandardItemModel(0, 1);
     browseModel = new QStandardItemModel(0,2);
-    browseView->setModel(browseModel);
+    //browseView->setModel(browseModel);
+    qDebug() << model->rowCount();
+    browseView->setModel(model);
+//    browseView
     connect(browseView, SIGNAL(clicked(QModelIndex)),
             this, SLOT(browseItemClicked(QModelIndex)));
 
@@ -371,6 +384,7 @@ void Dialog::updateBrowseWindow()
 //    int row = browseModel->rowCount();
     qDebug() << nuvo->browseList.size();
     qDebug() << browseModel->rowCount();
+
     for (int i = 0; i < nuvo->browseList.size(); i++) {
         qDebug() << i << nuvo->browseList.at(i)->title;
         browseModel->insertRow(i);

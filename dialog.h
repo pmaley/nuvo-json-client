@@ -12,6 +12,7 @@
 
 #include "nuvoactionitem.h"
 #include "nuvoapiclient.h"
+#include "treemodel.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
