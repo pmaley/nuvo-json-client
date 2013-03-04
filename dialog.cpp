@@ -15,6 +15,7 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(volumeChanged()), this, SLOT(updateVolume()));
     connect(nuvo, SIGNAL(metadataChanged()), this, SLOT(updateMetadata()));
     connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
+    connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
 
     createMenu();
     createTransportControlsBox();
@@ -43,6 +44,7 @@ Dialog::Dialog()
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
 
+    connect(browseButton, SIGNAL(clicked()), nuvo, SLOT(browseContainer()));
 
 }
 
@@ -237,12 +239,15 @@ void Dialog::createConsoleBox()
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
     disconnectButton->setEnabled(false);
+    browseButton = new QPushButton(tr("Browse"));
+
 
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(connectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
+    buttonBox2->addButton(browseButton, QDialogButtonBox::ActionRole);
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));
     connect(disconnectButton, SIGNAL(clicked()), nuvo, SLOT(disconnectFromHost()));
@@ -352,7 +357,23 @@ void Dialog::updateTransportControls()
     muteButton->setEnabled(nuvo->muteActionItem->property("active").toBool());
     shuffleButton->setEnabled(nuvo->shuffleActionItem->property("active").toBool());
     repeatButton->setEnabled(nuvo->repeatActionItem->property("active").toBool());
+}
 
+void Dialog::updateBrowseWindow()
+{
+    qDebug() << "ENTERING" << __func__;
+   // browseModel->clear();
+//    int row = browseModel->rowCount();
+    qDebug() << nuvo->browseList.size();
+    qDebug() << browseModel->rowCount();
+    for (int i = 0; i < nuvo->browseList.size(); i++) {
+        qDebug() << i << nuvo->browseList.at(i)->title;
+        browseModel->insertRow(i);
+        browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
+        //browseModel->setData(browseModel->index(i, 0), i);
+    }
+    qDebug() << browseModel->rowCount();
+    qDebug() << "EXITING" << __func__;
 }
 
 

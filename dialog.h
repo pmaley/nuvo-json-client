@@ -63,6 +63,7 @@ private:
                 *prevButton, *stopButton, *likeButton,
                 *dislikeButton, *shuffleButton, *repeatButton,
                 *muteButton;
+    QPushButton *browseButton;
 
     QDialogButtonBox *buttonBox, *buttonBox2;
     QLabel *hostLabel, *portLabel, *imageLabel;
@@ -113,6 +114,7 @@ private slots:
     void updateTransportControls();
     void updateMetadata();
     void updateVolume();
+    void updateBrowseWindow();
 };
 
 #endif // DIALOG_H

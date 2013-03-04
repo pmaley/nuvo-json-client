@@ -3,6 +3,7 @@
 
 
 #include "nuvoapiclient.h"
+#include "nuvocontaineritem.h"
 
 NuvoApiClient::NuvoApiClient(QObject *parent) :
     QObject(parent)
@@ -30,6 +31,13 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
 
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpError(QAbstractSocket::SocketError)));
+}
+
+void NuvoApiClient::browseContainer(){
+    qDebug() << "ENTERING" << __func__;
+    QString request(tr( "{ \"id\" : \"req-10\", \"url\" : \"/stable/music/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } "));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::sendRequest(QString request)
@@ -106,7 +114,7 @@ void NuvoApiClient::updateValue(NuvoActionItem *actionItem, int value)
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
     QString params( tr("{ \"value\" : { \"int\" : %1 } } }").arg(value));
-    QString request(tr(" { \"id\" : \"req-3\", \"url\" : \"%1\", \"method\" : \"setValue\", \"params\" : %2 ").arg(url,params));
+    QString request(tr(" { \"id\" : \"req-3\", \"url\" : \"%1\", \"method\" : \"setValue\", \"params\" : %2 }").arg(url,params));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -171,14 +179,28 @@ void NuvoApiClient::parseReplyMessage(QScriptValue sc)
 void NuvoApiClient::parseContainerItem(QScriptValue value){
     qDebug() << "ENTERING" << __func__;
     QScriptValue current(value);
+    QString title(current.property("title").toString());
+    QString url(current.property("url").toString());
+    QString icon(current.property("icon").toString());
     QString type(current.property("type").toString());
     QString id(current.property("id").toString());
-    QString title(current.property("title").toString());
+    QString sortKey(current.property("sortKey").toString());
     qDebug() << title << id << type;
+
+//    NuvoContainerItem* item = new NuvoContainerItem(QString(current.property("title").toString()),
+//                           current.property("url").toString(),
+//                           current.property("icon").toString(),
+//                           current.property("type").toString(),
+//                           current.property("id").toString(),
+//                           current.property("sortKey").toString());
+    NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey);
+    qDebug() << item->title;
+    browseList.append(item);
 
 //    int row = browseModel->rowCount();
 //    browseModel->insertRow(row);
 //    browseModel->setData(browseModel->index(row, 0), title);
+    emit browseDataChanged();
 
     qDebug() << "EXITING" << __func__;
 }
