@@ -27,6 +27,8 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     shuffleActionItem = new NuvoActionItem("shuffle","");
     repeatActionItem = new NuvoActionItem("repeat","");
 
+    musicContainer = new NuvoContainerItem("Music","/stable/music/","","","Music","");
+
     tcpSocket = new QTcpSocket(this);
 
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
@@ -34,15 +36,19 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
 }
 
 void NuvoApiClient::browseContainer(){
-    browseContainer("/stable/music/");
+    browseContainer(musicContainer);
+}
+
+void NuvoApiClient::browseContainer(NuvoContainerItem *item)
+{
+    browseContainer(QString(item->url));
 }
 
 void NuvoApiClient::browseContainer(QString url){
     qDebug() << "ENTERING" << __func__;
+    qDebug() << url;
     QString request(tr( "{ \"id\" : \"req-10\", \"url\" : \"%1\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(url));
-    //browseList.removeAll();
     browseList.clear();
-    qDebug() << browseList.size();
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -172,11 +178,13 @@ void NuvoApiClient::parseReplyMessage(QScriptValue sc)
             QScriptValue current = it.value();
             QString id(current.property("id").toString());
             QString type(current.property("type").toString());
+            QString av(current.property("av").toString());
 
             if (id == "info"){  parseTrackMetadata(current);  }
             else if ( type == "action"){  parseActionItem(current); }
             else if ( type == "value"){ parseValueItem(current); }
             else if ( type == "container"){ parseContainerItem(current); }
+            else if (av == "true") { parseContainerItem(current); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }

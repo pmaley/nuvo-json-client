@@ -72,11 +72,13 @@ public slots:
     void messageReceived();
     void tcpError(QAbstractSocket::SocketError socketError);
     void slot_netwManagerFinished(QNetworkReply *reply);
+    void browseContainer(NuvoContainerItem *item);
     void browseContainer(QString url);
     void browseContainer();
 
 private:
     QString currentMessage;
+    NuvoContainerItem* musicContainer;
     
 };
 
