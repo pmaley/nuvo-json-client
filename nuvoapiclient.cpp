@@ -34,8 +34,15 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
 }
 
 void NuvoApiClient::browseContainer(){
+    browseContainer("/stable/music/");
+}
+
+void NuvoApiClient::browseContainer(QString url){
     qDebug() << "ENTERING" << __func__;
-    QString request(tr( "{ \"id\" : \"req-10\", \"url\" : \"/stable/music/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } "));
+    QString request(tr( "{ \"id\" : \"req-10\", \"url\" : \"%1\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(url));
+    //browseList.removeAll();
+    browseList.clear();
+    qDebug() << browseList.size();
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -173,6 +180,7 @@ void NuvoApiClient::parseReplyMessage(QScriptValue sc)
             else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }
+    emit browseDataChanged();
     qDebug() << "EXITING" << __func__;
 }
 
@@ -187,20 +195,9 @@ void NuvoApiClient::parseContainerItem(QScriptValue value){
     QString sortKey(current.property("sortKey").toString());
     qDebug() << title << id << type;
 
-//    NuvoContainerItem* item = new NuvoContainerItem(QString(current.property("title").toString()),
-//                           current.property("url").toString(),
-//                           current.property("icon").toString(),
-//                           current.property("type").toString(),
-//                           current.property("id").toString(),
-//                           current.property("sortKey").toString());
     NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey);
     qDebug() << item->title;
     browseList.append(item);
-
-//    int row = browseModel->rowCount();
-//    browseModel->insertRow(row);
-//    browseModel->setData(browseModel->index(row, 0), title);
-    emit browseDataChanged();
 
     qDebug() << "EXITING" << __func__;
 }

@@ -72,6 +72,7 @@ public slots:
     void messageReceived();
     void tcpError(QAbstractSocket::SocketError socketError);
     void slot_netwManagerFinished(QNetworkReply *reply);
+    void browseContainer(QString url);
     void browseContainer();
 
 private:
