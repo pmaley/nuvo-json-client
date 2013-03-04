@@ -51,6 +51,13 @@
 #include <QStringList>
 #include <iostream>
 
+TreeModel::TreeModel(QObject *parent)
+    : QAbstractItemModel(parent)
+{
+    QList<QVariant> rootData;
+    rootData << "Title" << "Summary";
+    rootItem = new TreeItem(rootData);
+}
 
 TreeModel::TreeModel(const QString &data, QObject *parent)
     : QAbstractItemModel(parent)

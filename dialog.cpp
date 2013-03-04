@@ -1,6 +1,7 @@
 
 #include "dialog.h"
 #include "NuvoActionItem.h"
+#include "treeitem.h"
 
 Dialog::Dialog()
 {
@@ -27,19 +28,18 @@ Dialog::Dialog()
     file.open(QIODevice::ReadOnly);
     QString text = file.readAll();
 
-    TreeModel *model = new TreeModel(text);
+    browseModel = new TreeModel(text);
 
-    qDebug() << model->rowCount();
+    //qDebug() << model->rowCount();
     file.close();
 
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
     browseView->setAlternatingRowColors(true);
     //browseModel = new QStandardItemModel(0, 1);
-    browseModel = new QStandardItemModel(0,2);
-    //browseView->setModel(browseModel);
-    qDebug() << model->rowCount();
-    browseView->setModel(model);
+//    browseModel = new QStandardItemModel(0,2);
+    browseView->setModel(browseModel);
+    //browseView->setModel(model);
 //    browseView
     connect(browseView, SIGNAL(clicked(QModelIndex)),
             this, SLOT(browseItemClicked(QModelIndex)));
@@ -380,29 +380,32 @@ void Dialog::updateTransportControls()
 void Dialog::updateBrowseWindow()
 {
     qDebug() << "ENTERING" << __func__;
-    browseModel->setRowCount(0);
-//    int row = browseModel->rowCount();
-    qDebug() << nuvo->browseList.size();
-    qDebug() << browseModel->rowCount();
+    //browseModel->setRowCount(0);
+
+    delete browseModel;
+    browseModel = new TreeModel();
 
     for (int i = 0; i < nuvo->browseList.size(); i++) {
         qDebug() << i << nuvo->browseList.at(i)->title;
-        browseModel->insertRow(i);
+        //browseModel->rootItem->appendChild(new TreeItem(*nuvo->browseList.at(i)->asList()));
         //browseModel->item(i,0)->setEditable(false);
-        browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
-        browseModel->setData(browseModel->index(i, 1), nuvo->browseList.at(i)->url);
+        //browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
+        //browseModel->setData(browseModel->index(i, 1), nuvo->browseList.at(i)->url);
     }
     qDebug() << browseModel->rowCount();
+    browseView->setModel(browseModel);
     qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
-    QStandardItem *item = browseModel->itemFromIndex(index);
-    qDebug() << item->text();
-    qDebug() << item->data().toString();
-    nuvo->browseContainer(item->text());
+    //QStandardItem *item = browseModel->itemFromIndex(index);
+    QVariant *item = new QVariant(browseModel->data(index,Qt::DisplayRole));
+    qDebug() << item->toString();
+//    qDebug() << item->text();
+//    qDebug() << item->data().toString();
+//    nuvo->browseContainer(item->text());
     qDebug() << "EXITING" << __func__;
 }
 

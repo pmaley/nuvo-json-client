@@ -12,3 +12,5 @@ NuvoActionItem::NuvoActionItem(QString _name, QString _url, bool _active) : QObj
     url = _url;
     active = _active;
 }
+
+

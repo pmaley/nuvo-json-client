@@ -23,3 +23,13 @@ NuvoContainerItem::NuvoContainerItem(QString _title, QString _url,
     qDebug() << title << url << icon << itemType << name << sortKey;
 
 }
+
+
+QList<QVariant>* NuvoContainerItem::asList()
+{
+    QList<QVariant> *list = new QList<QVariant>();
+    list->append(title);
+    list->append(url);
+    list->append(name);
+    return list;
+}

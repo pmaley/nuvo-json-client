@@ -9,7 +9,6 @@ class NuvoActionItem : public QObject
 public:
     explicit NuvoActionItem(QObject *parent = 0);
     explicit NuvoActionItem(QString _name, QString _url, bool _active = false);
-
 signals:
     
 public slots:

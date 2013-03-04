@@ -19,7 +19,8 @@ public:
     QString itemType;
     QString name;
     QString sortKey;
-    
+    QList<QVariant>* asList();
+
 signals:
     
 public slots:

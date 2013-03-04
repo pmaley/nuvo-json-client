@@ -77,7 +77,7 @@ private:
     QProgressBar *trackProgressBar;
     QTimer *progressBarTimer;
     QTreeView *browseView;
-    QStandardItemModel *browseModel;
+    TreeModel *browseModel;
 
 
     QMenu *fileMenu;

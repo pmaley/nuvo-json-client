@@ -53,8 +53,11 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
+    explicit TreeModel(QObject *parent = 0);
     explicit TreeModel(const QString &data, QObject *parent = 0);
     ~TreeModel();
+
+    TreeItem *rootItem;
 
     QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -69,7 +72,7 @@ public:
 private:
     void setupModelData(const QStringList &lines, TreeItem *parent);
 
-    TreeItem *rootItem;
+    //TreeItem *rootItem;
 };
 //! [0]
 
