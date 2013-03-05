@@ -376,7 +376,7 @@ void Dialog::updateBrowseWindow()
         browseModel->insertRow(i);
         //browseModel->item(i,0)->setEditable(false);
         browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
-        browseModel->setData(browseModel->index(i, 1), nuvo->browseList.at(i)->url);
+        browseModel->setData(browseModel->index(i, 1), i);
     }
     qDebug() << browseModel->rowCount();
     qDebug() << "EXITING" << __func__;
@@ -385,10 +385,19 @@ void Dialog::updateBrowseWindow()
 void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
-    QStandardItem *item = browseModel->itemFromIndex(index);
-    qDebug() << item->text();
-    qDebug() << item->data().toString();
-    nuvo->browseContainer(item->text());
+    //QStandardItem *item = browseModel->itemFromIndex(index);
+    qDebug() << browseModel->itemFromIndex(index)->text();
+    qDebug() << browseModel->itemFromIndex(index)->data();
+    int i = browseModel->itemFromIndex(index)->text().toInt();
+    qDebug() << i;
+    NuvoContainerItem *item = nuvo->browseList.at(i);
+    qDebug() << item->title;
+    qDebug() << item->url;
+    if (item->av == true)
+        //nuvo->invokeAction();
+        qDebug() << "TODO";
+    else
+        nuvo->browseContainer(item->url);
     qDebug() << "EXITING" << __func__;
 }
 

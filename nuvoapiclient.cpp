@@ -27,7 +27,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     shuffleActionItem = new NuvoActionItem("shuffle","");
     repeatActionItem = new NuvoActionItem("repeat","");
 
-    musicContainer = new NuvoContainerItem("Music","/stable/music/","","","Music","");
+    musicContainer = new NuvoContainerItem("Music","/stable/music/","","","Music","",false,0);
 
     tcpSocket = new QTcpSocket(this);
 
@@ -50,6 +50,7 @@ void NuvoApiClient::browseContainer(QString url){
     QString request(tr( "{ \"id\" : \"req-10\", \"url\" : \"%1\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(url));
     browseList.clear();
     sendRequest(request);
+    emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(request)));
     qDebug() << "EXITING" << __func__;
 }
 
@@ -201,9 +202,11 @@ void NuvoApiClient::parseContainerItem(QScriptValue value){
     QString type(current.property("type").toString());
     QString id(current.property("id").toString());
     QString sortKey(current.property("sortKey").toString());
-    qDebug() << title << id << type;
+    bool av = current.property("av").toBool();
+    QString index(current.property("index").toString());
+    qDebug() << title << id << type << index;
 
-    NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey);
+    NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey,av,index.toInt());
     qDebug() << item->title;
     browseList.append(item);
 
