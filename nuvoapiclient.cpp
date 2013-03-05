@@ -111,36 +111,28 @@ void NuvoApiClient::messageReceived()
 void NuvoApiClient::parseJsonResponse(QString result)
 {
     qDebug() << "ENTERING" << __func__;
-    QScriptValue sc;
 
-    //qDebug() << result;
     QByteArray utf8;
     utf8.append(result);
-    qDebug() << QJsonDocument::fromJson(utf8).toJson();
     QJsonObject j = QJsonDocument::fromJson(utf8).object();
-    qDebug() << j.keys();
 
-    QJsonValue channel = j.value("channel");
-    QJsonValue id = j.value("id");
     QJsonValue res = j.value("result");
-    QJsonValue type1 = j.value("type");
+    QString channel(j.value("channel").toString());
+    QString id(j.value("id").toString());
+    QString type(j.value("type").toString());
 
-    qDebug() << channel << id << res << type1;
 
-    qDebug() << res;
-    qDebug() << res.isObject();
+    qDebug() << "KEYS:" << j.keys();
+    qDebug() << "CHANNEL: " << channel;
+    qDebug() << "ID: " << id;
+   // qDebug() << "RESULT: " << res;
+    qDebug() << "TYPE: " << type;
+    qDebug() << "RESULT IS OBJECT? " << res.isObject();
     QJsonObject children = res.toObject();
-    qDebug() << children.value("children");
-
-
-
-
+    //qDebug() << "CHILDREN:" << children.value("children");
 
     QScriptEngine engine;
-    sc = engine.evaluate("(" + QString(result) + ")");
-    qDebug() << "Recv. on channel " << sc.property("channel").toString();
-    qDebug() << result;
-    QString type = sc.property("type").toString();
+    QScriptValue sc = engine.evaluate("(" + QString(result) + ")");
 
     if (type == "reply") { parseReplyMessage(sc); }
     else if ( type == "event"){  parseEventMessage(sc); }
