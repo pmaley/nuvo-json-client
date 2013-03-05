@@ -113,10 +113,28 @@ void NuvoApiClient::parseJsonResponse(QString result)
     qDebug() << "ENTERING" << __func__;
     QScriptValue sc;
 
-    qDebug() << result;
+    //qDebug() << result;
     QByteArray utf8;
     utf8.append(result);
     qDebug() << QJsonDocument::fromJson(utf8).toJson();
+    QJsonObject j = QJsonDocument::fromJson(utf8).object();
+    qDebug() << j.keys();
+
+    QJsonValue channel = j.value("channel");
+    QJsonValue id = j.value("id");
+    QJsonValue res = j.value("result");
+    QJsonValue type1 = j.value("type");
+
+    qDebug() << channel << id << res << type1;
+
+    qDebug() << res;
+    qDebug() << res.isObject();
+    QJsonObject children = res.toObject();
+    qDebug() << children.value("children");
+
+
+
+
 
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
