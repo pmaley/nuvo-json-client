@@ -43,7 +43,7 @@ public:
     void parseTrackMetadata(QScriptValue value);
     void parseActionItem(QScriptValue value);
     void parseValueItem(QScriptValue value);
-    void parseContainerItem(QScriptValue value);
+    void parseContainerItem(QScriptValue parent, QScriptValue value);
     void parseChildValueChangedMessage(QScriptValue value);
     void parseChildItemChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);

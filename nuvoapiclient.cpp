@@ -112,6 +112,12 @@ void NuvoApiClient::parseJsonResponse(QString result)
 {
     qDebug() << "ENTERING" << __func__;
     QScriptValue sc;
+
+    qDebug() << result;
+    QByteArray utf8;
+    utf8.append(result);
+    qDebug() << QJsonDocument::fromJson(utf8).toJson();
+
     QScriptEngine engine;
     sc = engine.evaluate("(" + QString(result) + ")");
     qDebug() << "Recv. on channel " << sc.property("channel").toString();
@@ -178,6 +184,10 @@ void NuvoApiClient::loadAv(NuvoContainerItem* item){
 void NuvoApiClient::loadAv2(NuvoContainerItem* item){
     qDebug() << "ENTERING" << __func__;
     QString index("1");
+    //QString reqItem( item->myItem.toString() );
+    //QString parentItem( item->parent.toString() );
+    //qDebug() << "ITEM:" << reqItem;
+    //qDebug() << "PARENT:" << parentItem;
     QString reqItem(tr("{\"item\":{\"station\":true,\"title\":\"QuickMix\",\"av\":true,\"creator\":\"pandora\",\"url\":\"pandora:StationList/station_983251158063407\",\"resourceUrl\":\"station?stationToken=983251158063407\",\"icon\":\"skin:iconPandoraQuickmix\",\"context\":{\"url\":\"player:player/context\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"context\"}},\"nsdk\":{\"mediaData\":{\"metaData\":{\"playLogicPath\":\"pandora:PandoraPlayLogic\"},\"resources\":[{\"mimeType\":\"audio/x-pandora\"}]},\"type\":\"audio\"}}}"));
     QString parentItem(tr("{\"title\":\"Pandora\",\"activity\":true,\"search\":{\"title\":\"Artist, Track\",\"url\":\"pandora:searches\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"search\"}},\"url\":\"pandora:StationList\",\"icon\":\"skin:iconPandora\",\"type\":\"container\"}"));
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
@@ -220,8 +230,8 @@ void NuvoApiClient::parseReplyMessage(QScriptValue sc)
             if (id == "info"){  parseTrackMetadata(current);  }
             else if ( type == "action"){  parseActionItem(current); }
             else if ( type == "value"){ parseValueItem(current); }
-            else if ( type == "container"){ parseContainerItem(current); }
-            else if (av == "true") { parseContainerItem(current); }
+            else if ( type == "container"){ parseContainerItem(current, sc.property("result").property("item")); }
+            else if (av == "true") { parseContainerItem(current, sc.property("result").property("item")); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
         }
     }
@@ -229,20 +239,20 @@ void NuvoApiClient::parseReplyMessage(QScriptValue sc)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseContainerItem(QScriptValue value){
+void NuvoApiClient::parseContainerItem(QScriptValue value, QScriptValue parent){
     qDebug() << "ENTERING" << __func__;
-    QScriptValue current(value);
-    QString title(current.property("title").toString());
-    QString url(current.property("url").toString());
-    QString icon(current.property("icon").toString());
-    QString type(current.property("type").toString());
-    QString id(current.property("id").toString());
-    QString sortKey(current.property("sortKey").toString());
-    bool av = current.property("av").toBool();
-    QString index(current.property("index").toString());
-    qDebug() << title << id << type << index;
-
-    NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey,av,index.toInt());
+//    QScriptValue current(value);
+//    QString title(current.property("title").toString());
+//    QString url(current.property("url").toString());
+//    QString icon(current.property("icon").toString());
+//    QString type(current.property("type").toString());
+//    QString id(current.property("id").toString());
+//    QString sortKey(current.property("sortKey").toString());
+//    bool av = current.property("av").toBool();
+//    QString index(current.property("index").toString());
+//    qDebug() << title << id << type << index;
+    NuvoContainerItem* item = new NuvoContainerItem(parent,value);
+//    NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey,av,index.toInt());
     qDebug() << item->title;
     browseList.append(item);
 
