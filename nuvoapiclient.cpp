@@ -170,10 +170,23 @@ void NuvoApiClient::loadAv(NuvoContainerItem* item){
     QString parentItem("{ \"url\" : \"/tuneIn01/local\", \"type\" : \"container\", \"title\" : \"Local Radio\"}");
     QString context(tr("{ \"item\" : { \"url\" : \"/tuneIn01/radio2\", \"av\" : true, \"title\" : \"Radio 2\", \"description\" : \"Best Radio in Town\", \"creator\" : \"tunein\", \"resource\" : \"http:radio2.com/stream\" }, \"index\" : 1, \"parentItem\" : %1 }").arg(parentItem));
     //QString request(tr("{ \"id\" : %1, \"url\" : \"/stable/av/load/\", \"method\" : \"invoke\", \"context\" : %2 }").arg(reqId,context));
-    QString request(tr("{ \"id\" : \"req-6\", \"url\" : \"/stable/av/load\", \"method\" : \"invoke\", \"context\" : { \"item\" : { \"url\" : \"http://localhost:80/api/stream/nuvodbbot:/smb/NuVo:9ha3ecuD%40bradys-macbook-pro.local/Dr. Dre - 2001/20 - Dr. Dre - Ackrite.flac\", \"av\" : true, \"title\" : \"Ackrite\", \"description\" : \"2001\", \"creator\" : \"nuvodatabase\", \"resource\" : \"http://localhost:80/api/stream/nuvodbbot:/smb/NuVo:9ha3ecuD%40bradys-macbook-pro.local/Dr. Dre - 2001/20 - Dr. Dre - Ackrite.flac\" }, \"index\" : 1, \"parentItem\" : { \"url\" : \"artist\", \"type\" : \"container\", \"title\" : \"Dr. Dre\"} } }" ));
+    QString request(tr("" ));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
+
+void NuvoApiClient::loadAv2(NuvoContainerItem* item){
+    qDebug() << "ENTERING" << __func__;
+    QString index("1");
+    QString reqItem(tr("{\"item\":{\"station\":true,\"title\":\"QuickMix\",\"av\":true,\"creator\":\"pandora\",\"url\":\"pandora:StationList/station_983251158063407\",\"resourceUrl\":\"station?stationToken=983251158063407\",\"icon\":\"skin:iconPandoraQuickmix\",\"context\":{\"url\":\"player:player/context\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"context\"}},\"nsdk\":{\"mediaData\":{\"metaData\":{\"playLogicPath\":\"pandora:PandoraPlayLogic\"},\"resources\":[{\"mimeType\":\"audio/x-pandora\"}]},\"type\":\"audio\"}}}"));
+    QString parentItem(tr("{\"title\":\"Pandora\",\"activity\":true,\"search\":{\"title\":\"Artist, Track\",\"url\":\"pandora:searches\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"search\"}},\"url\":\"pandora:StationList\",\"icon\":\"skin:iconPandora\",\"type\":\"container\"}"));
+    QString reqId( tr("\"req-%1\"").arg(requestNum) );
+    QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, index, parentItem) );
+    QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"context\" : %2 }").arg(reqId, context) );
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
 
 NuvoActionItem* NuvoApiClient::findActionItem(QString id)
 {
@@ -347,16 +360,6 @@ void NuvoApiClient::parseChildRemovedMessage(QScriptValue value){
     } else {
         qDebug() << "ITEM NOT PROCESSED:" << id;
     }
-
-//    if ( id == "next"){ nextActionItem->setProperty("active",false); }
-//    else if ( id == "play"){  playActionItem->setProperty("active",false); }
-//    else if ( id == "pause"){ pauseActionItem->setProperty("active",false); }
-//    else if ( id == "previous"){ prevActionItem->setProperty("active",false); }
-//    else if ( id == "stop"){ stopActionItem->setProperty("active",false); }
-//    else if ( id == "like"){ likeActionItem->setProperty("active",false); }
-//    else if ( id == "dislike"){ dislikeActionItem->setProperty("active",false); }
-//    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
-//    emit transportChanged();
 
     qDebug() << "EXITING" << __func__;
 }
