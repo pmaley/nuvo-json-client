@@ -31,6 +31,8 @@ public:
     void connectToHost();
     void sendRequest(QString request);
     void invokeAction(NuvoActionItem *action);
+    void invokeAction(QString url);
+    void loadAv(NuvoContainerItem* item);
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
     void connectToHost(QString host, int port);
