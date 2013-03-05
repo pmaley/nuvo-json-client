@@ -368,7 +368,6 @@ void Dialog::updateBrowseWindow()
 {
     qDebug() << "ENTERING" << __func__;
     browseModel->setRowCount(0);
-//    int row = browseModel->rowCount();
     qDebug() << nuvo->browseList.size();
     qDebug() << browseModel->rowCount();
     for (int i = 0; i < nuvo->browseList.size(); i++) {
@@ -393,11 +392,13 @@ void Dialog::browseItemClicked(QModelIndex index)
     NuvoContainerItem *item = nuvo->browseList.at(i);
     qDebug() << item->title;
     qDebug() << item->url;
-    if (item->av == true)
-        //nuvo->invokeAction();
+    if (item->av == true) {
+        //nuvo->invokeAction(item->url);
+        nuvo->loadAv(item);
         qDebug() << "TODO";
-    else
+    } else {
         nuvo->browseContainer(item->url);
+    }
     qDebug() << "EXITING" << __func__;
 }
 
