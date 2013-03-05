@@ -79,6 +79,7 @@ public slots:
 private:
     QString currentMessage;
     NuvoContainerItem* musicContainer;
+    int requestNum = 0;
     
 };
 

@@ -11,6 +11,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     avState = "";
     volume = volumeMax = 0;
     progressPos = progressMax = 0;
+    requestNum = 0;
 
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
@@ -47,10 +48,10 @@ void NuvoApiClient::browseContainer(NuvoContainerItem *item)
 void NuvoApiClient::browseContainer(QString url){
     qDebug() << "ENTERING" << __func__;
     qDebug() << url;
-    QString request(tr( "{ \"id\" : \"req-10\", \"url\" : \"%1\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(url));
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
     browseList.clear();
     sendRequest(request);
-    emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(request)));
     qDebug() << "EXITING" << __func__;
 }
 
@@ -61,6 +62,7 @@ void NuvoApiClient::sendRequest(QString request)
     tcpSocket->write(cString);
     emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(cString)));
     qDebug() << cString << "written to socket";
+    requestNum++;
 }
 
 void NuvoApiClient::connectToHost(QString host, int port)
@@ -127,8 +129,11 @@ void NuvoApiClient::updateValue(NuvoActionItem *actionItem, int value)
 {
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
-    QString params( tr("{ \"value\" : { \"int\" : %1 } } }").arg(value));
-    QString request(tr(" { \"id\" : \"req-3\", \"url\" : \"%1\", \"method\" : \"setValue\", \"params\" : %2 }").arg(url,params));
+    QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    qDebug() << requestNum;
+    qDebug() << "String" << QString(requestNum);
+    QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"setValue\", \"params\" : %3 }").arg(reqId,url,params));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -137,7 +142,7 @@ void NuvoApiClient::toggleValue(NuvoActionItem *actionItem)
 {
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
-    QString request(tr("{ \"id\" : \"req-7\", \"url\" : \"%1\", \"method\" : \"toggleValue\" }").arg(url));
+    QString request(tr("{ \"id\" : \"req-%1\", \"url\" : \"%1\", \"method\" : \"toggleValue\" }").arg(QString(requestNum),url));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -147,7 +152,8 @@ void NuvoApiClient::invokeAction(NuvoActionItem *actionItem)
     qDebug() << "ENTERING" << __func__;
     QString url(actionItem->property("url").toString());
     QString name(actionItem->property("name").toString());
-    QString request(tr(" { \"id\":\"%1\", \"url\":\"%2\", \"method\":\"invoke\" }").arg(name,url));
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString request(tr(" { \"id\":%1, \"url\":\"%2\", \"method\":\"invoke\" }").arg(reqId,url));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -317,18 +323,23 @@ void NuvoApiClient::parseChildRemovedMessage(QScriptValue value){
     qDebug() << id;
     NuvoActionItem *actionItem = findActionItem(id);
 
-    if (actionItem)
+    if (actionItem) {
         actionItem->setProperty("url","");
+        actionItem->setProperty("active",false);
+        emit transportChanged();
+    } else {
+        qDebug() << "ITEM NOT PROCESSED:" << id;
+    }
 
-    if ( id == "next"){ nextActionItem->setProperty("active",false); }
-    else if ( id == "play"){  playActionItem->setProperty("active",false); }
-    else if ( id == "pause"){ pauseActionItem->setProperty("active",false); }
-    else if ( id == "previous"){ prevActionItem->setProperty("active",false); }
-    else if ( id == "stop"){ stopActionItem->setProperty("active",false); }
-    else if ( id == "like"){ likeActionItem->setProperty("active",false); }
-    else if ( id == "dislike"){ dislikeActionItem->setProperty("active",false); }
-    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
-    emit transportChanged();
+//    if ( id == "next"){ nextActionItem->setProperty("active",false); }
+//    else if ( id == "play"){  playActionItem->setProperty("active",false); }
+//    else if ( id == "pause"){ pauseActionItem->setProperty("active",false); }
+//    else if ( id == "previous"){ prevActionItem->setProperty("active",false); }
+//    else if ( id == "stop"){ stopActionItem->setProperty("active",false); }
+//    else if ( id == "like"){ likeActionItem->setProperty("active",false); }
+//    else if ( id == "dislike"){ dislikeActionItem->setProperty("active",false); }
+//    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+//    emit transportChanged();
 
     qDebug() << "EXITING" << __func__;
 }
@@ -340,18 +351,13 @@ void NuvoApiClient::parseActionItem(QScriptValue value)
     QString id(value.property("id").toString());
     qDebug() << id << ":" << url;
     NuvoActionItem *actionItem = findActionItem(id);
-    if (actionItem)
+    if (actionItem) {
         actionItem->setProperty("url",url);
-
-    if ( id == "next"){ nextActionItem->setProperty("active",true); }
-    else if ( id == "play"){  playActionItem->setProperty("active",true); }
-    else if ( id == "pause"){ pauseActionItem->setProperty("active",true); }
-    else if ( id == "previous"){ prevActionItem->setProperty("active",true); }
-    else if ( id == "stop"){ stopActionItem->setProperty("active",true); }
-    else if ( id == "like"){ likeActionItem->setProperty("active",true); }
-    else if ( id == "dislike"){ dislikeActionItem->setProperty("active",true); }
-    else { qDebug() << "ITEM NOT PROCESSED:" << id; }
-    emit transportChanged();
+        actionItem->setProperty("active",true);
+        emit transportChanged();
+    } else {
+        qDebug() << "ITEM NOT PROCESSED:" << id;
+    }
 
     qDebug() << "EXITING" << __func__;
 }
