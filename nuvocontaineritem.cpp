@@ -31,7 +31,6 @@ NuvoContainerItem::NuvoContainerItem(QJsonObject _parent, QJsonObject item) :
     qDebug() << "NUVOCONTAINERITEM";
     qDebug() << _parent.keys();
      parent = QJsonObject(_parent);
-     qDebug() << parent.keys();
      myItem = QJsonObject(item);
      QJsonObject current(item);
      title = QString(current.value("title").toString());

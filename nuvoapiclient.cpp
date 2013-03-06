@@ -202,7 +202,7 @@ void NuvoApiClient::loadAv2(NuvoContainerItem* item)
     qDebug() << "ENTERING" << __func__;
     QString index("1");
     qDebug() << item->myItem.keys();
-    QString reqItem( QJsonDocument(item->myItem).toJson() );
+    QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(item->myItem).toJson())));
     QString parentItem( QJsonDocument(item->parent).toJson() );
 //    qDebug() << "ITEM:" << reqItem;
     qDebug() << "PARENT:" << parentItem;
@@ -248,8 +248,8 @@ void NuvoApiClient::parseReplyMessage(QJsonValue value)
             if (id == "info"){  parseTrackMetadata(current);  }
             else if ( type == "action"){  parseActionItem(current); }
             else if ( type == "value"){ parseValueItem(current); }
-            else if ( type == "container"){ parseContainerItem(current, value.toObject()); }
-            else if (av == true) { parseContainerItem(current, value.toObject().value("object").toObject()); }
+            else if ( type == "container"){ parseContainerItem(current, value.toObject().value("item").toObject()); }
+            else if (av == true) { parseContainerItem(current, value.toObject().value("item").toObject()); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id; }
         }
     }
