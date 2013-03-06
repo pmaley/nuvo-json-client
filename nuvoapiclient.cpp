@@ -201,16 +201,17 @@ void NuvoApiClient::loadAv2(NuvoContainerItem* item)
 {
     qDebug() << "ENTERING" << __func__;
     QString index("1");
-    //QString reqItem( item->myItem.toString() );
-    //QString parentItem( item->parent.toString() );
-    //qDebug() << "ITEM:" << reqItem;
-    //qDebug() << "PARENT:" << parentItem;
-    QString reqItem(tr("{\"item\":{\"station\":true,\"title\":\"QuickMix\",\"av\":true,\"creator\":\"pandora\",\"url\":\"pandora:StationList/station_983251158063407\",\"resourceUrl\":\"station?stationToken=983251158063407\",\"icon\":\"skin:iconPandoraQuickmix\",\"context\":{\"url\":\"player:player/context\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"context\"}},\"nsdk\":{\"mediaData\":{\"metaData\":{\"playLogicPath\":\"pandora:PandoraPlayLogic\"},\"resources\":[{\"mimeType\":\"audio/x-pandora\"}]},\"type\":\"audio\"}}}"));
-    QString parentItem(tr("{\"title\":\"Pandora\",\"activity\":true,\"search\":{\"title\":\"Artist, Track\",\"url\":\"pandora:searches\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"search\"}},\"url\":\"pandora:StationList\",\"icon\":\"skin:iconPandora\",\"type\":\"container\"}"));
-    QString reqId( tr("\"req-%1\"").arg(requestNum) );
-    QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, index, parentItem) );
-    QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"context\" : %2 }").arg(reqId, context) );
-    sendRequest(request);
+    qDebug() << item->myItem.keys();
+//    QString reqItem( item->myItem.toString() );
+//    QString parentItem( item->parent.toString() );
+//    qDebug() << "ITEM:" << reqItem;
+//    qDebug() << "PARENT:" << parentItem;
+//    QString reqItem(tr("{\"item\":{\"station\":true,\"title\":\"QuickMix\",\"av\":true,\"creator\":\"pandora\",\"url\":\"pandora:StationList/station_983251158063407\",\"resourceUrl\":\"station?stationToken=983251158063407\",\"icon\":\"skin:iconPandoraQuickmix\",\"context\":{\"url\":\"player:player/context\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"context\"}},\"nsdk\":{\"mediaData\":{\"metaData\":{\"playLogicPath\":\"pandora:PandoraPlayLogic\"},\"resources\":[{\"mimeType\":\"audio/x-pandora\"}]},\"type\":\"audio\"}}}"));
+//    QString parentItem(tr("{\"title\":\"Pandora\",\"activity\":true,\"search\":{\"title\":\"Artist, Track\",\"url\":\"pandora:searches\",\"type\":\"container\",\"nsdk\":{\"containerType\":\"search\"}},\"url\":\"pandora:StationList\",\"icon\":\"skin:iconPandora\",\"type\":\"container\"}"));
+//    QString reqId( tr("\"req-%1\"").arg(requestNum) );
+//    QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, index, parentItem) );
+//    QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"context\" : %2 }").arg(reqId, context) );
+//    sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
 
@@ -234,19 +235,21 @@ NuvoActionItem* NuvoApiClient::findActionItem(QString id)
 void NuvoApiClient::parseReplyMessage(QJsonValue value)
 {
     qDebug() << "ENTERING" << __func__;
+    qDebug() << value.toObject().keys();
     if (value.toObject().value("children").isArray()){
-        QJsonArray it = value.toObject().value("children").toArray();
+        QJsonArray it(value.toObject().value("children").toArray());
         for (int i = 0; i < it.size(); i++ ){;
             QJsonObject current = it.at(i).toObject();
+            qDebug() << current.keys();
             QString id(current.value("id").toString());
             QString type(current.value("type").toString());
-            QString av(current.value("av").toString());
-
+            bool av(current.value("av").toBool());
+            qDebug() << id << type << av;
             if (id == "info"){  parseTrackMetadata(current);  }
             else if ( type == "action"){  parseActionItem(current); }
             else if ( type == "value"){ parseValueItem(current); }
             else if ( type == "container"){ parseContainerItem(current, current.value("result").toObject().value("item").toObject()); }
-            else if (av == "true") { parseContainerItem(current, current.value("result").toObject().value("item").toObject()); }
+            else if (av == true) { parseContainerItem(current, current.value("result").toObject().value("item").toObject()); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id; }
         }
     }
@@ -406,13 +409,12 @@ void NuvoApiClient::parseActionItem(QJsonObject value)
 void NuvoApiClient::parseTrackMetadata(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
     qDebug() << value.keys();
-
     metadata1 = QString(value.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(value.value("description").toString()));
     metadata3 = QString(value.value("longDescription").toString());
     emit metadataChanged();
+
     QUrl url(value.value("icon").toString());
-    qDebug() << url.toString();
     QNetworkRequest request(url);
     m_netwManager->get(request);
     qDebug() << "EXITING" << __func__;
