@@ -251,7 +251,7 @@ void NuvoApiClient::parseEventMessage(QString channel, QJsonValue value)
             QString type = QString(currentObj.value("type").toString());
             QString id = QString(currentObj.value("id").toString());
             if ( id == "info"){  parseTrackMetadata(currentObj); }
-            else if (type == "childValueChanged"){ parseChildValueChangedMessage(currentObj);}
+            else if (type == "childValueChanged"){ parseChildValueChangedMessage(channel,currentObj);}
             else if (type == "childItemChanged"){ parseChildItemChangedMessage(channel,currentObj);}
             else if (type == "childInserted"){ parseChildInsertedMessage(currentObj);}
             else if (type == "childRemoved"){  parseChildRemovedMessage(channel, currentObj); }
@@ -290,15 +290,29 @@ void NuvoApiClient::parseValueItem(QJsonObject value){
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseChildValueChangedMessage(QJsonObject value)
+void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject value)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.keys();
-    QString id = QString(value.value("id").toString());
-    QString index = QString(value.value("index").toString());
-    QString type = QString(value.value("type").toString());
-    QString value2 = QString(value.value("value").toString());
-    qDebug() << id << index << type << value2;
+//    qDebug() << value.keys();
+//    QString id = QString(value.value("id").toString());
+//    QString index = QString(value.value("index").toString());
+//    QString type = QString(value.value("type").toString());
+//    QString value2 = QString(value.value("value").toString());
+//    qDebug() << id << index << type << value2;
+
+    qDebug() << "KEYS:" << value.keys();
+
+    qDebug() << "ITEM:" << value.value("item").toObject().keys();
+//    QString id = value.value("item").toObject().value("id").toString();
+//    qDebug() << "ID:" << id;
+    qDebug() << "CHANNEL:" << channel;
+    int index = (int)value.value("index").toDouble();
+    qDebug() << "INDEX:" << index;
+    qDebug() << "ARRAY SIZE:" << channels[channel].value("children").toArray().size();
+    qDebug() << "CHILD KEYS:" << channels[channel].value("children").toArray().at(index).toObject().keys();
+    channels[channel].value("children").toArray().at(index) = QString(value.value("value").toString());
+    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
+    qDebug() << "ID:" << id;
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
         volume = (int)value.value("value").toObject().value("int").toDouble();
@@ -323,13 +337,14 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
     qDebug() << "KEYS:" << value.keys();
 
     qDebug() << "ITEM:" << value.value("item").toObject().keys();
-    QString id = value.value("item").toObject().value("id").toString();
-    qDebug() << "ID:" << id;
+
     qDebug() << "CHANNEL:" << channel;
     int index = (int)value.value("index").toDouble();
     qDebug() << "INDEX:" << index;
     qDebug() << "ARRAY SIZE:" << channels[channel].value("children").toArray().size();
     qDebug() << "CHILD KEYS:" << channels[channel].value("children").toArray().at(index).toObject().keys();
+    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
+    qDebug() << "ID:" << id;
     channels[channel].value("children").toArray().at(index) = QString(value.value("value").toString());
 
     if ( id == "volume"){

@@ -44,7 +44,7 @@ public:
     void parseValueItem(QJsonObject value);
     void parseContainerItem(QJsonObject parent, QJsonObject value);
 
-    void parseChildValueChangedMessage(QJsonObject value);
+    void parseChildValueChangedMessage(QString channel, QJsonObject value);
     void parseChildItemChangedMessage(QString channel, QJsonObject value);
     void parseChildInsertedMessage(QJsonObject value);
     void parseChildRemovedMessage(QString channel, QJsonObject value);
