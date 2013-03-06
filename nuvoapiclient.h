@@ -38,16 +38,17 @@ public:
     void toggleValue(NuvoActionItem *actionItem);
     void connectToHost(QString host, int port);
     void parseJsonResponse(QString json);
-    void parseReplyMessage(QScriptValue sc);
+    void parseReplyMessage(QJsonValue value);
     void parseEventMessage(QScriptValue sc);
-    void parseTrackMetadata(QScriptValue value);
-    void parseActionItem(QScriptValue value);
-    void parseValueItem(QScriptValue value);
-    void parseContainerItem(QScriptValue parent, QScriptValue value);
+    void parseEventMessage(QJsonValue value);
+    void parseTrackMetadata(QJsonObject obj);
+    void parseActionItem(QJsonObject value);
+    void parseValueItem(QJsonObject value);
+    void parseContainerItem(QJsonObject parent, QJsonObject value);
     void parseChildValueChangedMessage(QScriptValue value);
     void parseChildItemChangedMessage(QScriptValue value);
     void parseChildInsertedMessage(QScriptValue value);
-    void parseChildRemovedMessage(QScriptValue value);
+    void parseChildRemovedMessage(QJsonObject value);
     NuvoActionItem* findActionItem(QString id);
 
     NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
