@@ -329,18 +329,30 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
 
 void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << "KEYS:" << value.keys();
 
-    qDebug() << "ITEM:" << value.value("item").toObject().keys();
-
-    qDebug() << "CHANNEL:" << channel;
     int index = (int)value.value("index").toDouble();
+    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
+    QJsonObject item(value.value("item").toObject());
+
+    qDebug() << "RECV KEYS:" << value.keys();
+    qDebug() << "ITEM KEYS:" << item.keys();
+    qDebug() << "CHANNEL:" << channel;
     qDebug() << "INDEX:" << index;
     qDebug() << "ARRAY SIZE:" << channels[channel].value("children").toArray().size();
     qDebug() << "CHILD KEYS:" << channels[channel].value("children").toArray().at(index).toObject().keys();
-    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
     qDebug() << "ID:" << id;
-    channels[channel].value("children").toArray().at(index) = QString(value.value("value").toString());
+    qDebug() << "ATTEMPTING TO STORE(obj w/ keys):" << item.keys();
+    qDebug() << "ATTEMPTING TO STORE(desc.):" << item.value("description").toString();
+
+    qDebug() << "BEFORE:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
+    //channels[channel].value("children").toArray().replace(index,QJsonValue(value.value("item")));
+    QJsonArray children(channels[channel].value("children").toArray());
+    children.replace(index,QJsonValue(value.value("item")));
+    qDebug() << "BEFORE:" << children.at(index).toObject().value("description").toString();
+    channels[channel].value("children") = QJsonValue(children);
+
+    qDebug() << "AFTER:" << children.at(index).toObject().value("description").toString();
+    qDebug() << "AFTER:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
 
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
@@ -354,10 +366,11 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
         qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "info") {
-        qDebug() << "ID == INFO!!";
-        //parseTrackMetadata( channels[channel].value("children").toArray().at(index).toObject());
-
-        parseTrackMetadata( value.value("item").toObject());
+        qDebug() << "DESCRIPTIONS:";
+        qDebug() << "RECEIVED:" << value.value("item").toObject().value("description").toString();
+        qDebug() << "STORED:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
+        //parseTrackMetadata( value.value("item").toObject());  // works, but wrong
+        parseTrackMetadata( channels[channel].value("children").toArray().at(index).toObject() );
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
