@@ -350,6 +350,15 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
     children.replace(index,QJsonValue(value.value("item")));
     qDebug() << "BEFORE:" << children.at(index).toObject().value("description").toString();
     channels[channel].value("children") = QJsonValue(children);
+    QJsonObject::Iterator iterator;
+//    for ( iterator = channels[channel].begin(); iterator != channels[channel].end(); iterator++ ){
+//        qDebug() << iterator.value();
+//    }
+    iterator = channels[channel].find("children");
+    qDebug() << iterator.value();
+    iterator.value() = children;
+
+
 
     qDebug() << "AFTER:" << children.at(index).toObject().value("description").toString();
     qDebug() << "AFTER:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
