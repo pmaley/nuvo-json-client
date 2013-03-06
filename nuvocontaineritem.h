@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QScriptEngine>
 #include <QScriptValueIterator>
+#include <QtWidgets>
 
 class NuvoContainerItem : public QObject
 {
@@ -14,15 +15,15 @@ public:
     explicit NuvoContainerItem(QString _title, QString _url,
                                QString _icon, QString _type,
                                QString _id, QString _sortKey, bool _av, int _index);
-    explicit NuvoContainerItem(QScriptValue _parent, QScriptValue item);
+    explicit NuvoContainerItem(QJsonObject _parent, QJsonObject item);
     QString title;
     QString url;
     QString icon;
     QString itemType;
     QString name;
     QString sortKey;
-    QScriptValue parent;
-    QScriptValue myItem;
+    QJsonObject parent;
+    QJsonObject myItem;
     bool av;
     int index;
     

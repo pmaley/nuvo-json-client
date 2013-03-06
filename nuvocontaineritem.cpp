@@ -27,19 +27,19 @@ NuvoContainerItem::NuvoContainerItem(QString _title, QString _url,
 }
 
 
-NuvoContainerItem::NuvoContainerItem(QScriptValue _parent, QScriptValue item) :
+NuvoContainerItem::NuvoContainerItem(QJsonObject _parent, QJsonObject item) :
                             QObject()
 {
-     parent = QScriptValue(_parent);
-     myItem = QScriptValue(item);
-     QScriptValue current(item);
-     title = QString(current.property("title").toString());
-     url = QString(current.property("url").toString());
-     icon = QString(current.property("icon").toString());
-     itemType = QString(current.property("type").toString());
-     name = QString(current.property("id").toString());
-     sortKey = QString(current.property("sortKey").toString());
-     av = current.property("av").toBool();
-     index = QString(current.property("index").toString()).toInt();
+     parent = QJsonObject(_parent);
+     myItem = QJsonObject(item);
+     QJsonObject current(item);
+     title = QString(current.value("title").toString());
+     url = QString(current.value("url").toString());
+     icon = QString(current.value("icon").toString());
+     itemType = QString(current.value("type").toString());
+     name = QString(current.value("id").toString());
+     sortKey = QString(current.value("sortKey").toString());
+     av = current.value("av").toBool();
+     index = QString(current.value("index").toString()).toInt();
      qDebug() << title << name << itemType << index;
 }

@@ -45,9 +45,9 @@ public:
     void parseActionItem(QJsonObject value);
     void parseValueItem(QJsonObject value);
     void parseContainerItem(QJsonObject parent, QJsonObject value);
-    void parseChildValueChangedMessage(QScriptValue value);
-    void parseChildItemChangedMessage(QScriptValue value);
-    void parseChildInsertedMessage(QScriptValue value);
+    void parseChildValueChangedMessage(QJsonObject value);
+    void parseChildItemChangedMessage(QJsonObject value);
+    void parseChildInsertedMessage(QJsonObject value);
     void parseChildRemovedMessage(QJsonObject value);
     NuvoActionItem* findActionItem(QString id);
 
