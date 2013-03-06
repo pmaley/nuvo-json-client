@@ -332,17 +332,7 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
 
     int index = (int)value.value("index").toDouble();
     QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
-    QJsonObject item(value.value("item").toObject());
 
-    qDebug() << "RECV KEYS:" << value.keys();
-    qDebug() << "ITEM KEYS:" << item.keys();
-    qDebug() << "CHANNEL:" << channel;
-    qDebug() << "INDEX:" << index;
-    qDebug() << "ARRAY SIZE:" << channels[channel].value("children").toArray().size();
-    qDebug() << "CHILD KEYS:" << channels[channel].value("children").toArray().at(index).toObject().keys();
-    qDebug() << "ID:" << id;
-    qDebug() << "ATTEMPTING TO STORE(obj w/ keys):" << item.keys();
-    qDebug() << "ATTEMPTING TO STORE(desc.):" << item.value("description").toString();
 
     QJsonArray children(channels[channel].value("children").toArray());
     children.replace(index,QJsonValue(value.value("item")));
@@ -350,19 +340,22 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
     iterator = channels[channel].find("children");
     iterator.value() = children;
 
+    QJsonObject item(channels[channel].value("children").toArray().at(index).toObject());
     if ( id == "volume"){
+        qDebug() << "BRADY";
         qDebug() << volume << "/" << volumeMax;
-        volume = (int)value.value("value").toObject().value("int").toDouble();
+        //volume = (int)value.value("value").toObject().value("int").toDouble();
+        volume = (int) item.value("value").toObject().value("int").toDouble();
         qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
         qDebug() << progressPos << "/" << progressMax;
-        progressMax = (int) channels[channel].value("children").toArray().at(index).toObject().value("maxDouble").toDouble();
-        progressPos = (int) channels[channel].value("children").toArray().at(index).toObject().value("value").toObject().value("double").toDouble();
+        progressMax = (int) item.value("maxDouble").toDouble();
+        progressPos = (int) item.value("value").toObject().value("double").toDouble();
         qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "info") {
-        parseTrackMetadata( channels[channel].value("children").toArray().at(index).toObject() );
+        parseTrackMetadata( item );
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
