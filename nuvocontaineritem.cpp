@@ -22,15 +22,16 @@ NuvoContainerItem::NuvoContainerItem(QString _title, QString _url,
     sortKey = _sortKey;
     av = _av;
     index = _index;
-    qDebug() << title << url << icon << itemType << name << sortKey << index;
-
 }
 
 
 NuvoContainerItem::NuvoContainerItem(QJsonObject _parent, QJsonObject item) :
                             QObject()
 {
+    qDebug() << "NUVOCONTAINERITEM";
+    qDebug() << _parent.keys();
      parent = QJsonObject(_parent);
+     qDebug() << parent.keys();
      myItem = QJsonObject(item);
      QJsonObject current(item);
      title = QString(current.value("title").toString());
@@ -41,5 +42,4 @@ NuvoContainerItem::NuvoContainerItem(QJsonObject _parent, QJsonObject item) :
      sortKey = QString(current.value("sortKey").toString());
      av = current.value("av").toBool();
      index = QString(current.value("index").toString()).toInt();
-     qDebug() << title << name << itemType << index;
 }
