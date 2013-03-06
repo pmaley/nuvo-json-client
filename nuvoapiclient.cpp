@@ -295,25 +295,44 @@ void NuvoApiClient::parseValueItem(QJsonObject value){
 void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject value)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << "KEYS:" << value.keys();
-    qDebug() << "ITEM:" << value.value("item").toObject().keys();
-    qDebug() << "CHANNEL:" << channel;
     int index = (int)value.value("index").toDouble();
-    qDebug() << "INDEX:" << index;
-    qDebug() << "ARRAY SIZE:" << channels[channel].value("children").toArray().size();
-    qDebug() << "CHILD KEYS:" << channels[channel].value("children").toArray().at(index).toObject().keys();
+    QString type(value.value("type").toString());
+    int intValue((int)value.value("value").toObject().value("int").toDouble());
 
-    channels[channel].value("children").toArray().at(index) = QString(value.value("value").toString());
+    qDebug() << "TYPE:" << type;
+    qDebug() << "VALUE:" << intValue;
+    qDebug() << "INDEX:" << index;
+
     QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
+    QJsonObject newItem(channels[channel].value("children").toArray().at(index).toObject());
+
+    QJsonObject::Iterator iterator2;
+    iterator2 = newItem.find("value");
+
+    //newItem.value("value") = QJsonValue(value.value("value"));
+    iterator2.value() = QJsonValue(value.value("value"));
+    qDebug() << "NEW VALUE:" << newItem.value("value").toObject().value("int");
+
+    QJsonArray children(channels[channel].value("children").toArray());
+
+    children.replace(index,QJsonValue(newItem));
+    QJsonObject::Iterator iterator;
+    iterator = channels[channel].find("children");
+    iterator.value() = children;
+
+    QJsonObject item(channels[channel].value("children").toArray().at(index).toObject());
     qDebug() << "ID:" << id;
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
-        volume = (int)value.value("value").toObject().value("int").toDouble();
+        //volume = (int)value.value("value").toObject().value("int").toDouble();
+        qDebug() << item.keys();
+        volume = (int)item.value("value").toObject().value("int").toDouble();
         qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
         qDebug() << progressPos << "/" << progressMax;
-        progressPos = value.value("value").toObject().value("double").toDouble();
+        //progressPos = value.value("value").toObject().value("double").toDouble();
+        progressPos = item.value("value").toObject().value("double").toDouble();
         qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "state") {
