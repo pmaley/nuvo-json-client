@@ -403,16 +403,16 @@ void NuvoApiClient::parseActionItem(QJsonObject value)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseTrackMetadata(QJsonObject obj){
+void NuvoApiClient::parseTrackMetadata(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << obj.keys();
-    QJsonObject value = obj.value("item").toObject();
+    qDebug() << value.keys();
 
     metadata1 = QString(value.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(value.value("description").toString()));
     metadata3 = QString(value.value("longDescription").toString());
     emit metadataChanged();
     QUrl url(value.value("icon").toString());
+    qDebug() << url.toString();
     QNetworkRequest request(url);
     m_netwManager->get(request);
     qDebug() << "EXITING" << __func__;
