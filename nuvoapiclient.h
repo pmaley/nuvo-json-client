@@ -39,7 +39,6 @@ public:
     void connectToHost(QString host, int port);
     void parseJsonResponse(QString json);
     void parseReplyMessage(QJsonValue value);
-    void parseEventMessage(QScriptValue sc);
     void parseEventMessage(QJsonValue value);
     void parseTrackMetadata(QJsonObject obj);
     void parseActionItem(QJsonObject value);

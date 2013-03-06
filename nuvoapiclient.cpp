@@ -131,7 +131,7 @@ void NuvoApiClient::parseJsonResponse(QString result)
     qDebug() << "TYPE: " << type;
     qDebug() << "RESULT IS OBJECT? " << res.isObject();
     qDebug() << "RESULT IS ARRAY? " << res.isArray();
-    qDebug() << "RESULT IS OBJECT? " << res.isBool();
+    qDebug() << "RESULT IS BOOL? " << res.isBool();
     qDebug() << "RESULT IS STRING? " << res.isString();
 
 
@@ -235,13 +235,8 @@ void NuvoApiClient::parseReplyMessage(QJsonValue value)
 {
     qDebug() << "ENTERING" << __func__;
     if (value.toObject().value("children").isArray()){
-    //if (sc.property("result").property("children").isArray() ){
-        //QScriptValueIterator it(sc.property("result").property("children"));
         QJsonArray it = value.toObject().value("children").toArray();
-        //while (it.hasNext()) {
-        for (int i = 0; i < it.size(); i++ ){
-            //it.next();
-            //QScriptValue current = it.value();
+        for (int i = 0; i < it.size(); i++ ){;
             QJsonObject current = it.at(i).toObject();
             QString id(current.value("id").toString());
             QString type(current.value("type").toString());
@@ -261,42 +256,9 @@ void NuvoApiClient::parseReplyMessage(QJsonValue value)
 
 void NuvoApiClient::parseContainerItem(QJsonObject value, QJsonObject parent){
     qDebug() << "ENTERING" << __func__;
-//    QScriptValue current(value);
-//    QString title(current.property("title").toString());
-//    QString url(current.property("url").toString());
-//    QString icon(current.property("icon").toString());
-//    QString type(current.property("type").toString());
-//    QString id(current.property("id").toString());
-//    QString sortKey(current.property("sortKey").toString());
-//    bool av = current.property("av").toBool();
-//    QString index(current.property("index").toString());
-//    qDebug() << title << id << type << index;
     NuvoContainerItem* item = new NuvoContainerItem(parent,value);
-//    NuvoContainerItem* item = new NuvoContainerItem(title,url,icon,type,id,sortKey,av,index.toInt());
     qDebug() << item->title;
     browseList.append(item);
-
-    qDebug() << "EXITING" << __func__;
-}
-
-void NuvoApiClient::parseEventMessage(QScriptValue value)
-{
-    qDebug() << "ENTERING" << __func__;
-    if (value.property("event").isArray() ){
-        QScriptValueIterator it(value.property("event"));
-        while (it.hasNext()) {
-            it.next();
-            QScriptValue current = it.value();
-            QString type = QString(current.property("type").toString());
-            QString id = QString(current.property("id").toString());
-//            if ( id == "info"){  parseTrackMetadata(current.property("item"));}
-//            else if (type == "childValueChanged"){ parseChildValueChangedMessage(current);}
-//            else if (type == "childItemChanged"){ parseChildItemChangedMessage(current);}
-//            else if (type == "childInserted"){ parseChildInsertedMessage(current);}
-//            //else if (type == "childRemoved"){  parseChildRemovedMessage(current); }
-//            else { qDebug() << "ITEM NOT PROCESSED:" << id << current.toString(); }
-        }
-    }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -309,6 +271,7 @@ void NuvoApiClient::parseEventMessage(QJsonValue value)
             QJsonValue current = array.at(i);
             qDebug() << current.isObject();
             QJsonObject currentObj = current.toObject();
+            qDebug() << currentObj.keys();
             QString type = QString(currentObj.value("type").toString());
             QString id = QString(currentObj.value("id").toString());
             if ( id == "info"){  parseTrackMetadata(currentObj); }
@@ -324,6 +287,7 @@ void NuvoApiClient::parseEventMessage(QJsonValue value)
 
 void NuvoApiClient::parseValueItem(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
+    qDebug() << value.keys();
     QString id = QString(value.value("id").toString());
     qDebug() << id;
 
@@ -353,6 +317,7 @@ void NuvoApiClient::parseValueItem(QJsonObject value){
 void NuvoApiClient::parseChildValueChangedMessage(QJsonObject value)
 {
     qDebug() << "ENTERING" << __func__;
+    qDebug() << value.keys();
     QString id = QString(value.value("id").toString());
     qDebug() << id;
     if ( id == "volume"){
@@ -376,6 +341,7 @@ void NuvoApiClient::parseChildValueChangedMessage(QJsonObject value)
 
 void NuvoApiClient::parseChildItemChangedMessage(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
+        qDebug() << value.keys();
     QString id = QString(value.value("id").toString());
     qDebug() << id;
     if ( id == "volume"){
@@ -395,12 +361,14 @@ void NuvoApiClient::parseChildItemChangedMessage(QJsonObject value){
 
 void NuvoApiClient::parseChildInsertedMessage(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
+    qDebug() << value.keys();
     parseActionItem(value.value("item").toObject());
     qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseChildRemovedMessage(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
+    qDebug() << value.keys();
     QString id(value.value("id").toString());
     qDebug() << id;
     NuvoActionItem *actionItem = findActionItem(id);
@@ -419,6 +387,7 @@ void NuvoApiClient::parseChildRemovedMessage(QJsonObject value){
 void NuvoApiClient::parseActionItem(QJsonObject value)
 {
     qDebug() << "ENTERING" << __func__;
+    qDebug() << value.keys();
     QString url(value.value("url").toString());
     QString id(value.value("id").toString());
     qDebug() << id << ":" << url;
@@ -436,6 +405,7 @@ void NuvoApiClient::parseActionItem(QJsonObject value)
 
 void NuvoApiClient::parseTrackMetadata(QJsonObject obj){
     qDebug() << "ENTERING" << __func__;
+    qDebug() << obj.keys();
     QJsonObject value = obj.value("item").toObject();
 
     metadata1 = QString(value.value("title").toString());
