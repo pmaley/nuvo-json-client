@@ -344,24 +344,11 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
     qDebug() << "ATTEMPTING TO STORE(obj w/ keys):" << item.keys();
     qDebug() << "ATTEMPTING TO STORE(desc.):" << item.value("description").toString();
 
-    qDebug() << "BEFORE:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
-    //channels[channel].value("children").toArray().replace(index,QJsonValue(value.value("item")));
     QJsonArray children(channels[channel].value("children").toArray());
     children.replace(index,QJsonValue(value.value("item")));
-    qDebug() << "BEFORE:" << children.at(index).toObject().value("description").toString();
-    channels[channel].value("children") = QJsonValue(children);
     QJsonObject::Iterator iterator;
-//    for ( iterator = channels[channel].begin(); iterator != channels[channel].end(); iterator++ ){
-//        qDebug() << iterator.value();
-//    }
     iterator = channels[channel].find("children");
-    qDebug() << iterator.value();
     iterator.value() = children;
-
-
-
-    qDebug() << "AFTER:" << children.at(index).toObject().value("description").toString();
-    qDebug() << "AFTER:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
 
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
@@ -370,15 +357,11 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
         emit volumeChanged();
     } else if (id == "time") {
         qDebug() << progressPos << "/" << progressMax;
-        progressMax = (int)value.value("item").toObject().value("maxDouble").toDouble();
-        progressPos = (int)value.value("item").toObject().value("value").toObject().value("double").toDouble();
+        progressMax = (int) channels[channel].value("children").toArray().at(index).toObject().value("maxDouble").toDouble();
+        progressPos = (int) channels[channel].value("children").toArray().at(index).toObject().value("value").toObject().value("double").toDouble();
         qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "info") {
-        qDebug() << "DESCRIPTIONS:";
-        qDebug() << "RECEIVED:" << value.value("item").toObject().value("description").toString();
-        qDebug() << "STORED:" << channels[channel].value("children").toArray().at(index).toObject().value("description").toString();
-        //parseTrackMetadata( value.value("item").toObject());  // works, but wrong
         parseTrackMetadata( channels[channel].value("children").toArray().at(index).toObject() );
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
