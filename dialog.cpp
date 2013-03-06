@@ -394,7 +394,7 @@ void Dialog::browseItemClicked(QModelIndex index)
     qDebug() << item->url;
     if (item->av == true) {
         //nuvo->invokeAction(item->url);
-        nuvo->loadAv2(item);
+        nuvo->loadAv(item);
         qDebug() << "TODO";
     } else {
         nuvo->browseContainer(item->url);

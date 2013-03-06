@@ -33,21 +33,21 @@ public:
     void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
     void loadAv(NuvoContainerItem* item);
-    void loadAv2(NuvoContainerItem* item);
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
     void connectToHost(QString host, int port);
     void parseJsonResponse(QString json);
-    void parseReplyMessage(QJsonValue value);
-    void parseEventMessage(QJsonValue value);
+    void parseReplyMessage(QString channel, QJsonValue value);
+    void parseEventMessage(QString channel, QJsonValue value);
     void parseTrackMetadata(QJsonObject obj);
     void parseActionItem(QJsonObject value);
     void parseValueItem(QJsonObject value);
     void parseContainerItem(QJsonObject parent, QJsonObject value);
+
     void parseChildValueChangedMessage(QJsonObject value);
-    void parseChildItemChangedMessage(QJsonObject value);
+    void parseChildItemChangedMessage(QString channel, QJsonObject value);
     void parseChildInsertedMessage(QJsonObject value);
-    void parseChildRemovedMessage(QJsonObject value);
+    void parseChildRemovedMessage(QString channel, QJsonObject value);
     NuvoActionItem* findActionItem(QString id);
 
     NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
@@ -83,6 +83,9 @@ private:
     QString currentMessage;
     NuvoContainerItem* musicContainer;
     int requestNum = 0;
+    QString avChannel;
+    QJsonObject avObject;
+    QMap<QString, QJsonObject> channels;
     
 };
 
