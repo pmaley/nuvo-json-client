@@ -98,7 +98,7 @@ void NuvoApiClient::messageReceived()
     if (currentMessage.contains('\n')){
         QStringList query = currentMessage.split(QRegExp("\n"));
         for (int i = 0; i < query.length()-1; i++){
-            qDebug() << "message" << i+1 << ":" << QString(query.at(i));
+            //qDebug() << "message" << i+1 << ":" << QString(query.at(i));
             //messageQueue.enqueue(QString(query.at(i)));
             parseJsonResponse(QString(query.at(i)));
         }
@@ -112,7 +112,7 @@ void NuvoApiClient::messageReceived()
 void NuvoApiClient::parseJsonResponse(QString result)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << result;
+    //qDebug() << result;
     QByteArray utf8;
     utf8.append(result);
     QJsonObject j = QJsonDocument::fromJson(utf8).object();
@@ -136,8 +136,6 @@ void NuvoApiClient::updateValue(NuvoActionItem *actionItem, int value)
     QString url(actionItem->property("url").toString());
     QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
     QString reqId(tr("\"req-%1\"").arg(requestNum));
-    qDebug() << requestNum;
-    qDebug() << "String" << QString(requestNum);
     QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"setValue\", \"params\" : %3 }").arg(reqId,url,params));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
