@@ -297,24 +297,14 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     qDebug() << "ENTERING" << __func__;
     int index = (int)value.value("index").toDouble();
     QString type(value.value("type").toString());
-    int intValue((int)value.value("value").toObject().value("int").toDouble());
-
-    qDebug() << "TYPE:" << type;
-    qDebug() << "VALUE:" << intValue;
-    qDebug() << "INDEX:" << index;
 
     QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
     QJsonObject newItem(channels[channel].value("children").toArray().at(index).toObject());
 
     QJsonObject::Iterator iterator2;
     iterator2 = newItem.find("value");
-
-    //newItem.value("value") = QJsonValue(value.value("value"));
     iterator2.value() = QJsonValue(value.value("value"));
-    qDebug() << "NEW VALUE:" << newItem.value("value").toObject().value("int");
-
     QJsonArray children(channels[channel].value("children").toArray());
-
     children.replace(index,QJsonValue(newItem));
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
@@ -324,19 +314,17 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     qDebug() << "ID:" << id;
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
-        //volume = (int)value.value("value").toObject().value("int").toDouble();
         qDebug() << item.keys();
         volume = (int)item.value("value").toObject().value("int").toDouble();
         qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
         qDebug() << progressPos << "/" << progressMax;
-        //progressPos = value.value("value").toObject().value("double").toDouble();
         progressPos = item.value("value").toObject().value("double").toDouble();
         qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "state") {
-        avState = QString(value.value("value").toObject().value("avState").toString());
+        avState = QString(item.value("value").toObject().value("avState").toString());
         emit avStateChanged();
     } else if (id == "info") {
         qDebug() << "ID == INFO!!";
