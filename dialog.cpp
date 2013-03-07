@@ -223,7 +223,7 @@ void Dialog::createConsoleBox()
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.21");
+    hostCombo = new QLineEdit("192.168.1.122");
     hostCombo->setFixedWidth(100);
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
