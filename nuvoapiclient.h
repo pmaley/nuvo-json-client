@@ -45,7 +45,7 @@ public:
 
     void parseChildValueChangedMessage(QString channel, QJsonObject value);
     void parseChildItemChangedMessage(QString channel, QJsonObject value);
-    void parseChildRemovedMessage(QString channel, QJsonObject value);
+    void parseChildRemovedMessage(QJsonObject value);
     NuvoActionItem* findActionItem(QString id);
 
     NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,

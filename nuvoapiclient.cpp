@@ -31,7 +31,6 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     repeatActionItem = new NuvoActionItem("repeat","");
 
     musicContainer = new NuvoContainerItem("Music","/stable/music/","","","Music","",false,0);
-
     tcpSocket = new QTcpSocket(this);
 
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
@@ -133,20 +132,15 @@ void NuvoApiClient::parseJsonResponse(QString result)
 
 void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 {
-    qDebug() << "EXITING" << __func__;
-    QJsonValue value = obj.value("result");
-    QString channel = obj.value("channel").toString();
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.toObject().keys();
-    channels[channel] = QJsonObject(value.toObject());
-    QJsonArray it(value.toObject().value("children").toArray());
+    QString channel = obj.value("channel").toString();
+    channels[channel] = QJsonObject(obj.value("result").toObject());
+    QJsonArray it(channels[channel].value("children").toArray());
+
     for (int i = 0; i < it.size(); i++ ){;
-        qDebug() << "INSIDE" << __func__ << "i =" << i;
-        //QJsonObject current = it.at(i).toObject();
-        QJsonObject current(channels[channel].value("children").toArray().at(i).toObject());
+        QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
         QString type(current.value("type").toString());
-        QString url(current.value("url").toString());
         bool av(current.value("av").toBool());
 
         if (id == "info"){  parseTrackMetadata();  }
@@ -154,15 +148,14 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             parseActionItem(current);
         }
         else if ( type == "value"){
-            NuvoActionItem *actionItem = findActionItem(id);
-            if (actionItem != NULL)
-                actionItem->setProperty("url",current.value("url").toString());
-            qDebug() << "ID:" << id;
-            qDebug() << "VALUE:" << current.value("value");
-
+            parseActionItem(current);
             updateDisplay(id,channel,i);
         }
-        else if ( type == "container" || av == true){ parseContainerItem(current, value.toObject().value("item").toObject()); }
+        else if ( type == "container" || av == true){
+//            parseContainerItem(current, obj.value("result").toObject().value("item").toObject());
+            NuvoContainerItem* item = new NuvoContainerItem(obj.value("result").toObject().value("item").toObject(),current);
+            browseList.append(item);
+        }
         else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     }
     emit browseDataChanged();
@@ -191,7 +184,7 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
             else if (type == "childInserted"){
                 parseActionItem(currentObj.value("item").toObject());
             }
-            else if (type == "childRemoved"){  parseChildRemovedMessage(channel, currentObj); }
+            else if (type == "childRemoved"){  parseChildRemovedMessage(currentObj); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id; }
         }
     }
@@ -340,14 +333,10 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value){
+void NuvoApiClient::parseChildRemovedMessage(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.keys();
     QString id(value.value("id").toString());
-    qDebug() << id;
     NuvoActionItem *actionItem = findActionItem(id);
-    qDebug() << "CHANNEL:" << channel;
-    qDebug() << channels[channel].value("children").toArray().size();
 
     if (actionItem) {
         actionItem->setProperty("url","");
@@ -363,10 +352,8 @@ void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value)
 void NuvoApiClient::parseActionItem(QJsonObject value)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.keys();
     QString url(value.value("url").toString());
     QString id(value.value("id").toString());
-    qDebug() << id << ":" << url;
     NuvoActionItem *actionItem = findActionItem(id);
     if (actionItem) {
         actionItem->setProperty("url",url);
