@@ -147,13 +147,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
         if (id == "info"){  parseTrackMetadata();  }
         else if ( type == "action"){
-            //parseActionItem(current);
-            NuvoActionItem *actionItem = findActionItem(id);
-            if (actionItem) {
-                actionItem->setProperty("url",url);
-                actionItem->setProperty("active",true);
-                emit transportChanged();
-            }
+            parseActionItem(current);
         }
         else if ( type == "value"){
             NuvoActionItem *actionItem = findActionItem(id);
