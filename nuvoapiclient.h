@@ -57,6 +57,7 @@ public:
     int volumeMax, volume, progressMax, progressPos;
     QString avState;
     QString metadata1, metadata2, metadata3;
+    void updateValue(QString id);
     
 signals:
     void avChanged();

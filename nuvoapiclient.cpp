@@ -205,24 +205,22 @@ void NuvoApiClient::parseReplyMessage(QString channel, QJsonValue value)
         avObject = QJsonObject(value.toObject());
     }
     channels[channel] = QJsonObject(value.toObject());
-    qDebug() << "CHANNEL:" << channel;
-    qDebug() << "CHILD SIZE" << channels[channel].value("children").toArray().size();
-    if (value.toObject().value("children").isArray()){
-        QJsonArray it(value.toObject().value("children").toArray());
-        for (int i = 0; i < it.size(); i++ ){;
-            QJsonObject current = it.at(i).toObject();
-            qDebug() << i << ":" << current.keys();
-            QString id(current.value("id").toString());
-            QString type(current.value("type").toString());
-            bool av(current.value("av").toBool());
-            qDebug() << id << type << av;
-            if (id == "info"){  parseTrackMetadata(current);  }
-            else if ( type == "action"){  parseActionItem(current); }
-            else if ( type == "value"){ parseValueItem(current); }
-            else if ( type == "container"){ parseContainerItem(current, value.toObject().value("item").toObject()); }
-            else if (av == true) { parseContainerItem(current, value.toObject().value("item").toObject()); }
-            else { qDebug() << "ITEM NOT PROCESSED:" << id; }
-        }
+    QJsonArray it(value.toObject().value("children").toArray());
+    for (int i = 0; i < it.size(); i++ ){;
+        QJsonObject current = it.at(i).toObject();
+        QString id(current.value("id").toString());
+        QString type(current.value("type").toString());
+        bool av(current.value("av").toBool());
+
+        if (av == true && type != "container")
+            qDebug() << "ALERT ALERT AV IS NOT CONTAINER";
+
+        if (id == "info"){  parseTrackMetadata(current);  }
+        else if ( type == "action"){  parseActionItem(current); }
+        else if ( type == "value"){ parseValueItem(current); }
+        else if ( type == "container" || av == true){ parseContainerItem(current, value.toObject().value("item").toObject()); }
+       // else if (av == true) { parseContainerItem(current, value.toObject().value("item").toObject()); }
+        else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     }
     emit browseDataChanged();
     qDebug() << "EXITING" << __func__;
@@ -238,7 +236,7 @@ void NuvoApiClient::parseContainerItem(QJsonObject value, QJsonObject parent){
 
 void NuvoApiClient::parseEventMessage(QString channel, QJsonValue value)
 {
-    qDebug() << "ENTERING -- CAUTION!!" << __func__;
+    qDebug() << "ENTERING" << __func__;
     qDebug() << channel;
 
     if ( value.isArray() ){
@@ -314,7 +312,6 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     qDebug() << "ID:" << id;
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
-        qDebug() << item.keys();
         volume = (int)item.value("value").toObject().value("int").toDouble();
         qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
@@ -349,9 +346,7 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
 
     QJsonObject item(channels[channel].value("children").toArray().at(index).toObject());
     if ( id == "volume"){
-        qDebug() << "BRADY";
         qDebug() << volume << "/" << volumeMax;
-        //volume = (int)value.value("value").toObject().value("int").toDouble();
         volume = (int) item.value("value").toObject().value("int").toDouble();
         qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
@@ -365,6 +360,11 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
         parseTrackMetadata( item );
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::updateValue(QString id)
+{
+
 }
 
 void NuvoApiClient::parseChildInsertedMessage(QJsonObject value){
@@ -415,7 +415,17 @@ void NuvoApiClient::parseActionItem(QJsonObject value)
 
 void NuvoApiClient::parseTrackMetadata(QJsonObject value){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << value.keys();
+
+    QJsonArray array(avObject.value("children").toArray());
+    QJsonArray::Iterator iterator;
+
+    iterator = array.begin();
+    int i;
+    for (i=0; i < array.size(); i++){
+        if (iterator[0].toObject().value("id").toString() == "info")
+            break;
+    }
+    QJsonObject obj = iterator[0].toObject();
     metadata1 = QString(value.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(value.value("description").toString()));
     metadata3 = QString(value.value("longDescription").toString());
