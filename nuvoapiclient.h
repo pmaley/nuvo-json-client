@@ -37,8 +37,8 @@ public:
     void toggleValue(NuvoActionItem *actionItem);
     void connectToHost(QString host, int port);
     void parseJsonResponse(QString json);
-    void parseReplyMessage(QString channel, QJsonValue value);
-    void parseEventMessage(QString channel, QJsonValue value);
+    void parseReplyMessage(QString channel, QJsonObject obj);
+    void parseEventMessage(QString channel, QJsonObject obj);
     void parseTrackMetadata(QJsonObject obj);
     void parseActionItem(QJsonObject value);
     void parseValueItem(QJsonObject value);

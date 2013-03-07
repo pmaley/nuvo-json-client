@@ -61,7 +61,7 @@ void NuvoApiClient::sendRequest(QString request)
     QByteArray byteArray = request.toUtf8();
     const char* cString = byteArray.constData();
     tcpSocket->write(cString);
-    emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(cString)));
+    emit displayText(QString(tr("<font color=\"Blue\">%1</font><br>").arg(cString)));
     qDebug() << cString << "written to socket";
     requestNum++;
 }
@@ -92,9 +92,7 @@ void NuvoApiClient::messageReceived()
     in.readRawData(data,blockSize);
     data[blockSize] = '\0';
 
-    emit displayText(QString(data));
     currentMessage.append(QString(data));
-
     if (currentMessage.contains('\n')){
         QStringList query = currentMessage.split(QRegExp("\n"));
         for (int i = 0; i < query.length()-1; i++){
@@ -112,19 +110,21 @@ void NuvoApiClient::messageReceived()
 void NuvoApiClient::parseJsonResponse(QString result)
 {
     qDebug() << "ENTERING" << __func__;
-    //qDebug() << result;
     QByteArray utf8;
     utf8.append(result);
     QJsonObject j = QJsonDocument::fromJson(utf8).object();
+    if (j.keys().contains("error"))
+        emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(result)));
+    else
+        emit displayText(QString(tr("<font color=\"Black\">%1</font><br>").arg(result)));
 
     QJsonValue res = j.value("result");
     QJsonValue event = j.value("event");
     QString channel(j.value("channel").toString());
     QString type(j.value("type").toString());
-    qDebug() << "RESPONSE ON CHANNEL:" << channel;
 
-    if (type == "reply") { parseReplyMessage(channel, res); }
-    else if ( type == "event"){  parseEventMessage(channel,event); }
+    if (type == "reply") { parseReplyMessage(channel, j); }
+    else if ( type == "event"){  parseEventMessage(channel,j); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
     qDebug() << "EXITING" << __func__;
@@ -197,8 +197,9 @@ NuvoActionItem* NuvoApiClient::findActionItem(QString id)
     else { return NULL; }
 }
 
-void NuvoApiClient::parseReplyMessage(QString channel, QJsonValue value)
+void NuvoApiClient::parseReplyMessage(QString channel, QJsonObject obj)
 {
+    QJsonValue value = obj.value("result");
     qDebug() << "ENTERING" << __func__;
     qDebug() << value.toObject().keys();
     if (channel == avChannel){
@@ -234,9 +235,11 @@ void NuvoApiClient::parseContainerItem(QJsonObject value, QJsonObject parent){
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseEventMessage(QString channel, QJsonValue value)
+void NuvoApiClient::parseEventMessage(QString channel, QJsonObject obj)
 {
     qDebug() << "ENTERING" << __func__;
+
+    QJsonValue value = obj.value("event");
     qDebug() << channel;
 
     if ( value.isArray() ){
