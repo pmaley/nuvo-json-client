@@ -29,24 +29,27 @@ public:
     explicit NuvoApiClient(QObject *parent = 0);
 
     void connectToHost();
+    void connectToHost(QString host, int port);
+
     void sendRequest(QString request);
+
     void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
     void loadAv(NuvoContainerItem* item);
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
-    void connectToHost(QString host, int port);
+
     void parseJsonResponse(QString json);
     void parseReplyMessage(QJsonObject obj);
     void parseEventMessage(QJsonObject obj);
+
     void parseTrackMetadata();
-    void parseActionItem(QJsonObject value);
-    void parseContainerItem(QJsonObject parent, QJsonObject value);
 
     void parseChildValueChangedMessage(QString channel, QJsonObject value);
     void parseChildItemChangedMessage(QString channel, QJsonObject value);
     void parseChildRemovedMessage(QString channel, QJsonObject value);
     void parseChildInsertedMessage(QString channel, QJsonObject value);
+
     void updateActionUrl(QString id, QString url, bool active);
 
     NuvoActionItem* findActionItem(QString id);

@@ -118,9 +118,6 @@ void NuvoApiClient::parseJsonResponse(QString result)
     else
         emit displayText(QString(tr("<font color=\"Black\">%1</font><br>").arg(result)));
 
-    QJsonValue res = j.value("result");
-    QJsonValue event = j.value("event");
-    QString channel(j.value("channel").toString());
     QString type(j.value("type").toString());
 
     if (type == "reply") { parseReplyMessage(j); }
@@ -140,19 +137,19 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
+        QString url(current.value("url").toString());
         QString type(current.value("type").toString());
         bool av(current.value("av").toBool());
 
         if (id == "info"){  parseTrackMetadata();  }
         else if ( type == "action"){
-            parseActionItem(current);
+            updateActionUrl(id,url,true);
         }
         else if ( type == "value"){
-            parseActionItem(current);
+            updateActionUrl(id,url,true);
             updateDisplay(channel,i);
         }
         else if ( type == "container" || av == true){
-//            parseContainerItem(current, obj.value("result").toObject().value("item").toObject());
             NuvoContainerItem* item = new NuvoContainerItem(obj.value("result").toObject().value("item").toObject(),current);
             browseList.append(item);
         }
@@ -183,7 +180,6 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
             }
             else if (type == "childInserted"){
                 parseChildInsertedMessage(channel,currentObj);
-                //parseActionItem(currentObj.value("item").toObject());
             }
             else if (type == "childRemoved"){  parseChildRemovedMessage(channel,currentObj); }
             else { qDebug() << "ITEM NOT PROCESSED:" << id; }
@@ -259,17 +255,6 @@ NuvoActionItem* NuvoApiClient::findActionItem(QString id)
     else { return NULL; }
 }
 
-
-
-void NuvoApiClient::parseContainerItem(QJsonObject value, QJsonObject parent){
-    qDebug() << "ENTERING" << __func__;
-    NuvoContainerItem* item = new NuvoContainerItem(parent,value);
-    browseList.append(item);
-    qDebug() << "EXITING" << __func__;
-}
-
-
-
 void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject value)
 {
     qDebug() << "ENTERING" << __func__;
@@ -322,20 +307,7 @@ void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value)
     iterator.value() = children;
     qDebug() << "SIZE AFTER:" << channels[channel].value("children").toArray().size();
 
-
-    qDebug() << "ID:" << id;
-    qDebug() << "CHANNEL:" << id;
-    qDebug() << "INDEX:" << index;
-    NuvoActionItem *actionItem = findActionItem(id);
-    if (actionItem) {
-        qDebug() << "IS ACTION ITEM.";
-        actionItem->setProperty("url","");
-        actionItem->setProperty("active",false);
-        emit transportChanged();
-    } else {
-        qDebug() << "ITEM NOT PROCESSED:" << id;
-    }
-
+    updateActionUrl(id,"",false);
     qDebug() << "EXITING" << __func__;
 }
 
@@ -346,7 +318,6 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
     int index = (int)value.value("index").toDouble();
     QString url = value.value("item").toObject().value("url").toString();
     QString id = value.value("item").toObject().value("id").toString();
-    QString type = value.value("type").toString();
 
     QJsonArray children(channels[channel].value("children").toArray());
     qDebug() << "SIZE BEFORE:" << children.size();
@@ -357,15 +328,6 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
     qDebug() << "SIZE AFTER:" << channels[channel].value("children").toArray().size();
 
     updateActionUrl(id,url,true);
-//    NuvoActionItem *actionItem = findActionItem(id);
-//    if (actionItem) {
-//        actionItem->setProperty("url",url);
-//        actionItem->setProperty("active",true);
-//        emit transportChanged();
-//    } else {
-//        qDebug() << "ITEM NOT PROCESSED:" << id;
-//    }
-
     qDebug() << "EXITING" << __func__;
 }
 
@@ -378,23 +340,6 @@ void NuvoApiClient::updateActionUrl(QString id, QString url, bool active){
     } else {
         qDebug() << "ITEM NOT PROCESSED:" << id;
     }
-}
-
-void NuvoApiClient::parseActionItem(QJsonObject value)
-{
-    qDebug() << "ENTERING" << __func__;
-    QString url(value.value("url").toString());
-    QString id(value.value("id").toString());
-    NuvoActionItem *actionItem = findActionItem(id);
-    if (actionItem) {
-        actionItem->setProperty("url",url);
-        actionItem->setProperty("active",true);
-        emit transportChanged();
-    } else {
-        qDebug() << "ITEM NOT PROCESSED:" << id;
-    }
-
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::updateDisplay(QString channel, int index)
