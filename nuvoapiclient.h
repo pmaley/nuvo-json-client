@@ -39,7 +39,7 @@ public:
     void parseJsonResponse(QString json);
     void parseReplyMessage(QJsonObject obj);
     void parseEventMessage(QJsonObject obj);
-    void parseTrackMetadata(QJsonObject obj);
+    void parseTrackMetadata();
     void parseActionItem(QJsonObject value);
     void parseValueItem(QJsonObject value);
     void parseContainerItem(QJsonObject parent, QJsonObject value);
@@ -57,7 +57,6 @@ public:
     int volumeMax, volume, progressMax, progressPos;
     QString avState;
     QString metadata1, metadata2, metadata3;
-    void updateValue(QString id);
     
 signals:
     void avChanged();
