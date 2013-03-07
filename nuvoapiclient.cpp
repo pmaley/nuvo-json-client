@@ -14,6 +14,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     progressPos = progressMax = 0;
     requestNum = 0;
     avChannel = "ch0";
+    currentBrowseChannel = "";
 
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
