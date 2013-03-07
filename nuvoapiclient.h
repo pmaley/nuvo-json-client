@@ -41,7 +41,6 @@ public:
     void parseEventMessage(QJsonObject obj);
     void parseTrackMetadata();
     void parseActionItem(QJsonObject value);
-    void parseValueItem(QJsonObject value);
     void parseContainerItem(QJsonObject parent, QJsonObject value);
 
     void parseChildValueChangedMessage(QString channel, QJsonObject value);
@@ -82,10 +81,10 @@ public slots:
 private:
     QString currentMessage;
     NuvoContainerItem* musicContainer;
-    int requestNum = 0;
+    int requestNum;
     QString avChannel;
-    QJsonObject avObject;
     QMap<QString, QJsonObject> channels;
+    void updateDisplay(QString id, QString channel, int index);
     
 };
 

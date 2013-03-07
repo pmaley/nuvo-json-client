@@ -5,7 +5,6 @@
 Dialog::Dialog()
 {
     nuvo = new NuvoApiClient();
-    //connect(nuvo, SIGNAL(avChanged()), this, SLOT(redisplay()));
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
     connect(nuvo, SIGNAL(progressBarChanged()), this, SLOT(updateProgressBar()));
     connect(nuvo->tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));

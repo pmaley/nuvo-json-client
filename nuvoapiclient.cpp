@@ -136,9 +136,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     QString channel = obj.value("channel").toString();
     qDebug() << "ENTERING" << __func__;
     qDebug() << value.toObject().keys();
-    if (channel == avChannel){
-        avObject = QJsonObject(value.toObject());
-    }
     channels[channel] = QJsonObject(value.toObject());
     QJsonArray it(value.toObject().value("children").toArray());
     for (int i = 0; i < it.size(); i++ ){;
@@ -147,12 +144,14 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         QString type(current.value("type").toString());
         bool av(current.value("av").toBool());
 
-        if (av == true && type != "container")
-            qDebug() << "ALERT ALERT AV IS NOT CONTAINER";
-
         if (id == "info"){  parseTrackMetadata();  }
         else if ( type == "action"){  parseActionItem(current); }
-        else if ( type == "value"){ parseValueItem(current); }
+        else if ( type == "value"){
+            NuvoActionItem *actionItem = findActionItem(id);
+            if (actionItem != NULL)
+                actionItem->setProperty("url",current.value("url").toString());
+            updateDisplay(id,channel,i);
+        }
         else if ( type == "container" || av == true){ parseContainerItem(current, value.toObject().value("item").toObject()); }
         else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     }
@@ -259,36 +258,7 @@ void NuvoApiClient::parseContainerItem(QJsonObject value, QJsonObject parent){
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseValueItem(QJsonObject value){
-    qDebug() << "ENTERING" << __func__;
-    qDebug() << value.keys();
-    QString id = QString(value.value("id").toString());
-    qDebug() << id;
 
-    NuvoActionItem *actionItem = findActionItem(id);
-    if (actionItem != NULL)
-        actionItem->setProperty("url",value.value("url").toString());
-
-    if ( id == "volume"){
-        qDebug() << volume << "/" << volumeMax;
-        volumeMax = (int)value.value("maxInt").toDouble();
-        volume = (int)value.value("value").toObject().value("int").toDouble();
-        qDebug() << volume << "/" << volumeMax;
-        emit volumeChanged();
-    } else if (id == "time") {
-        qDebug() << progressPos << "/" << progressMax;
-        progressMax = (int)value.value("maxDouble").toDouble();
-        progressPos = (int)value.value("value").toObject().value("double").toDouble();
-        qDebug() << progressPos << "/" << progressMax;
-        emit progressBarChanged();
-    } else if (id == "state") {
-        avState = QString(value.value("value").toObject().value("avState").toString());
-        emit avChanged();
-    } else if (id == "info") {
-        qDebug() << "ID == INFO!!";
-    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
-    qDebug() << "EXITING" << __func__;
-}
 
 void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject value)
 {
@@ -307,26 +277,32 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     iterator = channels[channel].find("children");
     iterator.value() = children;
 
+    updateDisplay(id,channel,index);
+    qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::updateDisplay(QString id,QString channel, int index)
+{
     QJsonObject item(channels[channel].value("children").toArray().at(index).toObject());
     qDebug() << "ID:" << id;
     if ( id == "volume"){
         qDebug() << volume << "/" << volumeMax;
+        volumeMax = (int)item.value("maxInt").toDouble();
         volume = (int)item.value("value").toObject().value("int").toDouble();
         qDebug() << volume << "/" << volumeMax;
         emit volumeChanged();
     } else if (id == "time") {
         qDebug() << progressPos << "/" << progressMax;
-        progressPos = item.value("value").toObject().value("double").toDouble();
+        progressMax = (int)item.value("maxDouble").toDouble();
+        progressPos = (int)item.value("value").toObject().value("double").toDouble();
         qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(item.value("value").toObject().value("avState").toString());
         emit avStateChanged();
     } else if (id == "info") {
-        parseTrackMetadata();
-    }else {
-        qDebug() << "ITEM NOT PROCESSED:" << id;
-    }
+        parseTrackMetadata();;
+    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     qDebug() << "EXITING" << __func__;
 }
 
