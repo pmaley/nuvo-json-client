@@ -73,6 +73,7 @@ signals:
     void volumeChanged();
     void metadataChanged();
     void browseDataChanged();
+    void refreshDisplay();
 
 public slots:
     void disconnectFromHost();
@@ -87,7 +88,8 @@ private:
     QString currentMessage;
     NuvoContainerItem* musicContainer;
     int requestNum;
-    QString avChannel;
+    QString avChannel, currentBrowseChannel;
+
     QMap<QString, QJsonObject> channels;
     void updateDisplay(QString channel, int index);
     

@@ -15,6 +15,7 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(metadataChanged()), this, SLOT(updateMetadata()));
     connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
     connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
+    connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
 
     createMenu();
     createTransportControlsBox();
@@ -314,17 +315,14 @@ void Dialog::incrementProgressBar(){
         trackProgressBar->setValue(trackProgressBar->value()+1);
     }
 }
-void Dialog::updateProgressBar(){
-    trackProgressBar->setMaximum(nuvo->progressMax);
-    trackProgressBar->setValue(nuvo->progressPos);
-}
+
 
 void Dialog::redisplay(){
     //TODO update screen w/ current client's info
     qDebug() << "REDISPLAY";
     updateVolume();
     updateMetadata();
-    updateAlbumArt();
+    //updateAlbumArt();
     updateTransportControls();
 }
 
@@ -338,6 +336,11 @@ void Dialog::updateVolume()
 
     volumeSlider->setMaximum(volMax);
     volumeSlider->setValue(vol);
+}
+
+void Dialog::updateProgressBar(){
+    trackProgressBar->setMaximum(nuvo->progressMax);
+    trackProgressBar->setValue(nuvo->progressPos);
 }
 
 void Dialog::updateMetadata()

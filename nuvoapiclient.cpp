@@ -104,7 +104,7 @@ void NuvoApiClient::messageReceived()
         currentMessage = QString(query.last());
     }
     delete(data);
-    emit avChanged();
+    //emit avChanged();
     qDebug() << "EXITING" << __func__;
 }
 
@@ -125,6 +125,7 @@ void NuvoApiClient::parseJsonResponse(QString result)
     else if ( type == "event"){  parseEventMessage(j); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
+    emit refreshDisplay();
     qDebug() << "EXITING" << __func__;
 }
 
@@ -328,7 +329,7 @@ void NuvoApiClient::updateActionUrl(QString id, QString url, bool active){
     if (actionItem) {
         actionItem->setProperty("url",url);
         actionItem->setProperty("active",active);
-        emit transportChanged();
+        //emit transportChanged();
     } else {
         qDebug() << "ITEM NOT PROCESSED:" << id;
     }
@@ -344,7 +345,7 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
         qDebug() << volume << "/" << volumeMax;
         volume = (int)item.value("value").toObject().value("volume").toObject().value("level").toDouble();
         qDebug() << volume << "/" << volumeMax;
-        emit volumeChanged();
+        //emit volumeChanged();
     } else if (id == "time") {
         qDebug() << progressPos << "/" << progressMax;
         progressMax = (int)item.value("maxDouble").toDouble();
@@ -353,7 +354,7 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
         emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(item.value("value").toObject().value("avState").toString());
-        emit avStateChanged();
+        //emit avStateChanged();
     } else if (id == "info") {
         parseTrackMetadata();;
     } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
@@ -375,7 +376,7 @@ void NuvoApiClient::parseTrackMetadata(){
     metadata1 = QString(obj.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(obj.value("description").toString()));
     metadata3 = QString(obj.value("longDescription").toString());
-    emit metadataChanged();
+    //emit metadataChanged();
 
     QUrl url(obj.value("icon").toString());
     QNetworkRequest request(url);
