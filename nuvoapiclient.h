@@ -45,7 +45,10 @@ public:
 
     void parseChildValueChangedMessage(QString channel, QJsonObject value);
     void parseChildItemChangedMessage(QString channel, QJsonObject value);
-    void parseChildRemovedMessage(QJsonObject value);
+    void parseChildRemovedMessage(QString channel, QJsonObject value);
+    void parseChildInsertedMessage(QString channel, QJsonObject value);
+    void updateActionUrl(QString id, QString url, bool active);
+
     NuvoActionItem* findActionItem(QString id);
 
     NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
@@ -83,7 +86,7 @@ private:
     int requestNum;
     QString avChannel;
     QMap<QString, QJsonObject> channels;
-    void updateDisplay(QString id, QString channel, int index);
+    void updateDisplay(QString channel, int index);
     
 };
 
