@@ -123,8 +123,8 @@ void NuvoApiClient::parseJsonResponse(QString result)
     QString channel(j.value("channel").toString());
     QString type(j.value("type").toString());
 
-    if (type == "reply") { parseReplyMessage(channel, j); }
-    else if ( type == "event"){  parseEventMessage(channel,j); }
+    if (type == "reply") { parseReplyMessage(j); }
+    else if ( type == "event"){  parseEventMessage(j); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
     qDebug() << "EXITING" << __func__;
@@ -197,9 +197,10 @@ NuvoActionItem* NuvoApiClient::findActionItem(QString id)
     else { return NULL; }
 }
 
-void NuvoApiClient::parseReplyMessage(QString channel, QJsonObject obj)
+void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 {
     QJsonValue value = obj.value("result");
+    QString channel = obj.value("channel").toString();
     qDebug() << "ENTERING" << __func__;
     qDebug() << value.toObject().keys();
     if (channel == avChannel){
@@ -235,10 +236,10 @@ void NuvoApiClient::parseContainerItem(QJsonObject value, QJsonObject parent){
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseEventMessage(QString channel, QJsonObject obj)
+void NuvoApiClient::parseEventMessage(QJsonObject obj)
 {
     qDebug() << "ENTERING" << __func__;
-
+    QString channel = obj.value("channel").toString();
     QJsonValue value = obj.value("event");
     qDebug() << channel;
 
