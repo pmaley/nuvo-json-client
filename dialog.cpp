@@ -25,8 +25,8 @@ Dialog::Dialog()
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
     browseView->setAlternatingRowColors(true);
-    //browseModel = new QStandardItemModel(0, 1);
-    browseModel = new QStandardItemModel(0,2);
+    browseModel = new QStandardItemModel(0, 1);
+    //browseModel = new QStandardItemModel(0,2);
     browseView->setModel(browseModel);
     connect(browseView, SIGNAL(clicked(QModelIndex)),
             this, SLOT(browseItemClicked(QModelIndex)));
@@ -376,7 +376,7 @@ void Dialog::updateBrowseWindow()
     for (int i = 0; i < nuvo->browseList.size(); i++) {
         browseModel->insertRow(i);
         browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
-        browseModel->setData(browseModel->index(i, 1), i);
+        //browseModel->setData(browseModel->index(i, 1), i);
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -384,8 +384,7 @@ void Dialog::updateBrowseWindow()
 void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
-    //QStandardItem *item = browseModel->itemFromIndex(index);
-    int i = browseModel->itemFromIndex(index)->text().toInt();
+    int i = index.row();
     NuvoContainerItem *item = nuvo->browseList.at(i);
 
     if (item->av == true) {
