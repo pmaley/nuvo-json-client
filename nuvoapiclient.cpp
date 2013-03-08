@@ -111,7 +111,6 @@ void NuvoApiClient::messageReceived()
         currentMessage = QString(query.last());
     }
     delete(data);
-    //emit avChanged();
     qDebug() << "EXITING" << __func__;
 }
 
