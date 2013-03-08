@@ -318,11 +318,9 @@ void Dialog::incrementProgressBar(){
 
 
 void Dialog::redisplay(){
-    //TODO update screen w/ current client's info
     qDebug() << "REDISPLAY";
     updateVolume();
     updateMetadata();
-    //updateAlbumArt();
     updateTransportControls();
 }
 
@@ -375,16 +373,11 @@ void Dialog::updateBrowseWindow()
 {
     qDebug() << "ENTERING" << __func__;
     browseModel->setRowCount(0);
-    qDebug() << nuvo->browseList.size();
-    qDebug() << browseModel->rowCount();
     for (int i = 0; i < nuvo->browseList.size(); i++) {
-        qDebug() << i << nuvo->browseList.at(i)->title;
         browseModel->insertRow(i);
-        //browseModel->item(i,0)->setEditable(false);
         browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
         browseModel->setData(browseModel->index(i, 1), i);
     }
-    qDebug() << browseModel->rowCount();
     qDebug() << "EXITING" << __func__;
 }
 
@@ -392,17 +385,11 @@ void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
     //QStandardItem *item = browseModel->itemFromIndex(index);
-    qDebug() << browseModel->itemFromIndex(index)->text();
-    qDebug() << browseModel->itemFromIndex(index)->data();
     int i = browseModel->itemFromIndex(index)->text().toInt();
-    qDebug() << i;
     NuvoContainerItem *item = nuvo->browseList.at(i);
-    qDebug() << item->title;
-    qDebug() << item->url;
+
     if (item->av == true) {
-        //nuvo->invokeAction(item->url);
         nuvo->loadAv(item);
-        qDebug() << "TODO";
     } else {
         nuvo->browseContainer(item->url);
     }
