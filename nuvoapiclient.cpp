@@ -1,12 +1,9 @@
 #include <QtWidgets>
 
-
-
 #include "nuvoapiclient.h"
 #include "nuvocontaineritem.h"
 
-NuvoApiClient::NuvoApiClient(QObject *parent) :
-    QObject(parent)
+NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
 {
     avState = "";
     volume = 0;
@@ -60,7 +57,6 @@ void NuvoApiClient::browseContainer(NuvoContainerItem *item)
 
 void NuvoApiClient::browseContainer(QString url){
     qDebug() << "ENTERING" << __func__;
-    qDebug() << url;
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
     browseList.clear();
