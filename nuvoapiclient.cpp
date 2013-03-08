@@ -190,7 +190,7 @@ void NuvoApiClient::updateValue(NuvoActionItem *actionItem, int value)
     QString url(actionItem->property("url").toString());
     QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
     QString reqId(tr("\"req-%1\"").arg(requestNum));
-    QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"setValue\", \"params\" : %3 }").arg(reqId,url,params));
+    QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(reqId,url,params));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
