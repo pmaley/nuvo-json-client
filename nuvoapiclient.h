@@ -92,6 +92,8 @@ private:
     QMap<QString, QJsonObject> channels;
     QStack<QString> browseChannelStack;
 
+    void unsubscribe(QString channel);
+
     void updateDisplay(QString channel, int index);
 
     void parseJsonResponse(QString json);

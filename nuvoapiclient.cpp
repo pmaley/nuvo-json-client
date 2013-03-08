@@ -60,13 +60,25 @@ void NuvoApiClient::browseUpOne()
 {
     qDebug() << "ENTERING" << __func__;
     //TODO
-    //unsubscribe(currentBrowseChannel)
+    unsubscribe(currentBrowseChannel);
     if (!browseChannelStack.empty()){
         currentBrowseChannel = browseChannelStack.pop();
         emit browseDataChanged();
     }
     qDebug() << currentBrowseChannel;
     qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::unsubscribe(QString channel)
+{
+    qDebug() << "ENTERING" << __func__;
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
+    qDebug() << channelString;
+    QString closeRequest( tr("{ \"id\" : %1, \"method\" : \"cancel\", \"params\" : %2 } ").arg(reqId,channelString) );
+    sendRequest(closeRequest);
+    qDebug() << "EXITING" << __func__;
+
 }
 
 void NuvoApiClient::browseContainer()
@@ -90,9 +102,7 @@ void NuvoApiClient::browseContainer(QString url){
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
     browseList.clear();
-    qDebug() << "BEFORE:" << currentBrowseRequestNum;
     currentBrowseRequestNum = sendRequest(request);
-    qDebug() << "AFTER:" << currentBrowseRequestNum;
     qDebug() << "EXITING" << __func__;
 }
 
