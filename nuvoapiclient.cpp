@@ -12,6 +12,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
     requestNum = 0;
     avChannel = "ch0";
     currentBrowseChannel = "";
+    currentBrowseRequestNum = -1;
 
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
@@ -39,7 +40,7 @@ int NuvoApiClient::getAvValue(QString id){
     QJsonArray children = channels[avChannel].value("children").toArray();
     for (int i = 0; i < children.size(); i++){
         qDebug() << children.at(i).toObject().value("id").toString();
-        if (QString(children.at(i).toObject().value("id").toString()) == QString("volume")){
+        if (QString(children.at(i).toObject().value("id").toString()) == QString(id)){
             return (int) children.at(i).toObject().value("value").toObject().value("volume").toObject().value("level").toDouble();
         }
     }
@@ -60,11 +61,11 @@ void NuvoApiClient::browseContainer(QString url){
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
     browseList.clear();
-    sendRequest(request);
+    currentBrowseRequestNum = sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::sendRequest(QString request)
+int NuvoApiClient::sendRequest(QString request)
 {
     QByteArray byteArray = request.toUtf8();
     const char* cString = byteArray.constData();
@@ -72,6 +73,7 @@ void NuvoApiClient::sendRequest(QString request)
     emit displayText(QString(tr("<font color=\"Blue\">%1</font><br>").arg(cString)));
     qDebug() << cString << "written to socket";
     requestNum++;
+    return requestNum-1;
 }
 
 void NuvoApiClient::connectToHost(QString host, int port)
@@ -336,7 +338,6 @@ void NuvoApiClient::updateActionUrl(QString id, QString url, bool active){
     if (actionItem) {
         actionItem->setProperty("url",url);
         actionItem->setProperty("active",active);
-        //emit transportChanged();
     } else {
         qDebug() << "ITEM NOT PROCESSED:" << id;
     }
@@ -347,24 +348,19 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
     qDebug() << "ENTERING" << __func__;
     QJsonObject item(channels[channel].value("children").toArray().at(index).toObject());
     QString id = item.value("id").toString();
-    qDebug() << "ID:" << id;
     if ( id == "volume"){
-        qDebug() << volume << "/" << volumeMax;
         volume = (int)item.value("value").toObject().value("volume").toObject().value("level").toDouble();
-        qDebug() << volume << "/" << volumeMax;
-        //emit volumeChanged();
     } else if (id == "time") {
-        qDebug() << progressPos << "/" << progressMax;
         progressMax = (int)item.value("maxDouble").toDouble();
         progressPos = (int)item.value("value").toObject().value("double").toDouble();
-        qDebug() << progressPos << "/" << progressMax;
         emit progressBarChanged();
     } else if (id == "state") {
         avState = QString(item.value("value").toObject().value("avState").toString());
-        //emit avStateChanged();
     } else if (id == "info") {
         parseTrackMetadata();;
-    } else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+    } else {
+        qDebug() << "ITEM NOT PROCESSED:" << id;
+    }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -383,11 +379,11 @@ void NuvoApiClient::parseTrackMetadata(){
     metadata1 = QString(obj.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(obj.value("description").toString()));
     metadata3 = QString(obj.value("longDescription").toString());
-    //emit metadataChanged();
 
     QUrl url(obj.value("icon").toString());
     QNetworkRequest request(url);
     m_netwManager->get(request);
+
     qDebug() << "EXITING" << __func__;
 }
 

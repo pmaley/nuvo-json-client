@@ -33,7 +33,7 @@ public:
     void connectToHost();
     void connectToHost(QString host, int port);
 
-    void sendRequest(QString request);
+    int sendRequest(QString request);
 
     void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
@@ -63,6 +63,8 @@ public:
     int volumeMax, volume, progressMax, progressPos;
     QString avState;
     QString metadata1, metadata2, metadata3;
+
+    int currentBrowseRequestNum;
     
 signals:
     void avChanged();
