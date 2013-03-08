@@ -39,6 +39,7 @@ public:
     void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
     void loadAv(NuvoContainerItem* item);
+    void loadAv(int index);
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
 
@@ -87,6 +88,7 @@ public slots:
     void slot_netwManagerFinished(QNetworkReply *reply);
     void browseContainer(NuvoContainerItem *item);
     void browseContainer(QString url);
+    void browseContainer(int index);
     void browseContainer();
 
 private:

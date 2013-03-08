@@ -26,7 +26,6 @@ Dialog::Dialog()
     browseView->setRootIsDecorated(false);
     browseView->setAlternatingRowColors(true);
     browseModel = new QStandardItemModel(0, 1);
-    //browseModel = new QStandardItemModel(0,2);
     browseView->setModel(browseModel);
     connect(browseView, SIGNAL(clicked(QModelIndex)),
             this, SLOT(browseItemClicked(QModelIndex)));
@@ -385,11 +384,10 @@ void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
     NuvoContainerItem *item = nuvo->browseList.at(index.row());
-
     if (item->av == true) {
         nuvo->loadAv(item);
     } else {
-        nuvo->browseContainer(item->url);
+        nuvo->browseContainer(index.row());
     }
     qDebug() << "EXITING" << __func__;
 }

@@ -48,25 +48,23 @@ int NuvoApiClient::getAvValue(QString id){
 
 QList<QString> NuvoApiClient::getBrowseItems()
 {
-    qDebug() << "ENTERING" << __func__;
-    qDebug() << "Current browse channel:" << currentBrowseChannel;
-    qDebug() << channels[currentBrowseChannel].keys();
-
     QList<QString> list;
     QJsonArray children = channels[currentBrowseChannel].value("children").toArray();
     for (int i = 0; i < children.size(); i++){
-        qDebug() << children.at(i).toObject().value("title").toString();
         list.append(QString(children.at(i).toObject().value("title").toString()));
     }
-
-    qDebug() << "EXITING" << __func__;
     return list;
 }
 
-
-
-void NuvoApiClient::browseContainer(){
+void NuvoApiClient::browseContainer()
+{
     browseContainer(musicContainer);
+}
+
+void NuvoApiClient::browseContainer(int index)
+{
+    QString url(channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("url").toString());
+    browseContainer(url);
 }
 
 void NuvoApiClient::browseContainer(NuvoContainerItem *item)
@@ -124,7 +122,6 @@ void NuvoApiClient::messageReceived()
     if (currentMessage.contains('\n')){
         QStringList query = currentMessage.split(QRegExp("\n"));
         for (int i = 0; i < query.length()-1; i++){
-            //qDebug() << "message" << i+1 << ":" << QString(query.at(i));
             //messageQueue.enqueue(QString(query.at(i)));
             parseJsonResponse(QString(query.at(i)));
         }
@@ -252,6 +249,12 @@ void NuvoApiClient::invokeAction(QString url)
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
+
+void NuvoApiClient::loadAv(int index)
+{
+
+}
+
 
 void NuvoApiClient::loadAv(NuvoContainerItem* item)
 {
