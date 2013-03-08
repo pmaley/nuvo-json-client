@@ -1,7 +1,6 @@
 #include <QtWidgets>
 
 #include "nuvoapiclient.h"
-#include "nuvocontaineritem.h"
 
 NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
 {
@@ -29,7 +28,6 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
     shuffleActionItem = new NuvoActionItem("shuffle","");
     repeatActionItem = new NuvoActionItem("repeat","");
 
-    musicContainer = new NuvoContainerItem("Music","/stable/music/","","","Music","",false,0);
     tcpSocket = new QTcpSocket(this);
 
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
@@ -81,7 +79,7 @@ void NuvoApiClient::unsubscribe(QString channel)
 
 void NuvoApiClient::browseContainer()
 {
-    browseContainer(musicContainer);
+    browseContainer("/stable/music/");
 }
 
 void NuvoApiClient::browseContainer(int index)
@@ -90,16 +88,10 @@ void NuvoApiClient::browseContainer(int index)
     browseContainer(url);
 }
 
-void NuvoApiClient::browseContainer(NuvoContainerItem *item)
-{
-    browseContainer(QString(item->url));
-}
-
 void NuvoApiClient::browseContainer(QString url){
     qDebug() << "ENTERING" << __func__;
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
-    browseList.clear();
     currentBrowseRequestNum = sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
@@ -204,10 +196,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         else if ( type == "value"){
             updateActionUrl(id,url,true);
             updateDisplay(channel,i);
-        }
-        else if ( type == "container" || av == true){
-            NuvoContainerItem* item = new NuvoContainerItem(obj.value("result").toObject().value("item").toObject(),current);
-            browseList.append(item);
         }
         else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     }

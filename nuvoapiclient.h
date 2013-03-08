@@ -10,7 +10,6 @@
 
 
 #include <nuvoactionitem.h>
-#include <nuvocontaineritem.h>
 
 QT_BEGIN_NAMESPACE
 class QTcpSocket;
@@ -24,7 +23,6 @@ public:
     QNetworkSession *networkSession;
     QNetworkAccessManager *m_netwManager;
     QPixmap albumArt;
-    QList<NuvoContainerItem*> browseList;
 
     explicit NuvoApiClient(QObject *parent = 0);
 
@@ -77,7 +75,6 @@ public slots:
     void messageReceived();
     void tcpError(QAbstractSocket::SocketError socketError);
     void slot_netwManagerFinished(QNetworkReply *reply);
-    void browseContainer(NuvoContainerItem *item);
     void browseContainer(QString url);
     void browseContainer(int index);
     void browseContainer();
@@ -86,7 +83,6 @@ public slots:
 private:
     int requestNum;
     QString currentMessage;
-    NuvoContainerItem* musicContainer;
 
     QString avChannel, currentBrowseChannel;
 
