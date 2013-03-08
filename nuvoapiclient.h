@@ -29,6 +29,7 @@ public:
     explicit NuvoApiClient(QObject *parent = 0);
 
     int getAvValue(QString id);
+    QList<QString> getBrowseItems();
 
     void connectToHost();
     void connectToHost(QString host, int port);

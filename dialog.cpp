@@ -372,10 +372,11 @@ void Dialog::updateTransportControls()
 void Dialog::updateBrowseWindow()
 {
     qDebug() << "ENTERING" << __func__;
+    QList<QString> items = nuvo->getBrowseItems();
     browseModel->setRowCount(0);
-    for (int i = 0; i < nuvo->browseList.size(); i++) {
+    for (int i = 0; i < items.size(); i++) {
         browseModel->insertRow(i);
-        browseModel->setData(browseModel->index(i, 0), nuvo->browseList.at(i)->title);
+        browseModel->setData(browseModel->index(i, 0), QString(items.at(i)) );
     }
     qDebug() << "EXITING" << __func__;
 }

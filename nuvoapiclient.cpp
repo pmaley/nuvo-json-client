@@ -39,13 +39,31 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
 int NuvoApiClient::getAvValue(QString id){
     QJsonArray children = channels[avChannel].value("children").toArray();
     for (int i = 0; i < children.size(); i++){
-        qDebug() << children.at(i).toObject().value("id").toString();
         if (QString(children.at(i).toObject().value("id").toString()) == QString(id)){
             return (int) children.at(i).toObject().value("value").toObject().value("volume").toObject().value("level").toDouble();
         }
     }
     return -1;
 }
+
+QList<QString> NuvoApiClient::getBrowseItems()
+{
+    qDebug() << "ENTERING" << __func__;
+    qDebug() << "Current browse channel:" << currentBrowseChannel;
+    qDebug() << channels[currentBrowseChannel].keys();
+
+    QList<QString> list;
+    QJsonArray children = channels[currentBrowseChannel].value("children").toArray();
+    for (int i = 0; i < children.size(); i++){
+        qDebug() << children.at(i).toObject().value("title").toString();
+        list.append(QString(children.at(i).toObject().value("title").toString()));
+    }
+
+    qDebug() << "EXITING" << __func__;
+    return list;
+}
+
+
 
 void NuvoApiClient::browseContainer(){
     browseContainer(musicContainer);
@@ -140,9 +158,12 @@ void NuvoApiClient::parseJsonResponse(QString result)
 void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 {
     qDebug() << "ENTERING" << __func__;
+    qDebug() << "ID: " << obj.value("id").toString();
     QString channel = obj.value("channel").toString();
     channels[channel] = QJsonObject(obj.value("result").toObject());
     QJsonArray it(channels[channel].value("children").toArray());
+
+
 
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
@@ -165,7 +186,11 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
         else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     }
-    emit browseDataChanged();
+
+    if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentBrowseRequestNum)) ){
+        currentBrowseChannel = channel;
+        emit browseDataChanged();
+    }
     qDebug() << "EXITING" << __func__;
 }
 
