@@ -281,14 +281,17 @@ void NuvoApiClient::invokeAction(QString url)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::loadAv(NuvoContainerItem* item)
+void NuvoApiClient::loadAv(int index, NuvoContainerItem* item)
 {
     qDebug() << "ENTERING" << __func__;
-    QString index("1");
-    QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(item->myItem).toJson())));
+    qDebug() << "INDEX:" << index;
+    QString indexParam("1");
+//    QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(item->myItem).toJson())));
+    QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
     QString parentItem( QJsonDocument(item->parent).toJson() );
+//    QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("children").toArray().at(index).toObject()).toJson() );
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
-    QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, index, parentItem) );
+    QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1 }").arg(context) );
     QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"params\" : %2 }").arg(reqId, params) );
     sendRequest(request);
