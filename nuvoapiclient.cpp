@@ -229,7 +229,8 @@ void NuvoApiClient::loadAv(NuvoContainerItem* item)
     QString parentItem( QJsonDocument(item->parent).toJson() );
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, index, parentItem) );
-    QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"context\" : %2 }").arg(reqId, context) );
+    QString params( tr("{\"context\": %1 }").arg(context) );
+    QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"params\" : %2 }").arg(reqId, params) );
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
