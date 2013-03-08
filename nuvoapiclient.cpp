@@ -160,8 +160,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     channels[channel] = QJsonObject(obj.value("result").toObject());
     QJsonArray it(channels[channel].value("children").toArray());
 
-
-
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
@@ -250,17 +248,10 @@ void NuvoApiClient::invokeAction(QString url)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::loadAv(int index)
-{
-
-}
-
-
 void NuvoApiClient::loadAv(NuvoContainerItem* item)
 {
     qDebug() << "ENTERING" << __func__;
     QString index("1");
-    qDebug() << item->myItem.keys();
     QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(item->myItem).toJson())));
     QString parentItem( QJsonDocument(item->parent).toJson() );
     QString reqId( tr("\"req-%1\"").arg(requestNum) );

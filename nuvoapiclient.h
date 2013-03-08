@@ -39,7 +39,6 @@ public:
     void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
     void loadAv(NuvoContainerItem* item);
-    void loadAv(int index);
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
 
