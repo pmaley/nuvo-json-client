@@ -28,6 +28,8 @@ public:
 
     explicit NuvoApiClient(QObject *parent = 0);
 
+    int getAvValue(QString id);
+
     void connectToHost();
     void connectToHost(QString host, int port);
 

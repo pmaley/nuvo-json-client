@@ -328,11 +328,8 @@ void Dialog::redisplay(){
 
 void Dialog::updateVolume()
 {
-    int vol = nuvo->volume;
     int volMax = nuvo->volumeMax;
-
-//    int vol = nuvo->getAvValue("volume");
-//    int volMax = nuvo->getAvValue("volumeMax");
+    int vol = nuvo->getAvValue("volume");
 
     volumeSlider->setMaximum(volMax);
     volumeSlider->setValue(vol);

@@ -38,6 +38,17 @@ NuvoApiClient::NuvoApiClient(QObject *parent) :
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpError(QAbstractSocket::SocketError)));
 }
 
+int NuvoApiClient::getAvValue(QString id){
+    QJsonArray children = channels[avChannel].value("children").toArray();
+    for (int i = 0; i < children.size(); i++){
+        qDebug() << children.at(i).toObject().value("id").toString();
+        if (QString(children.at(i).toObject().value("id").toString()) == QString("volume")){
+            return (int) children.at(i).toObject().value("value").toObject().value("volume").toObject().value("level").toDouble();
+        }
+    }
+    return -1;
+}
+
 void NuvoApiClient::browseContainer(){
     browseContainer(musicContainer);
 }
