@@ -59,13 +59,11 @@ QList<QString> NuvoApiClient::getBrowseItems()
 void NuvoApiClient::browseUpOne()
 {
     qDebug() << "ENTERING" << __func__;
-    //TODO
-    unsubscribe(currentBrowseChannel);
     if (!browseChannelStack.empty()){
+        unsubscribe(currentBrowseChannel);
         currentBrowseChannel = browseChannelStack.pop();
         emit browseDataChanged();
     }
-    qDebug() << currentBrowseChannel;
     qDebug() << "EXITING" << __func__;
 }
 
@@ -148,7 +146,7 @@ void NuvoApiClient::messageReceived()
         QStringList query = currentMessage.split(QRegExp("\n"));
         for (int i = 0; i < query.length()-1; i++){
             //messageQueue.enqueue(QString(query.at(i)));
-            parseJsonResponse(QString(query.at(i)));
+            parseJsonMessage(QString(query.at(i)));
         }
         currentMessage = QString(query.last());
     }
@@ -156,7 +154,7 @@ void NuvoApiClient::messageReceived()
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::parseJsonResponse(QString result)
+void NuvoApiClient::parseJsonMessage(QString result)
 {
     qDebug() << "ENTERING" << __func__;
     QByteArray utf8;
@@ -168,13 +166,20 @@ void NuvoApiClient::parseJsonResponse(QString result)
         emit displayText(QString(tr("<font color=\"Black\">%1</font><br>").arg(result)));
 
     QString type(j.value("type").toString());
+    QString channel(j.value("channel").toString());
 
     if (type == "reply") { parseReplyMessage(j); }
     else if ( type == "event"){  parseEventMessage(j); }
+    else if ( type == "closed"){ channelClosed(channel); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
     emit refreshDisplay();
     qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::channelClosed(QString channel)
+{
+    channels.remove(channel);
 }
 
 void NuvoApiClient::parseReplyMessage(QJsonObject obj)

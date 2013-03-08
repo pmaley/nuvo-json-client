@@ -93,10 +93,11 @@ private:
     QStack<QString> browseChannelStack;
 
     void unsubscribe(QString channel);
+    void channelClosed(QString channel);
 
     void updateDisplay(QString channel, int index);
 
-    void parseJsonResponse(QString json);
+    void parseJsonMessage(QString json);
     void parseReplyMessage(QJsonObject obj);
     void parseEventMessage(QJsonObject obj);
 
