@@ -47,6 +47,7 @@ Dialog::Dialog()
     resize(1000,1000);
 
     connect(browseButton, SIGNAL(clicked()), nuvo, SLOT(browseContainer()));
+    connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
 
 }
 
@@ -244,6 +245,7 @@ void Dialog::createConsoleBox()
     disconnectButton = new QPushButton(tr("Disconnect"));
     disconnectButton->setEnabled(false);
     browseButton = new QPushButton(tr("Browse"));
+    backBrowseButton = new QPushButton(tr("^"));
 
 
     buttonBox2 = new QDialogButtonBox;
@@ -252,6 +254,7 @@ void Dialog::createConsoleBox()
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
     buttonBox2->addButton(browseButton, QDialogButtonBox::ActionRole);
+    buttonBox2->addButton(backBrowseButton, QDialogButtonBox::ActionRole);
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));
     connect(disconnectButton, SIGNAL(clicked()), nuvo, SLOT(disconnectFromHost()));

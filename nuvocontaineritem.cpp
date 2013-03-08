@@ -28,8 +28,6 @@ NuvoContainerItem::NuvoContainerItem(QString _title, QString _url,
 NuvoContainerItem::NuvoContainerItem(QJsonObject _parent, QJsonObject item) :
                             QObject()
 {
-    qDebug() << "NUVOCONTAINERITEM";
-    qDebug() << _parent.keys();
      parent = QJsonObject(_parent);
      myItem = QJsonObject(item);
      QJsonObject current(item);

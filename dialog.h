@@ -63,7 +63,7 @@ private:
                 *prevButton, *stopButton, *likeButton,
                 *dislikeButton, *shuffleButton, *repeatButton,
                 *muteButton;
-    QPushButton *browseButton;
+    QPushButton *browseButton, *backBrowseButton;
 
     QDialogButtonBox *buttonBox, *buttonBox2;
     QLabel *hostLabel, *portLabel, *imageLabel;

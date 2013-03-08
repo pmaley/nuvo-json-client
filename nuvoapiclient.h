@@ -42,16 +42,7 @@ public:
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
 
-    void parseJsonResponse(QString json);
-    void parseReplyMessage(QJsonObject obj);
-    void parseEventMessage(QJsonObject obj);
 
-    void parseTrackMetadata();
-
-    void parseChildValueChangedMessage(QString channel, QJsonObject value);
-    void parseChildItemChangedMessage(QString channel, QJsonObject value);
-    void parseChildRemovedMessage(QString channel, QJsonObject value);
-    void parseChildInsertedMessage(QString channel, QJsonObject value);
 
     void updateActionUrl(QString id, QString url, bool active);
 
@@ -89,15 +80,31 @@ public slots:
     void browseContainer(QString url);
     void browseContainer(int index);
     void browseContainer();
+    void browseUpOne();
 
 private:
+    int requestNum;
     QString currentMessage;
     NuvoContainerItem* musicContainer;
-    int requestNum;
+
     QString avChannel, currentBrowseChannel;
 
     QMap<QString, QJsonObject> channels;
+    QStack<QString> browseChannelStack;
+
     void updateDisplay(QString channel, int index);
+
+    void parseJsonResponse(QString json);
+    void parseReplyMessage(QJsonObject obj);
+    void parseEventMessage(QJsonObject obj);
+
+    void parseTrackMetadata();
+
+    void parseChildValueChangedMessage(QString channel, QJsonObject value);
+    void parseChildItemChangedMessage(QString channel, QJsonObject value);
+    void parseChildRemovedMessage(QString channel, QJsonObject value);
+    void parseChildInsertedMessage(QString channel, QJsonObject value);
+
     
 };
 

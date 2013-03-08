@@ -56,6 +56,19 @@ QList<QString> NuvoApiClient::getBrowseItems()
     return list;
 }
 
+void NuvoApiClient::browseUpOne()
+{
+    qDebug() << "ENTERING" << __func__;
+    //TODO
+    //unsubscribe(currentBrowseChannel)
+    if (!browseChannelStack.empty()){
+        currentBrowseChannel = browseChannelStack.pop();
+        emit browseDataChanged();
+    }
+    qDebug() << currentBrowseChannel;
+    qDebug() << "EXITING" << __func__;
+}
+
 void NuvoApiClient::browseContainer()
 {
     browseContainer(musicContainer);
@@ -77,7 +90,9 @@ void NuvoApiClient::browseContainer(QString url){
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
     browseList.clear();
+    qDebug() << "BEFORE:" << currentBrowseRequestNum;
     currentBrowseRequestNum = sendRequest(request);
+    qDebug() << "AFTER:" << currentBrowseRequestNum;
     qDebug() << "EXITING" << __func__;
 }
 
@@ -87,7 +102,7 @@ int NuvoApiClient::sendRequest(QString request)
     const char* cString = byteArray.constData();
     tcpSocket->write(cString);
     emit displayText(QString(tr("<font color=\"Blue\">%1</font><br>").arg(cString)));
-    qDebug() << cString << "written to socket";
+    qDebug() << cString << "written to socket. Request #" << requestNum;
     requestNum++;
     return requestNum-1;
 }
@@ -183,6 +198,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     }
 
     if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentBrowseRequestNum)) ){
+        if (currentBrowseChannel != QString("")){
+            browseChannelStack.push(currentBrowseChannel);
+        }
         currentBrowseChannel = channel;
         emit browseDataChanged();
     }
