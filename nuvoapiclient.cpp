@@ -281,15 +281,20 @@ void NuvoApiClient::invokeAction(QString url)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::loadAv(int index, NuvoContainerItem* item)
+void NuvoApiClient::browseClick(int index)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << "INDEX:" << index;
-    QString indexParam("1");
-//    QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(item->myItem).toJson())));
+    qDebug() << channels[currentBrowseChannel].value("children").toArray().at(index).toObject().keys();
+    bool av = channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("av").toBool();
+    if (av == true) { loadAv(index);  }
+    else { browseContainer(index); }
+    qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::loadAv(int index)
+{
     QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
-    QString parentItem( QJsonDocument(item->parent).toJson() );
-//    QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("children").toArray().at(index).toObject()).toJson() );
+    QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("item").toObject()).toJson() );
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1 }").arg(context) );

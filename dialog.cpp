@@ -386,12 +386,13 @@ void Dialog::updateBrowseWindow()
 void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
-    NuvoContainerItem *item = nuvo->browseList.at(index.row());
-    if (item->av == true) {
-        nuvo->loadAv(index.row(), item);
-    } else {
-        nuvo->browseContainer(index.row());
-    }
+    nuvo->browseClick(index.row());
+//    NuvoContainerItem *item = nuvo->browseList.at(index.row());
+//    if (item->av == true) {
+//        nuvo->loadAv(index.row());
+//    } else {
+//        nuvo->browseContainer(index.row());
+//    }
     qDebug() << "EXITING" << __func__;
 }
 

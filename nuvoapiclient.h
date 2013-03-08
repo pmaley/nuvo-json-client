@@ -38,10 +38,11 @@ public:
 
     void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
-    void loadAv(int index, NuvoContainerItem* item);
+    void loadAv(int index);
     void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
 
+    void browseClick(int index);
 
 
     void updateActionUrl(QString id, QString url, bool active);
