@@ -343,6 +343,7 @@ void Dialog::updateZonesList()
     for (int i = 0; i < items.size(); i++){
         zonesCombo->addItem(QString(items.at(i)));
     }
+    redisplay();
 }
 
 void Dialog::updateVolume()

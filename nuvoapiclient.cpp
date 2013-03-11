@@ -256,7 +256,12 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
         currentBrowseChannel = channel;
         emit browseDataChanged();
-    } else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
+    } /*else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
+        qDebug() << "ZONES:" << obj.keys();
+        emit zoneListChanged();
+    }*/
+
+    if (channel == zonesChannel){
         emit zoneListChanged();
     }
 
@@ -329,7 +334,6 @@ void NuvoApiClient::invokeAction(QString url)
 void NuvoApiClient::browseClick(int index)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << channels[currentBrowseChannel].value("children").toArray().at(index).toObject().keys();
     bool av = channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("av").toBool();
     if (av == true) { loadAv(index);  }
     else { browseContainer(index); }
