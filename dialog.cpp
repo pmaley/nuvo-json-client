@@ -22,15 +22,7 @@ Dialog::Dialog()
     createTransportControlsBox();
     createNowPlayingBox();
     createConsoleBox();
-
-
-
-//    browseView = new QTreeView;
-//    browseView->setRootIsDecorated(false);
-//    browseView->setAlternatingRowColors(true);
-//    browseModel = new QStandardItemModel(0, 1);
-//    browseView->setModel(browseModel);
-//    connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
+    createBrowseBox();
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
@@ -40,13 +32,7 @@ Dialog::Dialog()
     QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox,0,0);
-
-
-    createBrowseBox();
-
     mainLayout->addWidget(consoleBox,1,0,1,2);
-    //mainLayout->addWidget(combo,0,1,1,1);
-    //mainLayout->addWidget(browseView,0,2,1,1);
     mainLayout->addWidget(browseBox,0,1,1,1);
     mainLayout->setRowStretch(1,1000);
     setLayout(mainLayout);
@@ -54,9 +40,7 @@ Dialog::Dialog()
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
 
-    connect(browseButton, SIGNAL(clicked()), nuvo, SLOT(browseContainer()));
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
-
 }
 
 void Dialog::createBrowseBox()
@@ -269,7 +253,6 @@ void Dialog::createConsoleBox()
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
     disconnectButton->setEnabled(false);
-    browseButton = new QPushButton(tr("Browse"));
     backBrowseButton = new QPushButton(tr("^"));
 
 
@@ -278,7 +261,6 @@ void Dialog::createConsoleBox()
     buttonBox2->addButton(connectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
-    buttonBox2->addButton(browseButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(backBrowseButton, QDialogButtonBox::ActionRole);
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));

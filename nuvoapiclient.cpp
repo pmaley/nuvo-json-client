@@ -38,7 +38,7 @@ void NuvoApiClient::socketConnected(QAbstractSocket::SocketState state)
 {
     if (state == QAbstractSocket::ConnectedState){
         qDebug() << "CONNECTED";
-        browseContainer();
+        subscribeToChannelList();
     }
 }
 
@@ -95,16 +95,11 @@ void NuvoApiClient::unsubscribe(QString channel)
 
 }
 
-void NuvoApiClient::subscribeToChannelList(){
-    browseContainer("/stable/music/");
-}
-
-void NuvoApiClient::browseContainer()
+void NuvoApiClient::subscribeToChannelList()
 {
     currentAvRequestNum = browseContainer("/stable/av/");
     currentBrowseRequestNum = browseContainer("/stable/music/");
     currentZonesRequestNum = browseContainer("/stable/avs/");
-    qDebug() << currentBrowseRequestNum << currentAvRequestNum;
 }
 
 int NuvoApiClient::browseContainer(int index)

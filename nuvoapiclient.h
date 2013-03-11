@@ -80,7 +80,6 @@ public slots:
     void slot_netwManagerFinished(QNetworkReply *reply);
     int browseContainer(QString url);
     int browseContainer(int index);
-    void browseContainer();
     void browseUpOne();
 
 private:
