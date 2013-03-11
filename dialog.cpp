@@ -1,6 +1,5 @@
 
 #include "dialog.h"
-#include "NuvoActionItem.h"
 
 Dialog::Dialog()
 {

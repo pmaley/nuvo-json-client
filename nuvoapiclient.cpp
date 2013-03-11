@@ -15,18 +15,6 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
     m_netwManager = new QNetworkAccessManager(this);
     connect(m_netwManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(slot_netwManagerFinished(QNetworkReply*)));
 
-    volumeActionItem = new NuvoActionItem("volume","");
-    muteActionItem = new NuvoActionItem("mute","");
-    prevActionItem = new NuvoActionItem("prev","");
-    stopActionItem = new NuvoActionItem("stop","");
-    pauseActionItem = new NuvoActionItem("pause","");
-    playActionItem = new NuvoActionItem("play","");
-    nextActionItem = new NuvoActionItem("next","");
-    likeActionItem = new NuvoActionItem("like","");
-    dislikeActionItem = new NuvoActionItem("dislike","");
-    shuffleActionItem = new NuvoActionItem("shuffle","");
-    repeatActionItem = new NuvoActionItem("repeat","");
-
     tcpSocket = new QTcpSocket(this);
 
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
@@ -360,23 +348,6 @@ void NuvoApiClient::loadAv(int index)
     QString request( tr("{ \"id\" : %1, \"url\" : %2, \"method\" : \"invoke\", \"params\" : %3 }").arg(reqId, url, params) );
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
-}
-
-
-NuvoActionItem* NuvoApiClient::findActionItem(QString id)
-{
-    if ( id == "next"){ return nextActionItem;  }
-    else if ( id == "play"){  return playActionItem; }
-    else if ( id == "pause"){ return pauseActionItem; }
-    else if ( id == "previous"){ return prevActionItem; }
-    else if ( id == "stop"){ return stopActionItem; }
-    else if ( id == "like"){ return likeActionItem; }
-    else if ( id == "dislike"){ return dislikeActionItem; }
-    else if ( id == "volume"){ return volumeActionItem; }
-    else if ( id == "mute"){ return muteActionItem; }
-    else if ( id == "repeat"){ return repeatActionItem; }
-    else if ( id == "shuffle"){ return shuffleActionItem; }
-    else { return NULL; }
 }
 
 void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject value)

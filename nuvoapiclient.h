@@ -46,12 +46,6 @@ public:
 
     bool getItemActive(QString id);
 
-    NuvoActionItem* findActionItem(QString id);
-
-    NuvoActionItem *nextActionItem, *playActionItem, *pauseActionItem,
-                            *prevActionItem, *stopActionItem, *likeActionItem,
-                            *dislikeActionItem, *volumeActionItem, *muteActionItem,
-                            *shuffleActionItem, *repeatActionItem;
     int volumeMax, volume, progressMax, progressPos;
     QString avState;
     QString metadata1, metadata2, metadata3;

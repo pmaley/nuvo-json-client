@@ -10,7 +10,6 @@
 #include <QTimer>
 #include <QStandardItemModel>
 
-#include "nuvoactionitem.h"
 #include "nuvoapiclient.h"
 
 QT_BEGIN_NAMESPACE
