@@ -1,11 +1,9 @@
 QT += widgets network script
 
 HEADERS     = dialog.h \
-    nuvoactionitem.h \
     nuvoapiclient.h
 SOURCES     = dialog.cpp \
               main.cpp \
-    nuvoactionitem.cpp \
     nuvoapiclient.cpp
 
 # install
