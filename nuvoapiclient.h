@@ -28,6 +28,7 @@ public:
 
     int getAvValue(QString id);
     QList<QString> getBrowseItems();
+    QList<QString> getZonesList();
 
     void connectToHost();
     void connectToHost(QString host, int port);
@@ -69,6 +70,7 @@ signals:
     void metadataChanged();
     void browseDataChanged();
     void refreshDisplay();
+    void zoneListChanged();
 
 public slots:
     void disconnectFromHost();

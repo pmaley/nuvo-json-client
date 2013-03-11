@@ -59,7 +59,7 @@ private:
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
 
-    QComboBox * combo;
+    QComboBox * zonesCombo;
 
     QPushButton *buttons[NumButtons];
     QPushButton *nextButton, *playButton, *pauseButton,
@@ -119,6 +119,7 @@ private slots:
     void updateVolume();
     void updateBrowseWindow();
     void browseItemClicked(QModelIndex index);
+    void updateZonesList();
 };
 
 #endif // DIALOG_H

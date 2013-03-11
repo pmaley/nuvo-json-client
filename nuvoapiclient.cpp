@@ -52,6 +52,16 @@ int NuvoApiClient::getAvValue(QString id){
     return -1;
 }
 
+QList<QString> NuvoApiClient::getZonesList()
+{
+    QList<QString> list;
+    QJsonArray children = channels[zonesChannel].value("children").toArray();
+    for (int i = 0; i < children.size(); i++){
+        list.append(QString(children.at(i).toObject().value("title").toString()));
+    }
+    return list;
+}
+
 QList<QString> NuvoApiClient::getBrowseItems()
 {
     QList<QString> list;
@@ -207,7 +217,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         QString id(current.value("id").toString());
         QString url(current.value("url").toString());
         QString type(current.value("type").toString());
-        bool av(current.value("av").toBool());
 
         if (id == "info"){  parseTrackMetadata();  }
         else if ( type == "action"){
@@ -226,6 +235,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
         currentBrowseChannel = channel;
         emit browseDataChanged();
+    } else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
+        emit zoneListChanged();
     }
 
     qDebug() << "EXITING" << __func__;

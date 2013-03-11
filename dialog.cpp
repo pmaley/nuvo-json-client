@@ -16,6 +16,7 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
     connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
     connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
+    connect(nuvo, SIGNAL(zoneListChanged()), this, SLOT(updateZonesList()));
 
     createMenu();
     createTransportControlsBox();
@@ -62,7 +63,7 @@ void Dialog::createBrowseBox()
 {
     browseBox = new QGroupBox();
     QVBoxLayout *layout = new QVBoxLayout;
-    combo = new QComboBox();
+    zonesCombo = new QComboBox();
 
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
@@ -71,7 +72,7 @@ void Dialog::createBrowseBox()
     browseView->setModel(browseModel);
     connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
 
-    layout->addWidget(combo);
+    layout->addWidget(zonesCombo);
     layout->addWidget(browseView);
     browseBox->setLayout(layout);
 }
@@ -253,7 +254,7 @@ void Dialog::createConsoleBox()
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
     portLineEdit->setFixedWidth(50);
-    commandTextEdit = new QTextEdit("{ \"id\" : \"req-1\", \"url\" : \"/stable/av/\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }");
+    commandTextEdit = new QTextEdit();
     commandTextEdit->setFixedHeight(50);
     consoleTextEdit = new QTextEdit;
     consoleTextEdit->setReadOnly(true);
@@ -348,6 +349,16 @@ void Dialog::redisplay(){
     updateVolume();
     updateMetadata();
     updateTransportControls();
+}
+
+void Dialog::updateZonesList()
+{
+    qDebug() << "UPDATE ZONES LIST";
+    QList<QString> items = nuvo->getZonesList();
+    zonesCombo->clear();
+    for (int i = 0; i < items.size(); i++){
+        zonesCombo->addItem(QString(items.at(i)));
+    }
 }
 
 void Dialog::updateVolume()
