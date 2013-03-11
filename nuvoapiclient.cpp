@@ -34,9 +34,25 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
     connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketConnected(QAbstractSocket::SocketState)));
 }
 
-void NuvoApiClient::changeCurrentZone(QString zoneId)
+void NuvoApiClient::changeCurrentZone(QString zoneTitle)
 {
-    qDebug() << zoneId;
+    QJsonObject zone = findZone(zoneTitle);
+    qDebug() << zone.value("title").toString();
+    QString url(zone.value("url").toString());
+    qDebug() << url;
+
+    currentAvRequestNum = browseContainer(url);
+}
+
+QJsonObject NuvoApiClient::findZone(QString zoneTitle)
+{
+    QJsonArray children = channels[zonesChannel].value("children").toArray();
+    qDebug() << children.size();
+    for (int i = 0; i < children.size(); i++){
+        if (QString(children.at(i).toObject().value("title").toString()) == QString(zoneTitle)){
+            return children.at(i).toObject();
+        }
+    }
 }
 
 void NuvoApiClient::socketConnected(QAbstractSocket::SocketState state)

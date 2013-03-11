@@ -109,6 +109,8 @@ private:
     void parseChildRemovedMessage(QString channel, QJsonObject value);
     void parseChildInsertedMessage(QString channel, QJsonObject value);
 
+    QJsonObject findZone(QString zoneTitle);
+
     
 };
 
