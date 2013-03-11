@@ -377,16 +377,16 @@ void Dialog::updateAlbumArt(){
 
 void Dialog::updateTransportControls()
 {
-    likeButton->setEnabled(nuvo->likeActionItem->property("active").toBool());
-    dislikeButton->setEnabled(nuvo->dislikeActionItem->property("active").toBool());
-    prevButton->setEnabled(nuvo->prevActionItem->property("active").toBool());
-    nextButton->setEnabled(nuvo->nextActionItem->property("active").toBool());
-    stopButton->setEnabled(nuvo->stopActionItem->property("active").toBool());
-    pauseButton->setEnabled(nuvo->pauseActionItem->property("active").toBool());
-    playButton->setEnabled(nuvo->playActionItem->property("active").toBool());
-    muteButton->setEnabled(nuvo->muteActionItem->property("active").toBool());
-    shuffleButton->setEnabled(nuvo->shuffleActionItem->property("active").toBool());
-    repeatButton->setEnabled(nuvo->repeatActionItem->property("active").toBool());
+    likeButton->setEnabled(nuvo->getItemActive("like"));
+    dislikeButton->setEnabled(nuvo->getItemActive("dislike"));
+    prevButton->setEnabled(nuvo->getItemActive("prev"));
+    nextButton->setEnabled(nuvo->getItemActive("next"));
+    stopButton->setEnabled(nuvo->getItemActive("stop"));
+    pauseButton->setEnabled(nuvo->getItemActive("pause"));
+    playButton->setEnabled(nuvo->getItemActive("play"));
+    muteButton->setEnabled(nuvo->getItemActive("mute"));
+    shuffleButton->setEnabled(nuvo->getItemActive("shuffle"));
+    repeatButton->setEnabled(nuvo->getItemActive("repeat"));
 }
 
 void Dialog::updateBrowseWindow()

@@ -44,6 +44,7 @@ public:
 
     void browseClick(int index);
 
+    bool getItemActive(QString id);
 
     void updateActionUrl(QString id, QString url, bool active);
 

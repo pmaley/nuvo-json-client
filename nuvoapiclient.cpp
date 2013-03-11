@@ -61,6 +61,17 @@ QJsonObject NuvoApiClient::findAvItem(QString id)
     }
 }
 
+bool NuvoApiClient::getItemActive(QString id)
+{
+    QJsonArray children = channels[avChannel].value("children").toArray();
+    for (int i = 0; i < children.size(); i++){
+        if (QString(children.at(i).toObject().value("id").toString()) == QString(id)){
+            return true;
+        }
+    }
+    return false;
+}
+
 void NuvoApiClient::socketConnected(QAbstractSocket::SocketState state)
 {
     if (state == QAbstractSocket::ConnectedState){
@@ -241,10 +252,10 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
         if (id == "info"){  parseTrackMetadata();  }
         else if ( type == "action"){
-            updateActionUrl(id,url,true);
+            //updateActionUrl(id,url,true);
         }
         else if ( type == "value"){
-            updateActionUrl(id,url,true);
+            //updateActionUrl(id,url,true);
             updateDisplay(channel,i);
         }
         else { qDebug() << "ITEM NOT PROCESSED:" << id; }
@@ -425,7 +436,7 @@ void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value)
     iterator.value() = children;
     qDebug() << "SIZE AFTER:" << channels[channel].value("children").toArray().size();
 
-    updateActionUrl(id,"",false);
+    //updateActionUrl(id,"",false);
     qDebug() << "EXITING" << __func__;
 }
 
@@ -444,7 +455,7 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
     iterator.value() = children;
     qDebug() << "SIZE AFTER:" << channels[channel].value("children").toArray().size();
 
-    updateActionUrl(id,url,true);
+    //updateActionUrl(id,url,true);
     qDebug() << "EXITING" << __func__;
 }
 
