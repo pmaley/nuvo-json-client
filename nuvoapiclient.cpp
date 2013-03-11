@@ -9,8 +9,7 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
     volumeMax = 100;
     progressPos = progressMax = 0;
     requestNum = 0;
-    avChannel = "ch0";
-    currentBrowseChannel = "";
+    avChannel = zonesChannel = currentBrowseChannel = "";
     currentBrowseRequestNum = -1;
 
     m_netwManager = new QNetworkAccessManager(this);
@@ -197,6 +196,12 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     channels[channel] = QJsonObject(obj.value("result").toObject());
     QJsonArray it(channels[channel].value("children").toArray());
 
+    if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentAvRequestNum)) ){
+        avChannel = channel;
+    } else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
+        zonesChannel = channel;
+    }
+
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
@@ -222,6 +227,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         currentBrowseChannel = channel;
         emit browseDataChanged();
     }
+
     qDebug() << "EXITING" << __func__;
 }
 

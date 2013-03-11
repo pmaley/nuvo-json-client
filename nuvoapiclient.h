@@ -85,7 +85,7 @@ private:
     int requestNum;
     QString currentMessage;
 
-    QString avChannel, currentBrowseChannel;
+    QString avChannel, currentBrowseChannel, zonesChannel;
 
     QMap<QString, QJsonObject> channels;
     QStack<QString> browseChannelStack;

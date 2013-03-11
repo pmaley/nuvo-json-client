@@ -50,13 +50,16 @@ private:
     void createConsoleBox();
     void createMetadataBox();
     void createNowPlayingBox();
+    void createBrowseBox();
 
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
     QMenuBar *menuBar;
-    QGroupBox *transportControlsBox, *metadataBox, *nowPlayingBox, *consoleBox;
+    QGroupBox *transportControlsBox, *metadataBox, *nowPlayingBox, *consoleBox, *browseBox;
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
+
+    QComboBox * combo;
 
     QPushButton *buttons[NumButtons];
     QPushButton *nextButton, *playButton, *pauseButton,

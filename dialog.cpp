@@ -22,13 +22,14 @@ Dialog::Dialog()
     createNowPlayingBox();
     createConsoleBox();
 
-    browseView = new QTreeView;
-    browseView->setRootIsDecorated(false);
-    browseView->setAlternatingRowColors(true);
-    browseModel = new QStandardItemModel(0, 1);
-    browseView->setModel(browseModel);
-    connect(browseView, SIGNAL(clicked(QModelIndex)),
-            this, SLOT(browseItemClicked(QModelIndex)));
+
+
+//    browseView = new QTreeView;
+//    browseView->setRootIsDecorated(false);
+//    browseView->setAlternatingRowColors(true);
+//    browseModel = new QStandardItemModel(0, 1);
+//    browseView->setModel(browseModel);
+//    connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
@@ -38,8 +39,14 @@ Dialog::Dialog()
     QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox,0,0);
+
+
+    createBrowseBox();
+
     mainLayout->addWidget(consoleBox,1,0,1,2);
-    mainLayout->addWidget(browseView,0,1,1,1);
+    //mainLayout->addWidget(combo,0,1,1,1);
+    //mainLayout->addWidget(browseView,0,2,1,1);
+    mainLayout->addWidget(browseBox,0,1,1,1);
     mainLayout->setRowStretch(1,1000);
     setLayout(mainLayout);
 
@@ -51,6 +58,23 @@ Dialog::Dialog()
 
 }
 
+void Dialog::createBrowseBox()
+{
+    browseBox = new QGroupBox();
+    QVBoxLayout *layout = new QVBoxLayout;
+    combo = new QComboBox();
+
+    browseView = new QTreeView;
+    browseView->setRootIsDecorated(false);
+    browseView->setAlternatingRowColors(true);
+    browseModel = new QStandardItemModel(0, 1);
+    browseView->setModel(browseModel);
+    connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
+
+    layout->addWidget(combo);
+    layout->addWidget(browseView);
+    browseBox->setLayout(layout);
+}
 
 
 void Dialog::createMenu()
