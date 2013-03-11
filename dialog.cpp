@@ -225,9 +225,9 @@ void Dialog::stopButtonPressed(){ nuvo->invokeAction("stop",""); }
 void Dialog::likeButtonPressed(){ nuvo->invokeAction("like",""); }
 void Dialog::dislikeButtonPressed(){ nuvo->invokeAction("dislike",""); }
 void Dialog::volumeSliderAdjusted(){ nuvo->updateValue("volume", volumeSlider->value()); }
-void Dialog::muteButtonPressed(){ nuvo->toggleValue(nuvo->muteActionItem); }
-void Dialog::shuffleButtonPressed(){ nuvo->toggleValue(nuvo->shuffleActionItem); }
-void Dialog::repeatButtonPressed(){ nuvo->toggleValue(nuvo->repeatActionItem); }
+void Dialog::muteButtonPressed(){ nuvo->toggleValue("mute"); }
+void Dialog::shuffleButtonPressed(){ nuvo->toggleValue("shuffle"); }
+void Dialog::repeatButtonPressed(){ nuvo->toggleValue("repeat"); }
 
 void Dialog::createConsoleBox()
 {

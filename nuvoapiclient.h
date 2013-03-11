@@ -39,14 +39,12 @@ public:
     void invokeAction(QString id, QString other);
 
     void loadAv(int index);
-    void toggleValue(NuvoActionItem *actionItem);
+    void toggleValue(QString id);
     void updateValue(QString id, int value);
 
     void browseClick(int index);
 
     bool getItemActive(QString id);
-
-    void updateActionUrl(QString id, QString url, bool active);
 
     NuvoActionItem* findActionItem(QString id);
 

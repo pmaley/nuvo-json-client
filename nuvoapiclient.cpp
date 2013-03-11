@@ -251,11 +251,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         QString type(current.value("type").toString());
 
         if (id == "info"){  parseTrackMetadata();  }
-        else if ( type == "action"){
-            //updateActionUrl(id,url,true);
-        }
         else if ( type == "value"){
-            //updateActionUrl(id,url,true);
             updateDisplay(channel,i);
         }
         else { qDebug() << "ITEM NOT PROCESSED:" << id; }
@@ -267,10 +263,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
         currentBrowseChannel = channel;
         emit browseDataChanged();
-    } /*else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
-        qDebug() << "ZONES:" << obj.keys();
-        emit zoneListChanged();
-    }*/
+    }
 
     if (channel == zonesChannel){
         emit zoneListChanged();
@@ -313,10 +306,11 @@ void NuvoApiClient::updateValue(QString id, int value){
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::toggleValue(NuvoActionItem *actionItem)
+void NuvoApiClient::toggleValue(QString id)
 {
     qDebug() << "ENTERING" << __func__;
-    QString url(actionItem->property("url").toString());
+    QJsonObject obj = findAvItem(id);
+    QString url(obj.value("url").toString());
     QString request(tr("{ \"id\" : \"req-%1\", \"url\" : \"%1\", \"method\" : \"toggleValue\" }").arg(QString(requestNum),url));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
@@ -363,7 +357,6 @@ void NuvoApiClient::loadAv(int index)
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1 }").arg(context) );
-    //QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"params\" : %2 }").arg(reqId, params) );
     QString request( tr("{ \"id\" : %1, \"url\" : %2, \"method\" : \"invoke\", \"params\" : %3 }").arg(reqId, url, params) );
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
@@ -429,14 +422,11 @@ void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value)
     QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
 
     QJsonArray children(channels[channel].value("children").toArray());
-    qDebug() << "SIZE BEFORE:" << children.size();
     children.removeAt(index);
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
     iterator.value() = children;
-    qDebug() << "SIZE AFTER:" << channels[channel].value("children").toArray().size();
 
-    //updateActionUrl(id,"",false);
     qDebug() << "EXITING" << __func__;
 }
 
@@ -448,25 +438,12 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
     QString id = value.value("item").toObject().value("id").toString();
 
     QJsonArray children(channels[channel].value("children").toArray());
-    qDebug() << "SIZE BEFORE:" << children.size();
     children.insert(index,value.value("item").toObject());
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
     iterator.value() = children;
-    qDebug() << "SIZE AFTER:" << channels[channel].value("children").toArray().size();
 
-    //updateActionUrl(id,url,true);
     qDebug() << "EXITING" << __func__;
-}
-
-void NuvoApiClient::updateActionUrl(QString id, QString url, bool active){
-    NuvoActionItem *actionItem = findActionItem(id);
-    if (actionItem) {
-        actionItem->setProperty("url",url);
-        actionItem->setProperty("active",active);
-    } else {
-        qDebug() << "ITEM NOT PROCESSED:" << id;
-    }
 }
 
 void NuvoApiClient::updateDisplay(QString channel, int index)
