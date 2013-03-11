@@ -39,17 +39,23 @@ void NuvoApiClient::changeCurrentZone(QString zoneTitle)
     QJsonObject zone = findZone(zoneTitle);
     qDebug() << zone.value("title").toString();
     QString url(zone.value("url").toString());
-    qDebug() << url;
-
     currentAvRequestNum = browseContainer(url);
 }
 
 QJsonObject NuvoApiClient::findZone(QString zoneTitle)
 {
     QJsonArray children = channels[zonesChannel].value("children").toArray();
-    qDebug() << children.size();
     for (int i = 0; i < children.size(); i++){
         if (QString(children.at(i).toObject().value("title").toString()) == QString(zoneTitle)){
+            return children.at(i).toObject();
+        }
+    }
+}
+QJsonObject NuvoApiClient::findAvItem(QString id)
+{
+    QJsonArray children = channels[avChannel].value("children").toArray();
+    for (int i = 0; i < children.size(); i++){
+        if (QString(children.at(i).toObject().value("id").toString()) == QString(id)){
             return children.at(i).toObject();
         }
     }
@@ -281,6 +287,18 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
     qDebug() << "EXITING" << __func__;
 }
 
+void NuvoApiClient::updateValue(QString id, int value){
+    qDebug() << "ENTERING" << __func__;
+    QJsonObject obj = findAvItem(id);
+    QString url(obj.value("url").toString());
+    QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(reqId,url,params));
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
+
 void NuvoApiClient::updateValue(NuvoActionItem *actionItem, int value)
 {
     qDebug() << "ENTERING" << __func__;
@@ -298,6 +316,17 @@ void NuvoApiClient::toggleValue(NuvoActionItem *actionItem)
     QString url(actionItem->property("url").toString());
     QString request(tr("{ \"id\" : \"req-%1\", \"url\" : \"%1\", \"method\" : \"toggleValue\" }").arg(QString(requestNum),url));
     sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::invokeAction(QString id, QString other)
+{
+    qDebug() << "ENTERING" << __func__;
+
+    QJsonObject obj = findAvItem(id);
+    QString url(obj.value("url").toString());
+    qDebug() << url;
+    invokeAction(url);
     qDebug() << "EXITING" << __func__;
 }
 
