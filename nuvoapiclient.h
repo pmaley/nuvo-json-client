@@ -35,10 +35,8 @@ public:
 
     int sendRequest(QString request);
 
-    void invokeAction(NuvoActionItem *action);
     void invokeAction(QString url);
-
-    void invokeAction(QString url, QString other);
+    void invokeAction(QString id, QString other);
 
     void loadAv(int index);
     void toggleValue(NuvoActionItem *actionItem);

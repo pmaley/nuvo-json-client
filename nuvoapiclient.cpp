@@ -64,7 +64,6 @@ QJsonObject NuvoApiClient::findAvItem(QString id)
 void NuvoApiClient::socketConnected(QAbstractSocket::SocketState state)
 {
     if (state == QAbstractSocket::ConnectedState){
-        qDebug() << "CONNECTED";
         subscribeToChannelList();
     }
 }
@@ -318,13 +317,6 @@ void NuvoApiClient::invokeAction(QString id, QString other)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::invokeAction(NuvoActionItem *actionItem)
-{
-    qDebug() << "ENTERING" << __func__;
-    QString url(actionItem->property("url").toString());
-    invokeAction(url);
-    qDebug() << "EXITING" << __func__;
-}
 void NuvoApiClient::invokeAction(QString url)
 {
     qDebug() << "ENTERING" << __func__;
