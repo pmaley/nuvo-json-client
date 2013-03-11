@@ -104,6 +104,7 @@ private slots:
     void shuffleButtonPressed();
     void repeatButtonPressed();
     void muteButtonPressed();
+    void zoneSelected(QString zone);
 
     void onAvStateChange();
     void onConnectionStateChange();

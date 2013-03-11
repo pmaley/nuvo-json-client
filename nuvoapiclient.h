@@ -81,6 +81,7 @@ public slots:
     int browseContainer(QString url);
     int browseContainer(int index);
     void browseUpOne();
+    void changeCurrentZone(QString zoneId);
 
 private:
     int requestNum;

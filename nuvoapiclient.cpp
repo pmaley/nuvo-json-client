@@ -34,6 +34,11 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
     connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketConnected(QAbstractSocket::SocketState)));
 }
 
+void NuvoApiClient::changeCurrentZone(QString zoneId)
+{
+    qDebug() << zoneId;
+}
+
 void NuvoApiClient::socketConnected(QAbstractSocket::SocketState state)
 {
     if (state == QAbstractSocket::ConnectedState){

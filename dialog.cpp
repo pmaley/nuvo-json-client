@@ -41,6 +41,8 @@ Dialog::Dialog()
     resize(1000,1000);
 
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
+    connect(zonesCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(zoneSelected(QString)));
+
 }
 
 void Dialog::createBrowseBox()
@@ -404,6 +406,14 @@ void Dialog::browseItemClicked(QModelIndex index)
 {
     qDebug() << "ENTERING" << __func__;
     nuvo->browseClick(index.row());
+    qDebug() << "EXITING" << __func__;
+}
+
+void Dialog::zoneSelected(QString zone)
+{
+    qDebug() << "ENTERING" << __func__;
+    qDebug() << "ZONE:" << zone;
+    nuvo->changeCurrentZone(zone);
     qDebug() << "EXITING" << __func__;
 }
 
