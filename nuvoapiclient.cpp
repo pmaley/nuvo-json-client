@@ -342,12 +342,18 @@ void NuvoApiClient::browseClick(int index)
 
 void NuvoApiClient::loadAv(int index)
 {
+    qDebug() << channels[avChannel].keys();
+    QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
+    qDebug() << url;
+
+
     QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
     QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("item").toObject()).toJson() );
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1 }").arg(context) );
-    QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"params\" : %2 }").arg(reqId, params) );
+    //QString request( tr("{ \"id\" : %1, \"url\" : \"/stable/gav/load\", \"method\" : \"invoke\", \"params\" : %2 }").arg(reqId, params) );
+    QString request( tr("{ \"id\" : %1, \"url\" : %2, \"method\" : \"invoke\", \"params\" : %3 }").arg(reqId, url, params) );
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }

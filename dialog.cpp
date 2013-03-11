@@ -362,11 +362,9 @@ void Dialog::updateProgressBar(){
 
 void Dialog::updateMetadata()
 {
-    qDebug() << "ENTERING" << __func__;
     labels[0]->setText(nuvo->metadata1);
     labels[1]->setText(nuvo->metadata2);
     labels[2]->setText(nuvo->metadata3);
-    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::displayErrorMessage(const QString &err){
