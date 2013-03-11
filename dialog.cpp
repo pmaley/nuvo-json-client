@@ -217,18 +217,6 @@ void Dialog::createNowPlayingBox()
     nowPlayingBox->setLayout(layout);
 }
 
-//void Dialog::prevButtonPressed(){ nuvo->invokeAction(nuvo->prevActionItem); }
-//void Dialog::nextButtonPressed(){ nuvo->invokeAction(nuvo->nextActionItem); }
-//void Dialog::playButtonPressed(){  nuvo->invokeAction(nuvo->playActionItem); }
-//void Dialog::pauseButtonPressed(){ nuvo->invokeAction(nuvo->pauseActionItem); }
-//void Dialog::stopButtonPressed(){ nuvo->invokeAction(nuvo->stopActionItem); }
-//void Dialog::likeButtonPressed(){ nuvo->invokeAction(nuvo->likeActionItem); }
-//void Dialog::dislikeButtonPressed(){ nuvo->invokeAction(nuvo->dislikeActionItem); }
-//void Dialog::volumeSliderAdjusted(){ nuvo->updateValue(nuvo->volumeActionItem, volumeSlider->value()); }
-//void Dialog::muteButtonPressed(){ nuvo->toggleValue(nuvo->muteActionItem); }
-//void Dialog::shuffleButtonPressed(){ nuvo->toggleValue(nuvo->shuffleActionItem); }
-//void Dialog::repeatButtonPressed(){ nuvo->toggleValue(nuvo->repeatActionItem); }
-
 void Dialog::prevButtonPressed(){ nuvo->invokeAction("prev",""); }
 void Dialog::nextButtonPressed(){ nuvo->invokeAction("next",""); }
 void Dialog::playButtonPressed(){ nuvo->invokeAction("play",""); }

@@ -41,7 +41,6 @@ public:
     void invokeAction(QString url, QString other);
 
     void loadAv(int index);
-    void updateValue(NuvoActionItem *actionItem, int value);
     void toggleValue(NuvoActionItem *actionItem);
     void updateValue(QString id, int value);
 

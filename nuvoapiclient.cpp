@@ -298,18 +298,6 @@ void NuvoApiClient::updateValue(QString id, int value){
     qDebug() << "EXITING" << __func__;
 }
 
-
-void NuvoApiClient::updateValue(NuvoActionItem *actionItem, int value)
-{
-    qDebug() << "ENTERING" << __func__;
-    QString url(actionItem->property("url").toString());
-    QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
-    QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(reqId,url,params));
-    sendRequest(request);
-    qDebug() << "EXITING" << __func__;
-}
-
 void NuvoApiClient::toggleValue(NuvoActionItem *actionItem)
 {
     qDebug() << "ENTERING" << __func__;
