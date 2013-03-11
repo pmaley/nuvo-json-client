@@ -32,6 +32,15 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
 
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(messageReceived()));
     connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(tcpError(QAbstractSocket::SocketError)));
+    connect(tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketConnected(QAbstractSocket::SocketState)));
+}
+
+void NuvoApiClient::socketConnected(QAbstractSocket::SocketState state)
+{
+    if (state == QAbstractSocket::ConnectedState){
+        qDebug() << "CONNECTED";
+        browseContainer();
+    }
 }
 
 int NuvoApiClient::getAvValue(QString id){
@@ -77,23 +86,29 @@ void NuvoApiClient::unsubscribe(QString channel)
 
 }
 
-void NuvoApiClient::browseContainer()
-{
+void NuvoApiClient::subscribeToChannelList(){
     browseContainer("/stable/music/");
 }
 
-void NuvoApiClient::browseContainer(int index)
+void NuvoApiClient::browseContainer()
 {
-    QString url(channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("url").toString());
-    browseContainer(url);
+    currentAvRequestNum = browseContainer("/stable/av/");
+    currentBrowseRequestNum = browseContainer("/stable/music/");
+    currentZonesRequestNum = browseContainer("/stable/avs/");
+    qDebug() << currentBrowseRequestNum << currentAvRequestNum;
 }
 
-void NuvoApiClient::browseContainer(QString url){
-    qDebug() << "ENTERING" << __func__;
+int NuvoApiClient::browseContainer(int index)
+{
+    QString url(channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("url").toString());
+    currentBrowseRequestNum = browseContainer(url);
+    return currentBrowseRequestNum;
+}
+
+int NuvoApiClient::browseContainer(QString url){
     QString reqId(tr("\"req-%1\"").arg(requestNum));
-    QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } } ").arg(reqId,url));
-    currentBrowseRequestNum = sendRequest(request);
-    qDebug() << "EXITING" << __func__;
+    QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }\n").arg(reqId,url));
+    return sendRequest(request);
 }
 
 int NuvoApiClient::sendRequest(QString request)

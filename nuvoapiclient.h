@@ -55,7 +55,7 @@ public:
     QString avState;
     QString metadata1, metadata2, metadata3;
 
-    int currentBrowseRequestNum;
+    int currentBrowseRequestNum, currentAvRequestNum, currentZonesRequestNum;
     
 signals:
     void avChanged();
@@ -74,9 +74,10 @@ public slots:
     void disconnectFromHost();
     void messageReceived();
     void tcpError(QAbstractSocket::SocketError socketError);
+    void socketConnected(QAbstractSocket::SocketState);
     void slot_netwManagerFinished(QNetworkReply *reply);
-    void browseContainer(QString url);
-    void browseContainer(int index);
+    int browseContainer(QString url);
+    int browseContainer(int index);
     void browseContainer();
     void browseUpOne();
 
@@ -89,6 +90,7 @@ private:
     QMap<QString, QJsonObject> channels;
     QStack<QString> browseChannelStack;
 
+    void subscribeToChannelList();
     void unsubscribe(QString channel);
     void channelClosed(QString channel);
 
