@@ -87,6 +87,7 @@ private:
     void subscribeToChannelList();
     void unsubscribe(QString channel);
     void channelClosed(QString channel);
+    int sendKeepAlive(QString channel);
 
     void updateDisplay(QString channel, int index);
 

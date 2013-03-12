@@ -35,6 +35,7 @@ QJsonObject NuvoApiClient::findZone(QString zoneTitle)
             return children.at(i).toObject();
         }
     }
+    return QJsonObject(QJsonValue(QString("error")).toObject());
 }
 
 bool NuvoApiClient::getMuteState(){
@@ -128,7 +129,7 @@ void NuvoApiClient::unsubscribe(QString channel)
     qDebug() << "ENTERING" << __func__;
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
-    QString closeRequest( tr("{ \"id\" : %1, \"method\" : \"cancel\", \"params\" : %2 } ").arg(reqId,channelString) );
+    QString closeRequest( tr("{ \"id\" : %1, \"method\" : \"cancel\", \"params\" : %2 }\n").arg(reqId,channelString) );
     sendRequest(closeRequest);
     qDebug() << "EXITING" << __func__;
 
@@ -151,6 +152,14 @@ int NuvoApiClient::browseContainer(int index)
 int NuvoApiClient::browseContainer(QString url){
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }\n").arg(reqId,url));
+    return sendRequest(request);
+}
+
+int NuvoApiClient::sendKeepAlive(QString channel)
+{
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString channels(tr("{ \"channels\" : [\"%1\"] }").arg(channel));
+    QString request( tr("{ \"id\" : %1, \"method\" : \"keepAlive\", \"params\" : %2 }\n").arg(reqId, channels) );
     return sendRequest(request);
 }
 
@@ -228,6 +237,10 @@ void NuvoApiClient::parseJsonMessage(QString result)
 
     if (channel == currentBrowseChannel){
         emit browseDataChanged();
+    } else if (channel == zonesChannel){
+        emit zoneListChanged();
+    } else if (channel == currentBrowseChannel){
+        emit browseDataChanged();
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -245,6 +258,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     channels[channel] = QJsonObject(obj.value("result").toObject());
     QJsonArray it(channels[channel].value("children").toArray());
 
+
+    sendKeepAlive(channel);
     if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentAvRequestNum)) ){
         avChannel = channel;
     } else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
@@ -270,12 +285,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             browseChannelStack.push(currentBrowseChannel);
         }
         currentBrowseChannel = channel;
-        emit browseDataChanged();
     }
 
-    if (channel == zonesChannel){
-        emit zoneListChanged();
-    }
+
 
     qDebug() << "EXITING" << __func__;
 }
