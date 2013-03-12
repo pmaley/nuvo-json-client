@@ -32,8 +32,8 @@ public:
 
     int sendRequest(QString request);
 
-    void invokeAction(QString url);
-    void invokeAction(QString id, QString other);
+    void invokeAction(QJsonObject obj);
+    void invokeAction(QString id);
 
     void loadAv(int index);
     void toggleValue(QString id);
