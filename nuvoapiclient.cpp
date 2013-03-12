@@ -204,7 +204,9 @@ void NuvoApiClient::parseJsonMessage(QString result)
     else if ( type == "closed"){ channelClosed(channel); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
-    emit refreshDisplay();
+    if (!channel.isEmpty())
+        emit refreshDisplay();
+
     if (channel == currentBrowseChannel){
         emit browseDataChanged();
     }
