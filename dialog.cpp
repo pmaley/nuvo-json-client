@@ -33,6 +33,7 @@ Dialog::Dialog()
     mainLayout->addWidget(nowPlayingBox,0,0);
     mainLayout->addWidget(consoleBox,1,0,1,2);
     mainLayout->addWidget(browseBox,0,1,1,1);
+
     mainLayout->setRowStretch(1,1000);
     setLayout(mainLayout);
 
@@ -75,7 +76,9 @@ void Dialog::createMenu()
 void Dialog::createTransportControlsBox()
 {
     transportControlsBox = new QGroupBox();
+    transportControlsBox2 = new QGroupBox();
     QHBoxLayout *layout = new QHBoxLayout;
+    QHBoxLayout *layout2 = new QHBoxLayout();
 
     // Create next button
     nextButton = new QPushButton();
@@ -171,16 +174,24 @@ void Dialog::createTransportControlsBox()
     layout->addWidget(pauseButton);
     layout->addWidget(playButton);
     layout->addWidget(nextButton);
-//    layout->addWidget(muteButton);
-//    layout->addWidget(shuffleButton);
-//    layout->addWidget(repeatButton);
     transportControlsBox->setLayout(layout);
+
+    layout2->addWidget(muteButton);
+    layout2->addWidget(shuffleButton);
+    layout2->addWidget(repeatButton);
+    transportControlsBox2->setLayout(layout2);
 }
 
 void Dialog::createMetadataBox()
 {
     metadataBox = new QGroupBox();
     QVBoxLayout *layout = new QVBoxLayout;
+
+    QPixmap *image = new QPixmap(":/images/aom.jpg");
+    image = new QPixmap(image->scaledToHeight(100));
+    imageLabel = new QLabel();
+    imageLabel->setPixmap(*image);
+    layout->addWidget(imageLabel);
     for (int i = 0; i < NumGridRows; ++i) {
         labels[i] = new QLabel();
         labels[i]->setTextFormat(Qt::RichText);
@@ -193,10 +204,6 @@ void Dialog::createNowPlayingBox()
 {
     nowPlayingBox = new QGroupBox();
     QGridLayout *layout = new QGridLayout;
-    QPixmap *image = new QPixmap(":/images/aom.jpg");
-    image = new QPixmap(image->scaledToHeight(100));
-    imageLabel = new QLabel();
-    imageLabel->setPixmap(*image);
 
     createMetadataBox();
 
@@ -205,10 +212,11 @@ void Dialog::createNowPlayingBox()
     volumeSlider->setMaximum(100);
 
 
-    layout->addWidget(imageLabel,0,0);
-    layout->addWidget(metadataBox,0,1);
+    layout->addWidget(imageLabel,0,0,1,1);
+    layout->addWidget(metadataBox,0,1,1,1);
     layout->addWidget(trackProgressBar,1,0,1,2);
     layout->addWidget(volumeSlider,2,0,1,2);
+    layout->addWidget(transportControlsBox2,3,0,1,2);
     layout->addWidget(transportControlsBox,4,0,1,2);
 
     layout->setColumnStretch(1, 10);

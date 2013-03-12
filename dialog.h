@@ -54,7 +54,7 @@ private:
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
     QMenuBar *menuBar;
-    QGroupBox *transportControlsBox, *metadataBox, *nowPlayingBox, *consoleBox, *browseBox;
+    QGroupBox *transportControlsBox, *transportControlsBox2, *metadataBox, *nowPlayingBox, *consoleBox, *browseBox;
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
 

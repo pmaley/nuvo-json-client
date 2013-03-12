@@ -177,7 +177,6 @@ void NuvoApiClient::messageReceived()
     if (currentMessage.contains('\n')){
         QStringList query = currentMessage.split(QRegExp("\n"));
         for (int i = 0; i < query.length()-1; i++){
-            //messageQueue.enqueue(QString(query.at(i)));
             parseJsonMessage(QString(query.at(i)));
         }
         currentMessage = QString(query.last());
@@ -206,6 +205,9 @@ void NuvoApiClient::parseJsonMessage(QString result)
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
     emit refreshDisplay();
+    if (channel == currentBrowseChannel){
+        emit browseDataChanged();
+    }
     qDebug() << "EXITING" << __func__;
 }
 
@@ -231,7 +233,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
-        QString url(current.value("url").toString());
         QString type(current.value("type").toString());
 
         if (id == "info"){
