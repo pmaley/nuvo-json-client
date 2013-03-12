@@ -26,6 +26,9 @@ public:
     int getAvValue(QString id);
     QList<QString> getBrowseItems();
     QList<QString> getZonesList();
+    bool getMuteState();
+    bool getShuffleState();
+    bool getRepeatState();
 
     void connectToHost();
     void connectToHost(QString host, int port);
@@ -37,7 +40,7 @@ public:
 
     void loadAv(int index);
     void toggleValue(QString id);
-    void updateValue(QString id, int value);
+    void updateVolume(QString id, int value);
 
     void browseClick(int index);
 

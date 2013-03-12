@@ -158,6 +158,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon9(pixmap9);
     shuffleButton->setIcon(buttonIcon9);
     shuffleButton->setEnabled(false);
+    shuffleButton->setCheckable(true);
     connect(shuffleButton,SIGNAL(clicked()),this,SLOT(shuffleButtonPressed()));
 
     // Create repeat button
@@ -232,8 +233,8 @@ void Dialog::pauseButtonPressed(){ nuvo->invokeAction("pause"); }
 void Dialog::stopButtonPressed(){ nuvo->invokeAction("stop"); }
 void Dialog::likeButtonPressed(){ nuvo->invokeAction("like"); }
 void Dialog::dislikeButtonPressed(){ nuvo->invokeAction("dislike"); }
-void Dialog::volumeSliderAdjusted(){ nuvo->updateValue("volume", volumeSlider->value()); }
-void Dialog::muteButtonPressed(){ nuvo->toggleValue("mute"); }
+void Dialog::volumeSliderAdjusted(){ nuvo->updateVolume("volume", volumeSlider->value()); }
+void Dialog::muteButtonPressed(){ nuvo->toggleValue("volume"); }
 void Dialog::shuffleButtonPressed(){ nuvo->toggleValue("shuffle"); }
 void Dialog::repeatButtonPressed(){ nuvo->toggleValue("repeat"); }
 
@@ -392,9 +393,12 @@ void Dialog::updateTransportControls()
     stopButton->setEnabled(nuvo->getItemActive("stop"));
     pauseButton->setEnabled(nuvo->getItemActive("pause"));
     playButton->setEnabled(nuvo->getItemActive("play"));
-    muteButton->setEnabled(nuvo->getItemActive("mute"));
+    muteButton->setEnabled(nuvo->getItemActive("volume"));
+    muteButton->setChecked(nuvo->getMuteState());
     shuffleButton->setEnabled(nuvo->getItemActive("shuffle"));
+    shuffleButton->setChecked(nuvo->getShuffleState());
     repeatButton->setEnabled(nuvo->getItemActive("repeat"));
+    repeatButton->setChecked(nuvo->getRepeatState());
 }
 
 void Dialog::updateBrowseWindow()

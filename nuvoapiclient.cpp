@@ -36,6 +36,23 @@ QJsonObject NuvoApiClient::findZone(QString zoneTitle)
         }
     }
 }
+
+bool NuvoApiClient::getMuteState(){
+    QJsonObject obj = findAvItem("volume");
+    qDebug() << "KEYS" << obj.value("value").toObject().value("volume").toObject().keys();
+    return obj.value("value").toObject().value("volume").toObject().keys().contains("mute");
+}
+
+bool NuvoApiClient::getShuffleState(){
+    QJsonObject obj = findAvItem("shuffle");
+    return obj.value("value").toObject().value("bool").toBool();
+}
+
+bool NuvoApiClient::getRepeatState(){
+    QJsonObject obj = findAvItem("shuffle");
+    return obj.value("value").toObject().value("avRepeatMode").toString() != "normal";
+}
+
 QJsonObject NuvoApiClient::findAvItem(QString id)
 {
     QJsonArray children = channels[avChannel].value("children").toArray();
@@ -44,6 +61,7 @@ QJsonObject NuvoApiClient::findAvItem(QString id)
             return children.at(i).toObject();
         }
     }
+    return QJsonObject(QJsonValue(QString("error")).toObject());
 }
 
 bool NuvoApiClient::getItemActive(QString id)
@@ -191,6 +209,7 @@ void NuvoApiClient::parseJsonMessage(QString result)
     QByteArray utf8;
     utf8.append(result);
     QJsonObject j = QJsonDocument::fromJson(utf8).object();
+
     if (j.keys().contains("error"))
         emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(result)));
     else
@@ -284,7 +303,7 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
     qDebug() << "EXITING" << __func__;
 }
 
-void NuvoApiClient::updateValue(QString id, int value){
+void NuvoApiClient::updateVolume(QString id, int value){
     qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem(id);
     QString url(obj.value("url").toString());
