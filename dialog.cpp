@@ -213,7 +213,6 @@ void Dialog::createNowPlayingBox()
     volumeSlider = new QSlider(Qt::Horizontal);
     volumeSlider->setMaximum(100);
 
-
     layout->addWidget(imageLabel,0,0,1,1);
     layout->addWidget(metadataBox,0,1,1,1);
     layout->addWidget(trackProgressBar,1,0,1,2);
@@ -412,17 +411,12 @@ void Dialog::updateBrowseWindow()
 
 void Dialog::browseItemClicked(QModelIndex index)
 {
-    qDebug() << "ENTERING" << __func__;
     nuvo->browseClick(index.row());
-    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::zoneSelected(QString zone)
 {
-    qDebug() << "ENTERING" << __func__;
-    qDebug() << "ZONE:" << zone;
     nuvo->changeCurrentZone(zone);
-    qDebug() << "EXITING" << __func__;
 }
 
 

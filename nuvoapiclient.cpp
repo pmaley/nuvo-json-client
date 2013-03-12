@@ -298,7 +298,9 @@ void NuvoApiClient::toggleValue(QString id)
     qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem(id);
     QString url(obj.value("url").toString());
-    QString request(tr("{ \"id\" : \"req-%1\", \"url\" : \"%1\", \"method\" : \"toggleValue\" }").arg(QString(requestNum),url));
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString params(tr("{ \"operation\" : \"toggle\" }"));
+    QString request(tr("{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(reqId,url,params));
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
 }
