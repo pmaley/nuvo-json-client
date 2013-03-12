@@ -238,12 +238,13 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             parseTrackMetadata();
         } else if ( type == "value"){
             updateDisplay(channel,i);
+        } else {
+            qDebug() << "ITEM NOT PROCESSED:" << id;
         }
-        else { qDebug() << "ITEM NOT PROCESSED:" << id; }
     }
 
     if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentBrowseRequestNum)) ){
-        if (currentBrowseChannel != QString("")){
+        if (!currentBrowseChannel.isEmpty()){
             browseChannelStack.push(currentBrowseChannel);
         }
         currentBrowseChannel = channel;

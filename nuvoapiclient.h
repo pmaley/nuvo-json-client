@@ -46,8 +46,6 @@ public:
     int volumeMax, volume, progressMax, progressPos;
     QString avState;
     QString metadata1, metadata2, metadata3;
-
-    int currentBrowseRequestNum, currentAvRequestNum, currentZonesRequestNum;
     
 signals:
     void avChanged();
@@ -77,7 +75,7 @@ public slots:
 private:
     int requestNum;
     QString currentMessage;
-
+    int currentBrowseRequestNum, currentAvRequestNum, currentZonesRequestNum;
     QString avChannel, currentBrowseChannel, zonesChannel;
 
     QMap<QString, QJsonObject> channels;
