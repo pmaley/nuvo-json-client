@@ -36,6 +36,7 @@ Dialog::Dialog()
 
     mainLayout->setRowStretch(1,1000);
     setLayout(mainLayout);
+    mainLayout->setColumnStretch(1,200);
 
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
@@ -185,6 +186,7 @@ void Dialog::createTransportControlsBox()
 void Dialog::createMetadataBox()
 {
     metadataBox = new QGroupBox();
+    metadataBox->setFixedWidth(400);
     QVBoxLayout *layout = new QVBoxLayout;
 
     QPixmap *image = new QPixmap(":/images/aom.jpg");
