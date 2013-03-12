@@ -72,7 +72,7 @@ private:
     QLineEdit *hostCombo, *portLineEdit;
     QTextEdit *commandTextEdit, *consoleTextEdit;
     QPushButton *sendButton, *quitButton, *connectButton,
-                *disconnectButton;
+                *disconnectButton, *hideButton;
 
     QSlider *volumeSlider;
     QProgressBar *trackProgressBar;
@@ -103,6 +103,7 @@ private slots:
     void shuffleButtonPressed();
     void repeatButtonPressed();
     void muteButtonPressed();
+    void hideButtonPressed();
     void zoneSelected(QString zone);
 
     void onAvStateChange();

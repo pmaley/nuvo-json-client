@@ -40,7 +40,6 @@ QJsonObject NuvoApiClient::findZone(QString zoneTitle)
 
 bool NuvoApiClient::getMuteState(){
     QJsonObject obj = findAvItem("volume");
-    qDebug() << "KEYS" << obj.value("value").toObject().value("volume").toObject().keys();
     return obj.value("value").toObject().value("volume").toObject().keys().contains("mute");
 }
 

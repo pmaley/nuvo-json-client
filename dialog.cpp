@@ -40,6 +40,7 @@ Dialog::Dialog()
 
     setWindowTitle(tr("NWAS API Controller"));
     resize(1000,1000);
+    adjustSize();
 
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
     connect(zonesCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(zoneSelected(QString)));
@@ -169,6 +170,10 @@ void Dialog::createTransportControlsBox()
     repeatButton->setEnabled(false);
     connect(repeatButton,SIGNAL(clicked()),this,SLOT(repeatButtonPressed()));
 
+    // Create hide button
+    hideButton = new QPushButton();
+    connect(hideButton,SIGNAL(clicked()),this,SLOT(hideButtonPressed()));
+
     layout->addWidget(likeButton);
     layout->addWidget(dislikeButton);
     layout->addWidget(prevButton);
@@ -181,6 +186,8 @@ void Dialog::createTransportControlsBox()
     layout2->addWidget(muteButton);
     layout2->addWidget(shuffleButton);
     layout2->addWidget(repeatButton);
+    layout2->addWidget(hideButton);
+
     transportControlsBox2->setLayout(layout2);
 }
 
@@ -237,6 +244,11 @@ void Dialog::volumeSliderAdjusted(){ nuvo->updateVolume("volume", volumeSlider->
 void Dialog::muteButtonPressed(){ nuvo->toggleValue("volume"); }
 void Dialog::shuffleButtonPressed(){ nuvo->toggleValue("shuffle"); }
 void Dialog::repeatButtonPressed(){ nuvo->toggleValue("repeat"); }
+void Dialog::hideButtonPressed()
+{
+    consoleBox->setVisible(!consoleBox->isVisible());
+    adjustSize();
+}
 
 void Dialog::createConsoleBox()
 {
