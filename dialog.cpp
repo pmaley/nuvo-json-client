@@ -16,6 +16,7 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
     connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
     connect(nuvo, SIGNAL(zoneListChanged()), this, SLOT(updateZonesList()));
+    connect(nuvo, SIGNAL(browseListCleared()), this, SLOT(clearBrowseWindow()));
 
     createMenu();
     createTransportControlsBox();
@@ -39,7 +40,6 @@ Dialog::Dialog()
     mainLayout->setColumnStretch(1,200);
 
     setWindowTitle(tr("NWAS API Controller"));
-    resize(1000,1000);
     adjustSize();
 
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
@@ -411,6 +411,10 @@ void Dialog::updateTransportControls()
     shuffleButton->setChecked(nuvo->getShuffleState());
     repeatButton->setEnabled(nuvo->getItemActive("repeat"));
     repeatButton->setChecked(nuvo->getRepeatState());
+}
+void Dialog::clearBrowseWindow()
+{
+    browseModel->setRowCount(0);
 }
 
 void Dialog::updateBrowseWindow()

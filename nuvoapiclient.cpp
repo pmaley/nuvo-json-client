@@ -360,7 +360,10 @@ void NuvoApiClient::browseClick(int index)
     qDebug() << "ENTERING" << __func__;
     bool av = channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("av").toBool();
     if (av == true) { loadAv(index);  }
-    else { browseContainer(index); }
+    else {
+        browseContainer(index);
+        //emit browseListCleared();
+    }
     qDebug() << "EXITING" << __func__;
 }
 

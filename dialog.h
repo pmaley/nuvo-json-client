@@ -105,6 +105,7 @@ private slots:
     void muteButtonPressed();
     void hideButtonPressed();
     void zoneSelected(QString zone);
+    void clearBrowseWindow();
 
     void onAvStateChange();
     void onConnectionStateChange();

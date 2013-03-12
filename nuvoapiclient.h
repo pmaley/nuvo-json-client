@@ -63,6 +63,7 @@ signals:
     void browseDataChanged();
     void refreshDisplay();
     void zoneListChanged();
+    void browseListCleared();
 
 public slots:
     void disconnectFromHost();
