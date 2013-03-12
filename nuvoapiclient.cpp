@@ -259,7 +259,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     QJsonArray it(channels[channel].value("children").toArray());
 
 
-    sendKeepAlive(channel);
+    //sendKeepAlive(channel);
     if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentAvRequestNum)) ){
         avChannel = channel;
     } else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
