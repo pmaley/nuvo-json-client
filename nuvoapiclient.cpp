@@ -268,7 +268,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     if (count != length) {
         qDebug() << count << length;
         qDebug() << "Count != Length. Would continue to browse at this point";
-        continueBrowseContainer(channel,length);
+        //continueBrowseContainer(channel,length);
     }
 
     QJsonArray it(channels[channel].value("children").toArray());
