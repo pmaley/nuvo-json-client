@@ -257,8 +257,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     channels[channel] = QJsonObject(obj.value("result").toObject());
     QJsonArray it(channels[channel].value("children").toArray());
 
+    if (!channel.isEmpty())
+        sendKeepAlive(channel);
 
-    //sendKeepAlive(channel);
     if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentAvRequestNum)) ){
         avChannel = channel;
     } else if ( QString(obj.value("id").toString()) == QString(tr("req-%1").arg(currentZonesRequestNum)) ){
