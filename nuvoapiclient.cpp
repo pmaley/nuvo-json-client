@@ -148,9 +148,17 @@ int NuvoApiClient::browseContainer(int index)
     return currentBrowseRequestNum;
 }
 
-int NuvoApiClient::browseContainer(QString url){
+int NuvoApiClient::browseContainer(QString url, int startIndex){
     QString reqId(tr("\"req-%1\"").arg(requestNum));
-    QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : { \"count\" : -1 } }\n").arg(reqId,url));
+    QString count(tr("{ \"from\": %1, \"count\" : -1 }").arg(startIndex));
+    QString request(tr( "{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : %3 }\n").arg(reqId,url,count));
+    return sendRequest(request);
+}
+
+int NuvoApiClient::continueBrowseContainer(QString channel, int startIndex){
+    QString reqId(tr("\"req-%1\"").arg(requestNum));
+    QString count(tr("{ \"from\": %1, \"count\" : -1 }").arg(startIndex));
+    QString request(tr( "{ \"id\" : %1, \"channel\" : \"%2\", \"method\" : \"browse\", \"params\" : %3 }\n").arg(reqId,channel,count));
     return sendRequest(request);
 }
 
@@ -255,7 +263,16 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     qDebug() << "ID: " << obj.value("id").toString();
     QString channel = obj.value("channel").toString();
     channels[channel] = QJsonObject(obj.value("result").toObject());
+    int count = (int)(obj.value("result").toObject().value("count").toDouble());
+    int length = obj.value("result").toObject().value("children").toArray().size();
+    if (count != length) {
+        qDebug() << count << length;
+        qDebug() << "Count != Length. Would continue to browse at this point";
+        continueBrowseContainer(channel,length);
+    }
+
     QJsonArray it(channels[channel].value("children").toArray());
+
 
     if (!channel.isEmpty())
         sendKeepAlive(channel);

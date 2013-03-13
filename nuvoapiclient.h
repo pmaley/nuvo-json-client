@@ -71,8 +71,9 @@ public slots:
     void tcpError(QAbstractSocket::SocketError socketError);
     void socketConnected(QAbstractSocket::SocketState);
     void slot_netwManagerFinished(QNetworkReply *reply);
-    int browseContainer(QString url);
+    int browseContainer(QString url, int startIndex = 0);
     int browseContainer(int index);
+    int continueBrowseContainer(QString channel, int startIndex = 0);
     void browseUpOne();
     void changeCurrentZone(QString zoneId);
 
