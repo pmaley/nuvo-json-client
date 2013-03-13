@@ -262,14 +262,45 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     qDebug() << "ENTERING" << __func__;
     qDebug() << "ID: " << obj.value("id").toString();
     QString channel = obj.value("channel").toString();
-    channels[channel] = QJsonObject(obj.value("result").toObject());
+    //channels[channel] = QJsonObject(obj.value("result").toObject());
     int count = (int)(obj.value("result").toObject().value("count").toDouble());
     int length = obj.value("result").toObject().value("children").toArray().size();
+
     if (count != length) {
         qDebug() << count << length;
         qDebug() << "Count != Length. Would continue to browse at this point";
         //continueBrowseContainer(channel,length);
     }
+
+    if (!channel.isEmpty() && count == length){
+        channels[channel] = QJsonObject(obj.value("result").toObject());
+    } else if (!channel.isEmpty() && count != length && channel != currentReBrowseChannel){
+        channels[channel] = QJsonObject(obj.value("result").toObject());
+        currentReBrowseChannel = channel;
+        int objLen = channels[channel].value("children").toArray().size();
+        continueBrowseContainer(channel,objLen);
+    } else if (!channel.isEmpty() && count != length && channel == currentReBrowseChannel){
+        //append to children
+        QJsonArray insertChildren(obj.value("result").toObject().value("children").toArray());
+        QJsonArray children(channels[channel].value("children").toArray());
+        for (int i = 0; i < insertChildren.size(); i++){
+            children.append(insertChildren.at(i).toObject());
+        }
+        QJsonObject::Iterator iterator;
+        iterator = channels[channel].find("children");
+        iterator.value() = children;
+
+        int objLen = channels[channel].value("children").toArray().size();
+        if (objLen == count)
+            currentReBrowseChannel = "";
+        else {
+            qDebug() << "CONTINUING TO BROWSE";
+            continueBrowseContainer(channel,objLen);
+        }
+    }
+
+
+
 
     QJsonArray it(channels[channel].value("children").toArray());
 
