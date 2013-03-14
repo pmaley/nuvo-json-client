@@ -60,7 +60,6 @@ signals:
     void progressBarChanged();
     void displayText(const QString &err);
     void transportChanged();
-    void volumeChanged();
     void metadataChanged();
     void browseDataChanged();
     void refreshDisplay();

@@ -120,24 +120,19 @@ QList<QString> NuvoApiClient::getChildTitles(QString channel)
 
 void NuvoApiClient::browseUpOne()
 {
-    qDebug() << "ENTERING" << __func__;
     if (!browseChannelStack.empty()){
         unsubscribe(currentBrowseChannel);
         currentBrowseChannel = browseChannelStack.pop();
         emit browseDataChanged();
     }
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::unsubscribe(QString channel)
 {
-    qDebug() << "ENTERING" << __func__;
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
     QString closeRequest( tr("{ \"id\" : %1, \"method\" : \"cancel\", \"params\" : %2 }\n").arg(reqId,channelString) );
     sendRequest(closeRequest);
-    qDebug() << "EXITING" << __func__;
-
 }
 
 void NuvoApiClient::subscribeToChannelList()
@@ -189,7 +184,6 @@ int NuvoApiClient::sendRequest(QString request)
 
 void NuvoApiClient::connectToHost(QString host, int port)
 {
-    qDebug() << "ENTERING" << __func__;
     if (!tcpSocket->isOpen())
     {
         tcpSocket->abort();
@@ -204,13 +198,10 @@ void NuvoApiClient::disconnectFromHost()
 
 void NuvoApiClient::messageReceived()
 {
-    qDebug() << "ENTERING" << __func__;
     QDataStream in(tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
 
     int blockSize = tcpSocket->bytesAvailable()/sizeof(char);
-
-    // changed to blockSize+1 to fix "Invalid write of size 1" error
     char * data = new char[blockSize+1];
     in.readRawData(data,blockSize);
     data[blockSize] = '\0';
@@ -224,7 +215,6 @@ void NuvoApiClient::messageReceived()
         currentMessage = QString(query.last());
     }
     delete(data);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseJsonMessage(QString result)
@@ -247,7 +237,7 @@ void NuvoApiClient::parseJsonMessage(QString result)
     else if ( type == "closed"){ channelClosed(channel); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
-    if (!channel.isEmpty())
+    if (!channel.isEmpty() && channel == avChannel)
         emit refreshDisplay();
 
     if (channel == currentBrowseChannel){

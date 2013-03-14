@@ -10,7 +10,7 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(raiseError(const QString &)), this, SLOT(displayErrorMessage(const QString &)));
     connect(nuvo, SIGNAL(displayText(const QString &)), this, SLOT(displayLog(const QString &)));
     connect(nuvo, SIGNAL(transportChanged()), this, SLOT(updateTransportControls()));
-    connect(nuvo, SIGNAL(volumeChanged()), this, SLOT(updateVolume()));
+    //connect(nuvo, SIGNAL(volumeChanged()), this, SLOT(updateVolume()));
     connect(nuvo, SIGNAL(metadataChanged()), this, SLOT(updateMetadata()));
     connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
     connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
@@ -373,8 +373,9 @@ void Dialog::updateZonesList()
 
 void Dialog::updateVolume()
 {
-    volumeSlider->setMaximum(nuvo->volumeMax);
+    qDebug() << "ENTERING" << __func__;
     volumeSlider->setValue(nuvo->getAvValue("volume"));
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::updateProgressBar(){
