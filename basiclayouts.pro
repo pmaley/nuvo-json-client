@@ -1,10 +1,13 @@
 QT += widgets network script
 
 HEADERS     = dialog.h \
-    nuvoapiclient.h
+    nuvoapiclient.h \
+    bonjourbrowser.h \
+    bonjourrecord.h
 SOURCES     = dialog.cpp \
               main.cpp \
-    nuvoapiclient.cpp
+    nuvoapiclient.cpp \
+    bonjourbrowser.cpp
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/widgets/layouts/basiclayouts
