@@ -59,24 +59,16 @@ void Dialog::updateRecords(
 {
     foreach (BonjourRecord record, list) {
         qDebug() << record.serviceName;
-        QTreeWidgetItem *processItem =
-                  new QTreeWidgetItem(treeWidget,
-                             QStringList() << record.serviceName);
         QVariant variant;
         variant.setValue(record);
-//        processItem->setData(0, Qt::UserRole, variant);
 
         if (!resolver) {
             resolver = new BonjourResolver(this);
-            connect(resolver,
-                SIGNAL(recordResolved(const QHostInfo &, int)),
-                this,
-                SLOT(dnsRecordResolved(const QHostInfo &, int)));
+            connect(resolver, SIGNAL(bonjourRecordResolved(const QHostInfo &, int)),
+                this, SLOT(dnsRecordResolved(const QHostInfo &, int)));
         }
-//        QVariant variant = processItem->data(0, Qt::UserRole);
-        resolver->resolveBonjourRecord(
-                          variant.value<BonjourRecord>());
-        }
+        resolver->resolveBonjourRecord(variant.value<BonjourRecord>());
+    }
 }
 
 Dialog::~Dialog()
