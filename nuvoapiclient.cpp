@@ -102,6 +102,10 @@ QList<QString> NuvoApiClient::getZonesList()
     return list;
 }
 
+QString NuvoApiClient::getBrowseHeader(){
+    return channels[currentBrowseChannel].value("item").toObject().value("title").toString();
+}
+
 QList<QString> NuvoApiClient::getBrowseItems()
 {
     QList<QString> list;
@@ -261,16 +265,11 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 {
     qDebug() << "ENTERING" << __func__;
     qDebug() << "ID: " << obj.value("id").toString();
+
     QString channel = obj.value("channel").toString();
-    //channels[channel] = QJsonObject(obj.value("result").toObject());
     int count = (int)(obj.value("result").toObject().value("count").toDouble());
     int length = obj.value("result").toObject().value("children").toArray().size();
 
-    if (count != length) {
-        qDebug() << count << length;
-        qDebug() << "Count != Length. Would continue to browse at this point";
-        //continueBrowseContainer(channel,length);
-    }
 
     if (!channel.isEmpty() && count == length){
         channels[channel] = QJsonObject(obj.value("result").toObject());
@@ -280,7 +279,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         int objLen = channels[channel].value("children").toArray().size();
         continueBrowseContainer(channel,objLen);
     } else if (!channel.isEmpty() && count != length && channel == currentReBrowseChannel){
-        //append to children
         QJsonArray insertChildren(obj.value("result").toObject().value("children").toArray());
         QJsonArray children(channels[channel].value("children").toArray());
         for (int i = 0; i < insertChildren.size(); i++){
@@ -291,19 +289,11 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         iterator.value() = children;
 
         int objLen = channels[channel].value("children").toArray().size();
-        if (objLen == count)
-            currentReBrowseChannel = "";
-        else {
-            qDebug() << "CONTINUING TO BROWSE";
-            continueBrowseContainer(channel,objLen);
-        }
+        if (objLen == count) { currentReBrowseChannel = ""; }
+        else { continueBrowseContainer(channel,objLen); }
     }
 
-
-
-
     QJsonArray it(channels[channel].value("children").toArray());
-
 
     if (!channel.isEmpty())
         sendKeepAlive(channel);
@@ -409,10 +399,7 @@ void NuvoApiClient::browseClick(int index)
     qDebug() << "ENTERING" << __func__;
     bool av = channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("av").toBool();
     if (av == true) { loadAv(index);  }
-    else {
-        browseContainer(index);
-        //emit browseListCleared();
-    }
+    else { browseContainer(index); }
     qDebug() << "EXITING" << __func__;
 }
 

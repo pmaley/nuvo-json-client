@@ -24,6 +24,7 @@ public:
     explicit NuvoApiClient(QObject *parent = 0);
 
     int getAvValue(QString id);
+    QString getBrowseHeader();
     QList<QString> getBrowseItems();
     QList<QString> getZonesList();
     bool getMuteState();

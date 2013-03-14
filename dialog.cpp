@@ -50,8 +50,9 @@ Dialog::Dialog()
 void Dialog::createBrowseBox()
 {
     browseBox = new QGroupBox();
-    QVBoxLayout *layout = new QVBoxLayout;
+    QGridLayout *layout = new QGridLayout();
     zonesCombo = new QComboBox();
+    backBrowseButton = new QPushButton(tr("^"));
 
     browseView = new QTreeView;
     browseView->setRootIsDecorated(false);
@@ -60,8 +61,9 @@ void Dialog::createBrowseBox()
     browseView->setModel(browseModel);
     connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
 
-    layout->addWidget(zonesCombo);
-    layout->addWidget(browseView);
+    layout->addWidget(backBrowseButton, 0, 0, 1, 1);
+    layout->addWidget(zonesCombo, 0, 1, 1, 4);
+    layout->addWidget(browseView, 1, 0, 1, 5);
     browseBox->setLayout(layout);
 }
 
@@ -276,7 +278,7 @@ void Dialog::createConsoleBox()
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
     disconnectButton->setEnabled(false);
-    backBrowseButton = new QPushButton(tr("^"));
+    //backBrowseButton = new QPushButton(tr("^"));
 
 
     buttonBox2 = new QDialogButtonBox;
@@ -284,7 +286,7 @@ void Dialog::createConsoleBox()
     buttonBox2->addButton(connectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
-    buttonBox2->addButton(backBrowseButton, QDialogButtonBox::ActionRole);
+    //buttonBox2->addButton(backBrowseButton, QDialogButtonBox::ActionRole);
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));
     connect(disconnectButton, SIGNAL(clicked()), nuvo, SLOT(disconnectFromHost()));
@@ -426,6 +428,9 @@ void Dialog::updateBrowseWindow()
         browseModel->insertRow(i);
         browseModel->setData(browseModel->index(i, 0), QString(items.at(i)) );
     }
+    QStringList a;
+    a.append(nuvo->getBrowseHeader());
+    browseModel->setHorizontalHeaderLabels(a);
     qDebug() << "EXITING" << __func__;
 }
 
