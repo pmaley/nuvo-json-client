@@ -24,7 +24,6 @@ void NuvoApiClient::changeCurrentZone(QString zoneTitle)
     QJsonObject zone = findZone(zoneTitle);
     QString url(zone.value("url").toString());
     currentAvRequestNum = browseContainer(url);
-    qDebug() << "AV CHANNEL:" << avChannel;
     if (!avChannel.isEmpty())
         unsubscribe(avChannel);
 }
