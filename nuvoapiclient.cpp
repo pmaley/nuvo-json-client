@@ -94,22 +94,35 @@ int NuvoApiClient::getAvValue(QString id){
 
 QList<QString> NuvoApiClient::getZonesList()
 {
-    QList<QString> list;
-    QJsonArray children = channels[zonesChannel].value("children").toArray();
-    for (int i = 0; i < children.size(); i++){
-        list.append(QString(children.at(i).toObject().value("title").toString()));
-    }
-    return list;
+//    QList<QString> list;
+//    QJsonArray children = channels[zonesChannel].value("children").toArray();
+//    for (int i = 0; i < children.size(); i++){
+//        list.append(QString(children.at(i).toObject().value("title").toString()));
+//    }
+//    return list;
+    return getChildTitles(zonesChannel);
 }
 
-QString NuvoApiClient::getBrowseHeader(){
+QString NuvoApiClient::getBrowseHeader()
+{
     return channels[currentBrowseChannel].value("item").toObject().value("title").toString();
 }
 
 QList<QString> NuvoApiClient::getBrowseItems()
 {
+//    QList<QString> list;
+//    QJsonArray children = channels[currentBrowseChannel].value("children").toArray();
+//    for (int i = 0; i < children.size(); i++){
+//        list.append(QString(children.at(i).toObject().value("title").toString()));
+//    }
+//    return list;
+    return getChildTitles(currentBrowseChannel);
+}
+
+QList<QString> NuvoApiClient::getChildTitles(QString channel)
+{
     QList<QString> list;
-    QJsonArray children = channels[currentBrowseChannel].value("children").toArray();
+    QJsonArray children = channels[channel].value("children").toArray();
     for (int i = 0; i < children.size(); i++){
         list.append(QString(children.at(i).toObject().value("title").toString()));
     }

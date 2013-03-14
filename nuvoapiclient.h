@@ -25,6 +25,7 @@ public:
 
     int getAvValue(QString id);
     QString getBrowseHeader();
+    QList<QString> getChildTitles(QString channel);
     QList<QString> getBrowseItems();
     QList<QString> getZonesList();
     bool getMuteState();
