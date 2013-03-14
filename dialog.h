@@ -33,7 +33,8 @@ class QTreeWidgetItem;
 class QStandardItemModel;
 QT_END_NAMESPACE
 
-class Dialog : public QDialog
+//class Dialog : public QDialog
+class Dialog : public QWidget
 {
     Q_OBJECT
 

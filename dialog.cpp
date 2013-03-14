@@ -82,7 +82,7 @@ void Dialog::createMenu()
     fileMenu = new QMenu(tr("&File"), this);
     exitAction = fileMenu->addAction(tr("E&xit"));
     menuBar->addMenu(fileMenu);
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(accept()));
+    //connect(exitAction, SIGNAL(triggered()), this, SLOT(accept()));
 }
 
 void Dialog::createTransportControlsBox()
