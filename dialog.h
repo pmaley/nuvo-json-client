@@ -11,6 +11,7 @@
 #include <QStandardItemModel>
 
 #include "nuvoapiclient.h"
+#include "bonjourbrowser.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -33,7 +34,6 @@ class QTreeWidgetItem;
 class QStandardItemModel;
 QT_END_NAMESPACE
 
-//class Dialog : public QDialog
 class Dialog : public QWidget
 {
     Q_OBJECT
@@ -127,6 +127,8 @@ private slots:
     void updateBrowseWindow();
     void browseItemClicked(QModelIndex index);
     void updateZonesList();
+    void updateRecords(
+          const QList<BonjourRecord> &list);
 };
 
 #endif // DIALOG_H

@@ -45,6 +45,21 @@ Dialog::Dialog()
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
     connect(zonesCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(zoneSelected(QString)));
 
+    BonjourBrowser *browser = new BonjourBrowser(this);
+    browser->browseForServiceType("_nuvoplayer._tcp");
+    connect(browser,
+                SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
+                this, SLOT(updateRecords(const QList<BonjourRecord> &)));
+
+}
+
+void Dialog::updateRecords(
+      const QList<BonjourRecord> &list)
+{
+    qDebug() << "INSIDE updateRecords";
+  foreach (BonjourRecord record, list) {
+    qDebug() << record.serviceName;
+  }
 }
 
 Dialog::~Dialog()
