@@ -161,6 +161,8 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon8(pixmap8);
     muteButton->setIcon(buttonIcon8);
     muteButton->setEnabled(false);
+    muteButton->setDefault(false);
+    muteButton->setCheckable(true);
     connect(muteButton,SIGNAL(clicked()),this,SLOT(muteButtonPressed()));
 
     // Create shuffle button
@@ -397,8 +399,6 @@ void Dialog::updateAlbumArt(){
 
 void Dialog::updateTransportControls()
 {
-    //muteButton->setDefault(false);
-
     likeButton->setEnabled(nuvo->getItemActive("like"));
     dislikeButton->setEnabled(nuvo->getItemActive("dislike"));
     prevButton->setEnabled(nuvo->getItemActive("prev"));
@@ -408,23 +408,7 @@ void Dialog::updateTransportControls()
     playButton->setEnabled(nuvo->getItemActive("play"));
     muteButton->setEnabled(nuvo->getItemActive("volume"));
     muteButton->setChecked(nuvo->getMuteState());
-
-    qDebug() << "MUTE BUTTON";
-    qDebug() << "MUTE STATE:" << nuvo->getMuteState();
-    qDebug() << muteButton->isChecked();
-    qDebug() << muteButton->autoDefault();
-    qDebug() << muteButton->isDefault();
-    qDebug() << muteButton->isDown();
-    qDebug() << muteButton->isEnabled();
-    qDebug() << muteButton->isFlat();
-
-    qDebug() << "PLAY BUTTON";
-    qDebug() << playButton->isChecked();
-    qDebug() << playButton->isDefault();
-    qDebug() << playButton->isDown();
-    qDebug() << playButton->isEnabled();
-    qDebug() << playButton->isFlat();
-
+    muteButton->setDefault(false);
     shuffleButton->setEnabled(nuvo->getItemActive("shuffle"));
     shuffleButton->setChecked(nuvo->getShuffleState());
     repeatButton->setEnabled(nuvo->getItemActive("repeat"));
@@ -444,7 +428,6 @@ void Dialog::updateBrowseWindow()
         browseModel->setData(browseModel->index(i, 0), QString(items.at(i)) );
     }
     QStringList a(nuvo->getBrowseHeader());
-    //a.append(nuvo->getBrowseHeader());
     browseModel->setHorizontalHeaderLabels(a);
 }
 

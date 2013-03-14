@@ -479,12 +479,9 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
 
 void NuvoApiClient::updateDisplay(QString channel, int index)
 {
-    qDebug() << "ENTERING" << __func__;
     QJsonObject item(channels[channel].value("children").toArray().at(index).toObject());
     QString id = item.value("id").toString();
-    if ( id == "volume"){
-        volume = (int)item.value("value").toObject().value("volume").toObject().value("level").toDouble();
-    } else if (id == "time") {
+    if (id == "time") {
         progressMax = (int)item.value("maxDouble").toDouble();
         progressPos = (int)item.value("value").toObject().value("double").toDouble();
         emit progressBarChanged();
@@ -495,7 +492,6 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
     } else {
         qDebug() << "ITEM NOT PROCESSED:" << id;
     }
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseTrackMetadata(){
