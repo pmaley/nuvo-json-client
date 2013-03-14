@@ -17,20 +17,20 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(zoneListChanged()), this, SLOT(updateZonesList()));
     connect(nuvo, SIGNAL(browseListCleared()), this, SLOT(clearBrowseWindow()));
 
+    image = NULL;
+
     createMenu();
     createTransportControlsBox();
     createNowPlayingBox();
     createConsoleBox();
     createBrowseBox();
 
-    lastSliderValue = 0;
-
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
     connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(incrementProgressBar()));
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
 
-    QGridLayout *mainLayout = new QGridLayout();
+    mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
     mainLayout->addWidget(nowPlayingBox,0,0);
     mainLayout->addWidget(consoleBox,1,0,1,2);
@@ -46,6 +46,13 @@ Dialog::Dialog()
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
     connect(zonesCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(zoneSelected(QString)));
 
+}
+
+Dialog::~Dialog()
+{
+    delete nuvo;
+    delete progressBarTimer;
+    delete mainLayout;
 }
 
 void Dialog::createBrowseBox()
@@ -204,10 +211,14 @@ void Dialog::createMetadataBox()
     metadataBox->setFixedWidth(400);
     QVBoxLayout *layout = new QVBoxLayout;
 
-    QPixmap *image = new QPixmap(":/images/aom.jpg");
-    image = new QPixmap(image->scaledToHeight(100));
+    QPixmap *temp = new QPixmap(":/images/aom.jpg");
+    //image = new QPixmap(temp->scaledToHeight(100));
+    QPixmap image(temp->scaledToHeight(100));
+    delete temp;
+
     imageLabel = new QLabel();
-    imageLabel->setPixmap(*image);
+    //imageLabel->setPixmap(*image);
+    imageLabel->setPixmap(image);
     layout->addWidget(imageLabel);
     for (int i = 0; i < NumGridRows; ++i) {
         labels[i] = new QLabel();
@@ -273,7 +284,6 @@ void Dialog::createConsoleBox()
     portLabel->setBuddy(portLineEdit);
 
     sendButton = new QPushButton(tr("Send"));
-    sendButton->setDefault(true);
     sendButton->setEnabled(false);
     quitButton = new QPushButton(tr("Quit"));
     connectButton = new QPushButton(tr("Connect"));
@@ -387,6 +397,8 @@ void Dialog::updateAlbumArt(){
 
 void Dialog::updateTransportControls()
 {
+    //muteButton->setDefault(false);
+
     likeButton->setEnabled(nuvo->getItemActive("like"));
     dislikeButton->setEnabled(nuvo->getItemActive("dislike"));
     prevButton->setEnabled(nuvo->getItemActive("prev"));
@@ -396,6 +408,23 @@ void Dialog::updateTransportControls()
     playButton->setEnabled(nuvo->getItemActive("play"));
     muteButton->setEnabled(nuvo->getItemActive("volume"));
     muteButton->setChecked(nuvo->getMuteState());
+
+    qDebug() << "MUTE BUTTON";
+    qDebug() << "MUTE STATE:" << nuvo->getMuteState();
+    qDebug() << muteButton->isChecked();
+    qDebug() << muteButton->autoDefault();
+    qDebug() << muteButton->isDefault();
+    qDebug() << muteButton->isDown();
+    qDebug() << muteButton->isEnabled();
+    qDebug() << muteButton->isFlat();
+
+    qDebug() << "PLAY BUTTON";
+    qDebug() << playButton->isChecked();
+    qDebug() << playButton->isDefault();
+    qDebug() << playButton->isDown();
+    qDebug() << playButton->isEnabled();
+    qDebug() << playButton->isFlat();
+
     shuffleButton->setEnabled(nuvo->getItemActive("shuffle"));
     shuffleButton->setChecked(nuvo->getShuffleState());
     repeatButton->setEnabled(nuvo->getItemActive("repeat"));
@@ -414,8 +443,8 @@ void Dialog::updateBrowseWindow()
         browseModel->insertRow(i);
         browseModel->setData(browseModel->index(i, 0), QString(items.at(i)) );
     }
-    QStringList a;
-    a.append(nuvo->getBrowseHeader());
+    QStringList a(nuvo->getBrowseHeader());
+    //a.append(nuvo->getBrowseHeader());
     browseModel->setHorizontalHeaderLabels(a);
 }
 

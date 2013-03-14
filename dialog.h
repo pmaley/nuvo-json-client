@@ -39,6 +39,7 @@ class Dialog : public QDialog
 
 public:
     Dialog();
+    ~Dialog();
 
 signals:
      void connectionStateChanged();
@@ -53,6 +54,10 @@ private:
 
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
+    QPixmap *image;
+
+    QGridLayout *mainLayout;
+
     QMenuBar *menuBar;
     QGroupBox *transportControlsBox, *transportControlsBox2, *metadataBox, *nowPlayingBox, *consoleBox, *browseBox;
     QTextEdit *consoleWindow;

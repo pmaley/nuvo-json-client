@@ -210,7 +210,9 @@ void NuvoApiClient::messageReceived()
     in.setVersion(QDataStream::Qt_4_0);
 
     int blockSize = tcpSocket->bytesAvailable()/sizeof(char);
-    char * data = new char[blockSize];
+
+    // changed to blockSize+1 to fix "Invalid write of size 1" error
+    char * data = new char[blockSize+1];
     in.readRawData(data,blockSize);
     data[blockSize] = '\0';
 
