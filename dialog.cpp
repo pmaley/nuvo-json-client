@@ -46,6 +46,7 @@ Dialog::Dialog()
     connect(zonesCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(zoneSelected(QString)));
 
     BonjourBrowser *browser = new BonjourBrowser(this);
+    treeWidget = new QTreeWidget(this);
     browser->browseForServiceType("_nuvoplayer._tcp");
     connect(browser,
                 SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
@@ -56,10 +57,26 @@ Dialog::Dialog()
 void Dialog::updateRecords(
       const QList<BonjourRecord> &list)
 {
-    qDebug() << "INSIDE updateRecords";
-  foreach (BonjourRecord record, list) {
-    qDebug() << record.serviceName;
-  }
+    foreach (BonjourRecord record, list) {
+        qDebug() << record.serviceName;
+        QTreeWidgetItem *processItem =
+                  new QTreeWidgetItem(treeWidget,
+                             QStringList() << record.serviceName);
+        QVariant variant;
+        variant.setValue(record);
+//        processItem->setData(0, Qt::UserRole, variant);
+
+        if (!resolver) {
+            resolver = new BonjourResolver(this);
+            connect(resolver,
+                SIGNAL(recordResolved(const QHostInfo &, int)),
+                this,
+                SLOT(dnsRecordResolved(const QHostInfo &, int)));
+        }
+//        QVariant variant = processItem->data(0, Qt::UserRole);
+        resolver->resolveBonjourRecord(
+                          variant.value<BonjourRecord>());
+        }
 }
 
 Dialog::~Dialog()
@@ -67,6 +84,10 @@ Dialog::~Dialog()
     delete nuvo;
     delete progressBarTimer;
     delete mainLayout;
+}
+
+void Dialog::dnsRecordResolved(const QHostInfo & info, int num){
+    qDebug() << info.addresses().takeFirst().toString();
 }
 
 void Dialog::createBrowseBox()

@@ -12,6 +12,7 @@
 
 #include "nuvoapiclient.h"
 #include "bonjourbrowser.h"
+#include "bonjourresolver.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -53,11 +54,15 @@ private:
     void createNowPlayingBox();
     void createBrowseBox();
 
+
+
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
     QPixmap *image;
 
     QGridLayout *mainLayout;
+    QTreeWidget *treeWidget;
+    BonjourResolver *resolver;
 
     QMenuBar *menuBar;
     QGroupBox *transportControlsBox, *transportControlsBox2, *metadataBox, *nowPlayingBox, *consoleBox, *browseBox;
@@ -129,6 +134,7 @@ private slots:
     void updateZonesList();
     void updateRecords(
           const QList<BonjourRecord> &list);
+    void dnsRecordResolved(const QHostInfo &info, int num);
 };
 
 #endif // DIALOG_H
