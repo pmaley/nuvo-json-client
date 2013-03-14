@@ -107,7 +107,6 @@ private slots:
     void zoneSelected(QString zone);
     void clearBrowseWindow();
 
-    void onAvStateChange();
     void onConnectionStateChange();
     void incrementProgressBar();
     void connectToHost2();

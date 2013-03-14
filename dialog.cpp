@@ -12,7 +12,6 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(transportChanged()), this, SLOT(updateTransportControls()));
     connect(nuvo, SIGNAL(volumeChanged()), this, SLOT(updateVolume()));
     connect(nuvo, SIGNAL(metadataChanged()), this, SLOT(updateMetadata()));
-    connect(nuvo, SIGNAL(avStateChanged()), this, SLOT(onAvStateChange()));
     connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
     connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
     connect(nuvo, SIGNAL(zoneListChanged()), this, SLOT(updateZonesList()));
@@ -23,6 +22,8 @@ Dialog::Dialog()
     createNowPlayingBox();
     createConsoleBox();
     createBrowseBox();
+
+    lastSliderValue = 0;
 
     progressBarTimer = new QTimer(this);
     progressBarTimer->start(1000);
@@ -176,6 +177,10 @@ void Dialog::createTransportControlsBox()
     hideButton = new QPushButton();
     connect(hideButton,SIGNAL(clicked()),this,SLOT(hideButtonPressed()));
 
+    // Create volume slider
+    volumeSlider = new QSlider(Qt::Horizontal);
+    volumeSlider->setMaximum(100);
+
     layout->addWidget(likeButton);
     layout->addWidget(dislikeButton);
     layout->addWidget(prevButton);
@@ -186,10 +191,10 @@ void Dialog::createTransportControlsBox()
     transportControlsBox->setLayout(layout);
 
     layout2->addWidget(muteButton);
+    layout2->addWidget(volumeSlider);
     layout2->addWidget(shuffleButton);
     layout2->addWidget(repeatButton);
     layout2->addWidget(hideButton);
-
     transportControlsBox2->setLayout(layout2);
 }
 
@@ -218,15 +223,11 @@ void Dialog::createNowPlayingBox()
     QGridLayout *layout = new QGridLayout;
 
     createMetadataBox();
-
     trackProgressBar = new QProgressBar();
-    volumeSlider = new QSlider(Qt::Horizontal);
-    volumeSlider->setMaximum(100);
 
     layout->addWidget(imageLabel,0,0,1,1);
     layout->addWidget(metadataBox,0,1,1,1);
     layout->addWidget(trackProgressBar,1,0,1,2);
-    layout->addWidget(volumeSlider,2,0,1,2);
     layout->addWidget(transportControlsBox2,3,0,1,2);
     layout->addWidget(transportControlsBox,4,0,1,2);
 
@@ -278,15 +279,12 @@ void Dialog::createConsoleBox()
     connectButton = new QPushButton(tr("Connect"));
     disconnectButton = new QPushButton(tr("Disconnect"));
     disconnectButton->setEnabled(false);
-    //backBrowseButton = new QPushButton(tr("^"));
-
 
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(connectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
-    //buttonBox2->addButton(backBrowseButton, QDialogButtonBox::ActionRole);
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));
     connect(disconnectButton, SIGNAL(clicked()), nuvo, SLOT(disconnectFromHost()));
@@ -308,8 +306,6 @@ void Dialog::createConsoleBox()
 
 void Dialog::generateNewRequest()
 {
-    qDebug() << "ENTERING" << __func__;
-    //sendButton->setEnabled(false);
     nuvo->sendRequest(QString(commandTextEdit->toPlainText()));
     commandTextEdit->setText("");
 }
@@ -321,10 +317,6 @@ void Dialog::displayLog(const QString &err){
 
 void Dialog::connectToHost2(){
     nuvo->connectToHost(hostCombo->text(), portLineEdit->text().toInt());
-}
-
-void Dialog::onAvStateChange(){
-    qDebug() << "AvState Change:" << nuvo->avState;
 }
 
 void Dialog::onConnectionStateChange(){
@@ -352,7 +344,6 @@ void Dialog::incrementProgressBar(){
 
 
 void Dialog::redisplay(){
-    qDebug() << "REDISPLAY";
     updateVolume();
     updateMetadata();
     updateTransportControls();
@@ -360,7 +351,6 @@ void Dialog::redisplay(){
 
 void Dialog::updateZonesList()
 {
-    qDebug() << "UPDATE ZONES LIST";
     QList<QString> items = nuvo->getZonesList();
     zonesCombo->clear();
     for (int i = 0; i < items.size(); i++){
@@ -371,11 +361,8 @@ void Dialog::updateZonesList()
 
 void Dialog::updateVolume()
 {
-    int volMax = nuvo->volumeMax;
-    int vol = nuvo->getAvValue("volume");
-
-    volumeSlider->setMaximum(volMax);
-    volumeSlider->setValue(vol);
+    volumeSlider->setMaximum(nuvo->volumeMax);
+    volumeSlider->setValue(nuvo->getAvValue("volume"));
 }
 
 void Dialog::updateProgressBar(){
@@ -421,7 +408,6 @@ void Dialog::clearBrowseWindow()
 
 void Dialog::updateBrowseWindow()
 {
-    qDebug() << "ENTERING" << __func__;
     QList<QString> items = nuvo->getBrowseItems();
     browseModel->setRowCount(0);
     for (int i = 0; i < items.size(); i++) {
@@ -431,7 +417,6 @@ void Dialog::updateBrowseWindow()
     QStringList a;
     a.append(nuvo->getBrowseHeader());
     browseModel->setHorizontalHeaderLabels(a);
-    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::browseItemClicked(QModelIndex index)

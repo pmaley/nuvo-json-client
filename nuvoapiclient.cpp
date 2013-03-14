@@ -92,30 +92,20 @@ int NuvoApiClient::getAvValue(QString id){
     return -1;
 }
 
-QList<QString> NuvoApiClient::getZonesList()
-{
-//    QList<QString> list;
-//    QJsonArray children = channels[zonesChannel].value("children").toArray();
-//    for (int i = 0; i < children.size(); i++){
-//        list.append(QString(children.at(i).toObject().value("title").toString()));
-//    }
-//    return list;
-    return getChildTitles(zonesChannel);
-}
+
 
 QString NuvoApiClient::getBrowseHeader()
 {
     return channels[currentBrowseChannel].value("item").toObject().value("title").toString();
 }
 
+QList<QString> NuvoApiClient::getZonesList()
+{
+    return getChildTitles(zonesChannel);
+}
+
 QList<QString> NuvoApiClient::getBrowseItems()
 {
-//    QList<QString> list;
-//    QJsonArray children = channels[currentBrowseChannel].value("children").toArray();
-//    for (int i = 0; i < children.size(); i++){
-//        list.append(QString(children.at(i).toObject().value("title").toString()));
-//    }
-//    return list;
     return getChildTitles(currentBrowseChannel);
 }
 
@@ -338,8 +328,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         currentBrowseChannel = channel;
     }
 
-
-
     qDebug() << "EXITING" << __func__;
 }
 
@@ -367,53 +355,43 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
 }
 
 void NuvoApiClient::updateVolume(QString id, int value){
-    qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem(id);
     QString url(obj.value("url").toString());
     QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr(" { \"id\" : %1, \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(reqId,url,params));
     sendRequest(request);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::toggleValue(QString id)
 {
-    qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem(id);
     QString url(obj.value("url").toString());
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString params(tr("{ \"operation\" : \"toggle\" }"));
     QString request(tr("{ \"id\" : %1, \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(reqId,url,params));
     sendRequest(request);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::invokeAction(QString id)
 {
-    qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem(id);
     invokeAction(obj);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::invokeAction(QJsonObject obj)
 {
-    qDebug() << "ENTERING" << __func__;
     QString url(obj.value("url").toString());
     QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr(" { \"id\":%1, \"url\":\"%2\", \"method\":\"invoke\" }").arg(reqId,url));
     sendRequest(request);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::browseClick(int index)
 {
-    qDebug() << "ENTERING" << __func__;
     bool av = channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("av").toBool();
     if (av == true) { loadAv(index);  }
     else { browseContainer(index); }
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::loadAv(int index)
