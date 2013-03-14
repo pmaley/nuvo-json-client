@@ -5,7 +5,6 @@
 NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
 {
     avState = "";
-    volume = 0;
     volumeMax = 100;
     progressPos = progressMax = 0;
     requestNum = 0;

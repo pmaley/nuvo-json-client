@@ -48,7 +48,7 @@ public:
 
     bool getItemActive(QString id);
 
-    int volumeMax, volume, progressMax, progressPos;
+    int volumeMax, progressMax, progressPos;
     QString avState;
     QString metadata1, metadata2, metadata3;
     
