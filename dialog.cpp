@@ -9,7 +9,8 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(progressBarChanged()), this, SLOT(updateProgressBar()));
     connect(nuvo->tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));
     connect(nuvo, SIGNAL(raiseError(const QString &)), this, SLOT(displayErrorMessage(const QString &)));
-    connect(nuvo, SIGNAL(displayText(const QString &)), this, SLOT(displayLog(const QString &)));
+    connect(nuvo, SIGNAL(displayUnformattedText(const QString &)), this, SLOT(displayUnformattedText(const QString &)));
+    connect(nuvo, SIGNAL(displayFormattedText(const QString &)), this, SLOT(displayFormattedText(const QString &)));
     connect(nuvo, SIGNAL(transportChanged()), this, SLOT(updateTransportControls()));
     connect(nuvo, SIGNAL(metadataChanged()), this, SLOT(updateMetadata()));
     connect(nuvo, SIGNAL(browseDataChanged()), this, SLOT(updateBrowseWindow()));
@@ -351,8 +352,15 @@ void Dialog::generateNewRequest()
     commandTextEdit->setText("");
 }
 
-void Dialog::displayLog(const QString &err){
-    consoleTextEdit->append(QString(tr("%1").arg(err)));
+void Dialog::displayFormattedText(const QString &err)
+{
+    consoleTextEdit->append(QString(tr("%1<br>").arg(err)));
+    consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
+}
+
+void Dialog::displayUnformattedText(const QString &err)
+{
+    consoleTextEdit->insertPlainText(err);
     consoleTextEdit->verticalScrollBar()->setSliderPosition(consoleTextEdit->verticalScrollBar()->maximum());
 }
 

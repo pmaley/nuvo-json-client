@@ -178,7 +178,7 @@ int NuvoApiClient::sendRequest(QString request)
     QByteArray byteArray = request.toUtf8();
     const char* cString = byteArray.constData();
     tcpSocket->write(cString);
-    emit displayText(QString(tr("<font color=\"Blue\">%1</font><br>").arg(cString)));
+    emit displayFormattedText(QString(tr("<font color=\"Blue\">%1</font><br>").arg(cString)));
     qDebug() << cString << "written to socket. Request #" << requestNum;
     requestNum++;
     return requestNum-1;
@@ -227,10 +227,11 @@ void NuvoApiClient::parseJsonMessage(QString result)
     QJsonObject j = QJsonDocument::fromJson(utf8).object();
 
     if (j.keys().contains("error"))
-        emit displayText(QString(tr("<font color=\"Red\">%1</font><br>").arg(result)));
-    else
-        emit displayText(QString(tr("<font color=\"Black\">%1</font><br>").arg(result)));
-
+        emit displayFormattedText(QString(tr("<font color=\"Red\">%1</font><br>").arg(QString(QJsonDocument(j).toJson()))));
+    else {
+        //emit displayText(QString(tr("<font color=\"Black\">%1</font><br>").arg(QString(QJsonDocument(j).toJson()))));
+        emit displayUnformattedText(QString(tr("%1\n").arg(QString(QJsonDocument(j).toJson()))));
+    }
     QString type(j.value("type").toString());
     QString channel(j.value("channel").toString());
 
@@ -392,7 +393,7 @@ void NuvoApiClient::loadAv(int index)
     qDebug() << "ENTERING" << __func__;
     QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
     QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
-    QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("item").toObject()).toJson() );
+    QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("item").toObject()).toJson());
     QString reqId( tr("\"req-%1\"").arg(requestNum) );
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1 }").arg(context) );

@@ -123,7 +123,8 @@ private slots:
     void incrementProgressBar();
     void connectToHost2();
     void redisplay();
-    void displayLog(const QString &err);
+    void displayUnformattedText(const QString &err);
+    void displayFormattedText(const QString &err);
     void displayErrorMessage(const QString &err);
     void updateAlbumArt();
     void updateProgressBar();
@@ -133,8 +134,7 @@ private slots:
     void updateBrowseWindow();
     void browseItemClicked(QModelIndex index);
     void updateZonesList();
-    void updateRecords(
-          const QList<BonjourRecord> &list);
+    void updateRecords(const QList<BonjourRecord> &list);
     void dnsRecordResolved(const QHostInfo &info, int port);
 };
 
