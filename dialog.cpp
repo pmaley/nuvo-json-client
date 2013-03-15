@@ -46,7 +46,6 @@ Dialog::Dialog()
     connect(zonesCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(zoneSelected(QString)));
 
     BonjourBrowser *browser = new BonjourBrowser(this);
-    treeWidget = new QTreeWidget(this);
     browser->browseForServiceType("_nuvoplayer._tcp");
     connect(browser,
                 SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
@@ -79,7 +78,10 @@ Dialog::~Dialog()
 }
 
 void Dialog::dnsRecordResolved(const QHostInfo & info, int num){
-    qDebug() << info.addresses().takeFirst().toString();
+    QString address(info.addresses().takeFirst().toString());
+    qDebug() << address;
+    //stCombo->setText(address);
+    nuvo->connectToHost(address, 4747);
 }
 
 void Dialog::createBrowseBox()
@@ -299,7 +301,7 @@ void Dialog::createConsoleBox()
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
-    hostCombo = new QLineEdit("192.168.1.102");
+    hostCombo = new QLineEdit("");
     hostCombo->setFixedWidth(100);
     portLineEdit = new QLineEdit("4747");
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
@@ -341,6 +343,7 @@ void Dialog::createConsoleBox()
     mainLayout->setRowStretch(2,1000);
     portLineEdit->setFocus();
     consoleBox->setLayout(mainLayout);
+    consoleBox->setVisible(false);
 }
 
 void Dialog::generateNewRequest()
