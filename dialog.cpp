@@ -240,12 +240,10 @@ void Dialog::createMetadataBox()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QPixmap *temp = new QPixmap(":/images/aom.jpg");
-    //image = new QPixmap(temp->scaledToHeight(100));
     QPixmap image(temp->scaledToHeight(100));
     delete temp;
 
     imageLabel = new QLabel();
-    //imageLabel->setPixmap(*image);
     imageLabel->setPixmap(image);
     layout->addWidget(imageLabel);
     for (int i = 0; i < NumGridRows; ++i) {
