@@ -41,7 +41,7 @@ Dialog::Dialog()
     setLayout(mainLayout);
     mainLayout->setColumnStretch(1,200);
 
-    setWindowTitle(tr("NWAS API Controller"));
+    setWindowTitle(tr("NuVo Player"));
     adjustSize();
 
     connect(backBrowseButton, SIGNAL(clicked()), nuvo, SLOT(browseUpOne()));
@@ -49,8 +49,7 @@ Dialog::Dialog()
 
     BonjourBrowser *browser = new BonjourBrowser(this);
     browser->browseForServiceType("_nuvoplayer._tcp");
-    connect(browser,
-                SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
+    connect(browser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
 }

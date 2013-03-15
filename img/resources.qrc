@@ -30,5 +30,7 @@
         <file>player_icons/player_seeker_muted@2x.png</file>
         <file>player_icons/player_seeker.png</file>
         <file>player_icons/player_seeker@2x.png</file>
+        <file>Icon@2x.png</file>
+        <file>app_icon.icns</file>
     </qresource>
 </RCC>

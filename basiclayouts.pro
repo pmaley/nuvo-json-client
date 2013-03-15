@@ -21,8 +21,12 @@ INSTALLS += target
 
 simulator: warning(This example might not fully work on Simulator platform)
 
+ICON = img/app_icon.icns
+
 OTHER_FILES += \
     img/aom.jpg
+    img/Icon@2x.png
+    img/app_icon.icns
 
 RESOURCES += \
     img/resources.qrc
