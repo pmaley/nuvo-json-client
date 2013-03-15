@@ -295,6 +295,7 @@ void Dialog::hideButtonPressed()
 void Dialog::createConsoleBox()
 {
     consoleBox = new QGroupBox();
+    splitter = new QSplitter();
     hostLabel = new QLabel(tr("&Server name:"));
     portLabel = new QLabel(tr("S&erver port:"));
 
@@ -304,9 +305,10 @@ void Dialog::createConsoleBox()
     portLineEdit->setValidator(new QIntValidator(1, 65535, this));
     portLineEdit->setFixedWidth(50);
     commandTextEdit = new QTextEdit();
-    commandTextEdit->setFixedHeight(50);
+    commandTextEdit->setMinimumHeight(50);
     consoleTextEdit = new QTextEdit;
     consoleTextEdit->setReadOnly(true);
+    consoleTextEdit->setMinimumHeight(50);
 
     hostLabel->setBuddy(hostCombo);
     portLabel->setBuddy(portLineEdit);
@@ -334,11 +336,14 @@ void Dialog::createConsoleBox()
     mainLayout->addWidget(hostCombo, 0, 1, Qt::AlignLeft);
     mainLayout->addWidget(portLabel, 0, 2, Qt::AlignLeft);
     mainLayout->addWidget(portLineEdit, 0, 3, Qt::AlignLeft);
-    mainLayout->addWidget(commandTextEdit, 1, 0, 1, 8);
-    mainLayout->addWidget(consoleTextEdit, 2, 0, 1, 8);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->addWidget(commandTextEdit);
+    splitter->addWidget(consoleTextEdit);
+    mainLayout->addWidget(splitter,1,0,1,8);
     mainLayout->addWidget(buttonBox2, 0, 4, 1, 4);
-    mainLayout->setRowStretch(2,1000);
+    mainLayout->setRowStretch(1,1000);
     portLineEdit->setFocus();
+
     consoleBox->setLayout(mainLayout);
     consoleBox->setVisible(false);
 }

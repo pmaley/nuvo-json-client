@@ -59,6 +59,8 @@ private:
     NuvoApiClient* nuvo;
     QPixmap *image;
 
+    QSplitter *splitter;
+
     QGridLayout *mainLayout;
     QTreeWidget *treeWidget;
     BonjourResolver *resolver;
