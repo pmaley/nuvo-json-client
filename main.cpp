@@ -1,5 +1,6 @@
 #include <QApplication>
 #include "dialog.h"
+#include "overlay.h"
 
 int main(int argc, char *argv[])
 {

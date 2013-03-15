@@ -55,6 +55,9 @@ private:
     void createNowPlayingBox();
     void createBrowseBox();
 
+    Overlay *overlay;
+    void resizeEvent(QResizeEvent *event);
+
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
     QPixmap *image;

@@ -4,6 +4,7 @@
 Dialog::Dialog()
 {
     this->setDisabled(true);
+
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
     connect(nuvo, SIGNAL(progressBarChanged()), this, SLOT(updateProgressBar()));
@@ -53,6 +54,14 @@ Dialog::Dialog()
     connect(browser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
+    overlay = new Overlay(this);
+    overlay->show();
+
+}
+
+void Dialog::resizeEvent(QResizeEvent *event) {
+    overlay->resize(event->size());
+    event->accept();
 }
 
 void Dialog::updateRecords(
@@ -83,6 +92,7 @@ void Dialog::dnsRecordResolved(const QHostInfo & info, int port){
     QString address(info.addresses().takeFirst().toString());
     qDebug() << address << port;
     nuvo->connectToHost(address, port);
+    overlay->hide();
     this->setEnabled(true);
 }
 
