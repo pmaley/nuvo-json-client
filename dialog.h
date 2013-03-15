@@ -82,7 +82,7 @@ private:
     QLineEdit *hostCombo, *portLineEdit;
     QTextEdit *commandTextEdit, *consoleTextEdit;
     QPushButton *sendButton, *quitButton, *connectButton,
-                *disconnectButton, *hideButton;
+                *disconnectButton;
 
     QSlider *volumeSlider;
     QProgressBar *trackProgressBar;
@@ -92,7 +92,7 @@ private:
 
 
     QMenu *fileMenu;
-    QAction *exitAction;
+    QAction *exitAction, *debugAction;
 
     quint16 blockSize;
     QString lastMessage;

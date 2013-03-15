@@ -29,6 +29,7 @@ Dialog::Dialog()
     progressBarTimer->start(1000);
     connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(incrementProgressBar()));
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
+    connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeSliderAdjusted()));
 
     mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
@@ -51,11 +52,6 @@ Dialog::Dialog()
     connect(browser,
                 SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
-
-
-
-//    setCentralWidget(this);
-//    overlay = new Overlay(centralWidget());
 
 }
 
@@ -115,8 +111,10 @@ void Dialog::createMenu()
 {
     menuBar = new QMenuBar;
     fileMenu = new QMenu(tr("&File"), this);
+    debugAction = fileMenu->addAction(tr("Debug Mode"));
     exitAction = fileMenu->addAction(tr("E&xit"));
     menuBar->addMenu(fileMenu);
+    connect(debugAction,SIGNAL(triggered()),this,SLOT(hideButtonPressed()));
     //connect(exitAction, SIGNAL(triggered()), this, SLOT(accept()));
 }
 
@@ -217,10 +215,6 @@ void Dialog::createTransportControlsBox()
     repeatButton->setEnabled(false);
     connect(repeatButton,SIGNAL(clicked()),this,SLOT(repeatButtonPressed()));
 
-    // Create hide button
-    hideButton = new QPushButton();
-    connect(hideButton,SIGNAL(clicked()),this,SLOT(hideButtonPressed()));
-
     // Create volume slider
     volumeSlider = new QSlider(Qt::Horizontal);
     volumeSlider->setMaximum(100);
@@ -238,7 +232,6 @@ void Dialog::createTransportControlsBox()
     layout2->addWidget(volumeSlider);
     layout2->addWidget(shuffleButton);
     layout2->addWidget(repeatButton);
-    layout2->addWidget(hideButton);
     transportControlsBox2->setLayout(layout2);
 }
 
