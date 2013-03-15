@@ -3,7 +3,7 @@
 
 Dialog::Dialog()
 {
-    this->setDisabled(true);
+    //this->setDisabled(true);
 
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));

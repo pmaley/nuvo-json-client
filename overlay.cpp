@@ -1,19 +1,21 @@
 #include <QPainter>
 #include <QPen>
+#include <QPalette>
 #include "overlay.h"
 
 Overlay::Overlay(QWidget *parent)
     : QWidget(parent)
 {
-    setPalette(Qt::transparent);
-    setAttribute(Qt::WA_TransparentForMouseEvents);
+    QPalette pal = palette();
+    pal.setColor(backgroundRole(), Qt::blue);
+    setPalette(pal);
 }
 
 void Overlay::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(QPen(Qt::red));
-    painter.drawLine(width()/8, height()/8, 7*width()/8, 7*height()/8);
-    painter.drawLine(width()/8, 7*height()/8, 7*width()/8, height()/8);
+    QRect r(this->rect());
+    painter.fillRect(r,Qt::Dense5Pattern);
+
 }
