@@ -6,9 +6,7 @@
 Overlay::Overlay(QWidget *parent)
     : QWidget(parent)
 {
-    QPalette pal = palette();
-    pal.setColor(backgroundRole(), Qt::blue);
-    setPalette(pal);
+
 }
 
 void Overlay::paintEvent(QPaintEvent *event)
