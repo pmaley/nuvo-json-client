@@ -4,12 +4,14 @@ HEADERS     = dialog.h \
     nuvoapiclient.h \
     bonjourbrowser.h \
     bonjourrecord.h \
-    bonjourresolver.h
+    bonjourresolver.h \
+    overlay.h
 SOURCES     = dialog.cpp \
               main.cpp \
     nuvoapiclient.cpp \
     bonjourbrowser.cpp \
-    bonjourresolver.cpp
+    bonjourresolver.cpp \
+    overlay.cpp
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/widgets/layouts/basiclayouts

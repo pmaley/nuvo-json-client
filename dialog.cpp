@@ -3,6 +3,7 @@
 
 Dialog::Dialog()
 {
+    this->setDisabled(true);
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
     connect(nuvo, SIGNAL(progressBarChanged()), this, SLOT(updateProgressBar()));
@@ -51,6 +52,11 @@ Dialog::Dialog()
                 SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
+
+
+//    setCentralWidget(this);
+//    overlay = new Overlay(centralWidget());
+
 }
 
 void Dialog::updateRecords(
@@ -80,8 +86,8 @@ Dialog::~Dialog()
 void Dialog::dnsRecordResolved(const QHostInfo & info, int num){
     QString address(info.addresses().takeFirst().toString());
     qDebug() << address;
-    //stCombo->setText(address);
     nuvo->connectToHost(address, 4747);
+    this->setEnabled(true);
 }
 
 void Dialog::createBrowseBox()
@@ -396,7 +402,7 @@ void Dialog::updateZonesList()
     QList<QString> items = nuvo->getZonesList();
     zonesCombo->clear();
     for (int i = 0; i < items.size(); i++){
-        zonesCombo->addItem(QString(items.at(i)));
+        zonesCombo->addItem(items.at(i));
     }
     redisplay();
 }
