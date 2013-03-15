@@ -32,5 +32,6 @@
         <file>player_icons/player_seeker@2x.png</file>
         <file>Icon@2x.png</file>
         <file>app_icon.icns</file>
+        <file>default_album_art_large@2x.png</file>
     </qresource>
 </RCC>

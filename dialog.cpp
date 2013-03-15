@@ -249,7 +249,7 @@ void Dialog::createMetadataBox()
     metadataBox->setFixedWidth(400);
     QVBoxLayout *layout = new QVBoxLayout;
 
-    QPixmap *temp = new QPixmap(":/images/aom.jpg");
+    QPixmap *temp = new QPixmap(":/images/default_album_art_large@2x.png");
     QPixmap image(temp->scaledToHeight(100));
     delete temp;
 

@@ -27,6 +27,7 @@ OTHER_FILES += \
     img/aom.jpg
     img/Icon@2x.png
     img/app_icon.icns
+    img/default_album_art_large@2x.png
 
 RESOURCES += \
     img/resources.qrc
