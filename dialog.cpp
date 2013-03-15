@@ -81,7 +81,7 @@ Dialog::~Dialog()
 
 void Dialog::dnsRecordResolved(const QHostInfo & info, int num){
     QString address(info.addresses().takeFirst().toString());
-    qDebug() << address;
+    qDebug() << address << num;
     nuvo->connectToHost(address, 4747);
     this->setEnabled(true);
 }
@@ -111,11 +111,9 @@ void Dialog::createMenu()
 {
     menuBar = new QMenuBar;
     fileMenu = new QMenu(tr("&File"), this);
-    debugAction = fileMenu->addAction(tr("Debug Mode"));
-    exitAction = fileMenu->addAction(tr("E&xit"));
+    fileMenu->addAction(tr("&Debug Mode"), this, SLOT(hideButtonPressed()),
+                      QKeySequence(tr("Ctrl+D", "")));
     menuBar->addMenu(fileMenu);
-    connect(debugAction,SIGNAL(triggered()),this,SLOT(hideButtonPressed()));
-    //connect(exitAction, SIGNAL(triggered()), this, SLOT(accept()));
 }
 
 void Dialog::createTransportControlsBox()
