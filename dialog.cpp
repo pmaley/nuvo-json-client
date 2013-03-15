@@ -410,9 +410,7 @@ void Dialog::updateZonesList()
 
 void Dialog::updateVolume()
 {
-    qDebug() << "ENTERING" << __func__;
     volumeSlider->setValue(nuvo->getAvValue("volume"));
-    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::updateProgressBar(){
