@@ -135,7 +135,7 @@ private slots:
     void updateZonesList();
     void updateRecords(
           const QList<BonjourRecord> &list);
-    void dnsRecordResolved(const QHostInfo &info, int num);
+    void dnsRecordResolved(const QHostInfo &info, int port);
 };
 
 #endif // DIALOG_H

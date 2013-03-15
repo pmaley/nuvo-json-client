@@ -78,10 +78,10 @@ Dialog::~Dialog()
     delete mainLayout;
 }
 
-void Dialog::dnsRecordResolved(const QHostInfo & info, int num){
+void Dialog::dnsRecordResolved(const QHostInfo & info, int port){
     QString address(info.addresses().takeFirst().toString());
-    qDebug() << address << num;
-    nuvo->connectToHost(address, 4747);
+    qDebug() << address << port;
+    nuvo->connectToHost(address, port);
     this->setEnabled(true);
 }
 
