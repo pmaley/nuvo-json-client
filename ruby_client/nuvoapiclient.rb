@@ -16,6 +16,9 @@ config = YAML.load(yml)
 @logger.info config.inspect
 
 @request_num = 0
+@current_browse_channel = @current_av_channel = @current_avs_channel = ""
+@av_req = @avs_req = @music_req = -1
+
 @channels = {}
 @requests = []
 @socket = TCPSocket.open(host, port)
@@ -45,6 +48,13 @@ end
 def load_av
 
 end
+
+def browse_container(url)
+  params = { "from" => 0, "count" => -1}
+  request = { "url" => url, "method" => "browse", "params" => params }
+  send_request request
+end
+
 
 ########################
 # RECEIVE METHODS
@@ -81,6 +91,20 @@ end
 
 def parse_reply_message(mesg)
   @requests.delete(mesg["id"])
+  channel = mesg["channel"]  
+  puts "#{mesg["id"]}, #{@music_req}, #{@av_req}, #{@avs_req}"
+   
+  case mesg["id"].to_i
+  when @music_req
+    @current_browse_channel = channel
+  when @av_req
+    @current_av_channel = channel
+  when @avs_req
+    @current_avs_channel = channel
+  end
+
+
+
   @channels[mesg["channel"]] = mesg["result"]
 end
 
@@ -131,13 +155,35 @@ thread1 = Thread.new{
 }
 
 
-av_req = send_request(REQ_STABLE_AV)
-avs_req = send_request(REQ_STABLE_AVS)
-music_req = send_request(REQ_STABLE_MUSIC)
+@av_req = send_request(REQ_STABLE_AV)
+@avs_req = send_request(REQ_STABLE_AVS)
+@music_req = send_request(REQ_STABLE_MUSIC)
 
-#sleep 10
+sleep 2
 #close_channel("ch2")
 
+names = []
+@channels[@current_avs_channel]["children"].each { |zone| names << zone["title"] }
+@logger.debug "RETURNED ZONES = CONFIGURED ZONES #{names == config["zones"].keys}"
+
+@channels[@current_browse_channel]["children"].each { |child| puts child["id"] }
+@music_req = browse_container @channels[@current_browse_channel]["children"][1]["url"]
+
+sleep 2
+@channels[@current_browse_channel]["children"].each { |child| puts child["title"] }
+
+
+
+
+
+
 thread1.join
+
+
+
+
+
+
+
 
 
