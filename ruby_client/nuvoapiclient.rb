@@ -2,11 +2,13 @@
 
 require 'json'
 require 'socket'
+require 'logger'
 
 host = ARGV[0] ? ARGV[0] : "192.168.1.101"
 port = ARGV[1] ? ARGV[1] : 4747
 
-puts "Connecting to #{host}, port #{port}."
+@logger = Logger.new(STDOUT)
+@logger.info "Connecting to #{host}, port #{port}."
 
 @request_num = 0
 @channels = {}
@@ -20,58 +22,60 @@ REQ_STABLE_MUSIC = { "url" => "/stable/music/", "method" => "browse", "params" =
 def send_request(request)
   request["id"] = "req-#{@request_num}"
   @requests << "req-#{@request_num}"
-  puts request
-  puts @requests.inspect
+  @logger.info request
   @request_num += 1
   @socket.write "#{request.to_json}\n"
   return @request_num-1
 end
 
 def childInserted(channel,mesg)
-  puts "INSIDE CHILD INSERTED"
-  puts "Insert at index=#{mesg["index"]}"
-  puts @channels[channel]["children"].length
-  @channels[channel]["children"].insert mesg["index"], mesg["item"]
-  puts @channels[channel]["children"].length
+  index = mesg["index"] ? mesg["index"] : 0
+  @channels[channel]["children"].insert index, mesg["item"]
+  @logger.info "ID: #{@channels[channel]["children"][index]["id"]}"
 end
 
 def childRemoved(channel,mesg)
-  puts "INSIDE CHILD REMOVED"
-  puts "Remove at index=#{mesg["index"]}"
-  puts @channels[channel]["children"].length
+  index = mesg["index"] ? mesg["index"] : 0
+  @logger.info "ID: #{@channels[channel]["children"][index]["id"]}"
   @channels[channel]["children"].delete_at mesg["index"]
-  puts @channels[channel]["children"].length
 end
 
 def childValueChanged(channel,mesg)
-  puts "INSIDE CHILD VALUE CHANGED"
+  index = mesg["index"] ? mesg["index"] : 0
+  @logger.info "ID: #{@channels[channel]["children"][index]["id"]}"
+  @logger.info @channels[channel]["children"][index]["value"].inspect
+  @channels[channel]["children"][index]["value"] = mesg["value"]
+  @logger.info @channels[channel]["children"][index]["value"].inspect
 end
 
 def childItemChanged(channel,mesg)
-  puts "INSIDE CHILD ITEM CHANGED"
+  index = mesg["index"] ? mesg["index"] : 0
+  @logger.info "ID: #{@channels[channel]["children"][index]["id"]}"
+  @channels[channel]["children"][index] = mesg["item"]
 end
 
 def parse_closed_message(mesg)
-  puts "CLOSE MESSAGE"
+  @logger.info "CLOSE MESSAGE"
+  @logger.info mesg.keys
 end
 
 def parse_reply_message(mesg)
   @requests.delete(mesg["id"])
-  puts @requests.inspect
   @channels[mesg["channel"]] = mesg["result"]
 end
 
 def parse_event_message(mesg)
   mesg["event"].each do |event|
-    puts event["type"]
+    @logger.info "--------------------"
+    @logger.info event["type"]
     method = "#{event["type"]}"
     send "#{event["type"]}", mesg["channel"], event
   end
 end
 
 def process_message(mesg)
-  puts "*********************************************************"
-  puts "#{mesg["type"]}: #{mesg["id"]}: #{mesg["channel"]}"
+  @logger.info "*********************************************************"
+  @logger.info "#{mesg["type"]}: #{mesg["id"]}: #{mesg["channel"]}"
 
   method = "parse_#{mesg["type"]}_message"
   send method, mesg
