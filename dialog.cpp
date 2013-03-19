@@ -5,6 +5,8 @@ Dialog::Dialog()
 {
     //this->setDisabled(true);
 
+    placeholderArt = new QPixmap(":/images/default_album_art_large@2x.png");
+
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
     connect(nuvo, SIGNAL(albumArtCleared()), this, SLOT(clearAlbumArt()));
@@ -19,8 +21,6 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
     connect(nuvo, SIGNAL(zoneListChanged()), this, SLOT(updateZonesList()));
     connect(nuvo, SIGNAL(browseListCleared()), this, SLOT(clearBrowseWindow()));
-
-    image = NULL;
 
     createMenu();
     createTransportControlsBox();
@@ -267,10 +267,11 @@ void Dialog::createMetadataBox()
     metadataBox->setFixedWidth(400);
     QVBoxLayout *layout = new QVBoxLayout;
 
-    QPixmap *temp = new QPixmap(":/images/default_album_art_large@2x.png");
     imageLabel = new QLabel();
-    imageLabel->setPixmap(temp->scaledToWidth(200));
-    delete temp;
+    imageLabel->setPixmap(placeholderArt->scaledToWidth(200));
+    imageLabel->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(imageLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
+
 
     layout->addWidget(imageLabel);
     for (int i = 0; i < NumGridRows; ++i) {
@@ -469,12 +470,11 @@ void Dialog::displayErrorMessage(const QString &err){
 
 void Dialog::clearAlbumArt()
 {
-    QPixmap *temp = new QPixmap(":/images/default_album_art_large@2x.png");
-    imageLabel->setPixmap(temp->scaledToWidth(200));
-    delete temp;
-
+    imageLabel->setPixmap(placeholderArt->scaledToWidth(200));
 }
-void Dialog::updateAlbumArt(){
+
+void Dialog::updateAlbumArt()
+{
     imageLabel->setPixmap(nuvo->albumArt.scaledToWidth(100));
 }
 
@@ -527,5 +527,12 @@ void Dialog::clearConsoleWindow()
     consoleTextEdit->clear();
 }
 
+void Dialog::showContextMenu(const QPoint& Pos)
+{
+    QMenu ContextMenu(this);
+
+    ContextMenu.addAction("Test action");
+    ContextMenu.exec(imageLabel->mapToGlobal(Pos));
+}
 
 

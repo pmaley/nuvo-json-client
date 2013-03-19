@@ -36,6 +36,8 @@ void Overlay::paintEvent(QPaintEvent *event)
         this->setLayout(l);
     }
 
+    event->accept();
+
 }
 
 void Overlay::setText(QString txt)

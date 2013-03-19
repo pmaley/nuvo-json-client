@@ -60,7 +60,7 @@ private:
 
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
-    QPixmap *image;
+    QPixmap *placeholderArt;
 
     QSplitter *splitter;
 
@@ -82,6 +82,7 @@ private:
                 *muteButton;
     QPushButton *backBrowseButton;
     QPushButton *clearButton;
+    QPushButton *nowPlayingContext;
 
     QDialogButtonBox *buttonBox, *buttonBox2;
     QLabel *hostLabel, *portLabel, *imageLabel;
@@ -142,6 +143,7 @@ private slots:
     void updateRecords(const QList<BonjourRecord> &list);
     void dnsRecordResolved(const QHostInfo &info, int port);
     void clearConsoleWindow();
+    void showContextMenu(const QPoint& Pos);
 };
 
 #endif // DIALOG_H
