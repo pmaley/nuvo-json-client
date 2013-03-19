@@ -20,3 +20,9 @@ Steps to build:
 5) In QT Creator, click "configure project" button
 
 6) From build menu, select "Run"
+
+
+
+Hotkeys:
+ctrl+D	Toggle debug mode (hide/show console and connection window)
+ctrl+K	Clear console window
