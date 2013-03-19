@@ -223,6 +223,7 @@ void Dialog::createTransportControlsBox()
     QIcon buttonIcon10(pixmap10);
     repeatButton->setIcon(buttonIcon10);
     repeatButton->setEnabled(false);
+    repeatButton->setCheckable(true);
     connect(repeatButton,SIGNAL(clicked()),this,SLOT(repeatButtonPressed()));
 
     // Create volume slider
@@ -295,7 +296,7 @@ void Dialog::dislikeButtonPressed(){ nuvo->invokeAction("dislike"); }
 void Dialog::volumeSliderAdjusted(){ nuvo->updateVolume("volume", volumeSlider->value()); }
 void Dialog::muteButtonPressed(){ nuvo->toggleValue("volume"); }
 void Dialog::shuffleButtonPressed(){ nuvo->toggleValue("shuffle"); }
-void Dialog::repeatButtonPressed(){ nuvo->toggleValue("repeat"); }
+void Dialog::repeatButtonPressed(){ nuvo->toggleValue("repeatMode"); }
 void Dialog::hideButtonPressed()
 {
     consoleBox->setVisible(!consoleBox->isVisible());
@@ -463,7 +464,7 @@ void Dialog::updateTransportControls()
     muteButton->setDefault(false);
     shuffleButton->setEnabled(nuvo->getItemActive("shuffle"));
     shuffleButton->setChecked(nuvo->getShuffleState());
-    repeatButton->setEnabled(nuvo->getItemActive("repeat"));
+    repeatButton->setEnabled(nuvo->getItemActive("repeatMode"));
     repeatButton->setChecked(nuvo->getRepeatState());
 }
 void Dialog::clearBrowseWindow()

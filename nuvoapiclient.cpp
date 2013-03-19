@@ -50,8 +50,11 @@ bool NuvoApiClient::getShuffleState(){
 }
 
 bool NuvoApiClient::getRepeatState(){
-    QJsonObject obj = findAvItem("shuffle");
-    return obj.value("value").toObject().value("avRepeatMode").toString() != "normal";
+    QJsonObject obj = findAvItem("repeatMode");
+    qDebug() << QString(obj.value("value").toObject().value("avRepeatMode").toString());
+    bool active = QString(obj.value("value").toObject().value("avRepeatMode").toString()) != QString("normal");
+    qDebug() << "REPEAT IS ACTIVE:" << active;
+    return active;
 }
 
 QJsonObject NuvoApiClient::findAvItem(QString id)
