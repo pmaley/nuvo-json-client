@@ -309,8 +309,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             parseTrackMetadata();
         } else if ( type == "value"){
             updateDisplay(channel,i);
-        } else {
-            qDebug() << "PARSE_REPLY_MESSAGE: ITEM NOT PROCESSED:" << id;
         }
     }
 
