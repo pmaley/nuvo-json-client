@@ -145,6 +145,7 @@ private slots:
     void dnsRecordResolved(const QHostInfo &info, int port);
     void clearConsoleWindow();
     void showContextMenu(const QPoint& Pos);
+    void updateNowPlayingContextMenu();
 };
 
 #endif // DIALOG_H

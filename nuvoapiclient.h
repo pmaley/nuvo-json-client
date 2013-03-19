@@ -28,6 +28,7 @@ public:
     QList<QString> getChildTitles(QString channel);
     QList<QString> getBrowseItems();
     QList<QString> getZonesList();
+    QList<QString> getNowPlayingContextItems();
     bool getMuteState();
     bool getShuffleState();
     bool getRepeatState();
@@ -85,8 +86,8 @@ public slots:
 private:
     int requestNum;
     QString currentMessage;
-    int currentBrowseRequestNum, currentAvRequestNum, currentZonesRequestNum;
-    QString avChannel, currentBrowseChannel, zonesChannel, currentReBrowseChannel;
+    int currentBrowseRequestNum, currentAvRequestNum, currentZonesRequestNum, currentNowPlayingContextMenuRequestNum;
+    QString avChannel, currentBrowseChannel, zonesChannel, currentReBrowseChannel, currentNowPlayingContextMenuChannel;
 
     QMap<QString, QJsonObject> channels;
     QStack<QString> browseChannelStack;

@@ -100,6 +100,10 @@ int NuvoApiClient::getAvValue(QString id){
 }
 
 
+QList<QString> NuvoApiClient::getNowPlayingContextItems()
+{
+    return getChildTitles(currentNowPlayingContextMenuChannel);
+}
 
 QString NuvoApiClient::getBrowseHeader()
 {
@@ -316,6 +320,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         avChannel = channel;
     } else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentZonesRequestNum)) ){
         zonesChannel = channel;
+    } else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentNowPlayingContextMenuRequestNum)) ){
+        currentNowPlayingContextMenuChannel = channel;
     }
 
     for (int i = 0; i < it.size(); i++ ){;
@@ -327,6 +333,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             parseTrackMetadata();
         } else if ( type == "value"){
             updateDisplay(channel,i);
+        } else if ( id == "trackItem"){
+            currentNowPlayingContextMenuRequestNum = browseContainer(current.value("context").toObject().value("url").toString());
         }
     }
 
@@ -334,7 +342,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         if (!currentBrowseChannel.isEmpty()){
             browseChannelStack.push(currentBrowseChannel);
         }
+        unsubscribe(currentBrowseChannel);
         currentBrowseChannel = channel;
+        emit metadataChanged();
     }
 
     qDebug() << "EXITING" << __func__;

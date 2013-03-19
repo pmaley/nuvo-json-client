@@ -7,7 +7,7 @@ Dialog::Dialog()
 
     placeholderArt = new QPixmap(":/images/default_album_art_large@2x.png");
     nowPlayingContextMenu = new QMenu(this);
-    nowPlayingContextMenu->addAction("Test action");
+    //nowPlayingContextMenu->addAction("Test action");
 
 
     nuvo = new NuvoApiClient();
@@ -440,6 +440,15 @@ void Dialog::redisplay(){
     }
 }
 
+void Dialog::updateNowPlayingContextMenu()
+{
+    QList<QString> items = nuvo->getNowPlayingContextItems();
+    nowPlayingContextMenu->clear();
+    for (int i = 0; i < items.size(); i++){
+        nowPlayingContextMenu->addAction(items.at(i));
+    }
+}
+
 void Dialog::updateZonesList()
 {
     QList<QString> items = nuvo->getZonesList();
@@ -465,6 +474,7 @@ void Dialog::updateMetadata()
     labels[0]->setText(nuvo->metadata1);
     labels[1]->setText(nuvo->metadata2);
     labels[2]->setText(nuvo->metadata3);
+    updateNowPlayingContextMenu();
 }
 
 void Dialog::displayErrorMessage(const QString &err){
