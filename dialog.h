@@ -62,6 +62,7 @@ private:
     NuvoApiClient* nuvo;
     QPixmap *placeholderArt;
 
+    QMenu *nowPlayingContextMenu;
     QSplitter *splitter;
 
     QGridLayout *mainLayout;

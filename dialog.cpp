@@ -6,6 +6,9 @@ Dialog::Dialog()
     //this->setDisabled(true);
 
     placeholderArt = new QPixmap(":/images/default_album_art_large@2x.png");
+    nowPlayingContextMenu = new QMenu(this);
+    nowPlayingContextMenu->addAction("Test action");
+
 
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
@@ -529,10 +532,7 @@ void Dialog::clearConsoleWindow()
 
 void Dialog::showContextMenu(const QPoint& Pos)
 {
-    QMenu ContextMenu(this);
-
-    ContextMenu.addAction("Test action");
-    ContextMenu.exec(imageLabel->mapToGlobal(Pos));
+    nowPlayingContextMenu->exec(imageLabel->mapToGlobal(Pos));
 }
 
 
