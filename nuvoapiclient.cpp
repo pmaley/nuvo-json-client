@@ -342,7 +342,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         if (!currentBrowseChannel.isEmpty()){
             browseChannelStack.push(currentBrowseChannel);
         }
-        unsubscribe(currentBrowseChannel);
         currentBrowseChannel = channel;
         emit metadataChanged();
     }

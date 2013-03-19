@@ -8,6 +8,8 @@ Dialog::Dialog()
     placeholderArt = new QPixmap(":/images/default_album_art_large@2x.png");
     nowPlayingContextMenu = new QMenu(this);
     //nowPlayingContextMenu->addAction("Test action");
+    //connect(nowPlayingContextMenu,SIGNAL())
+    //nowPlayingContextMenu->
 
 
     nuvo = new NuvoApiClient();
@@ -445,8 +447,14 @@ void Dialog::updateNowPlayingContextMenu()
     QList<QString> items = nuvo->getNowPlayingContextItems();
     nowPlayingContextMenu->clear();
     for (int i = 0; i < items.size(); i++){
-        nowPlayingContextMenu->addAction(items.at(i));
+        nowPlayingContextMenu->addAction(items.at(i),this,SLOT(contextMenuItemSelected()));
     }
+}
+void Dialog::contextMenuItemSelected()
+{
+    qDebug() << "ITEM SELECTED";
+    qDebug() << nowPlayingContextMenu->actions().length();
+//    qDebug() << "SELECTED" << QString(nowPlayingContextMenu->activeAction()->text());
 }
 
 void Dialog::updateZonesList()
