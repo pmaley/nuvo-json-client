@@ -81,6 +81,7 @@ private:
                 *dislikeButton, *shuffleButton, *repeatButton,
                 *muteButton;
     QPushButton *backBrowseButton;
+    QPushButton *clearButton;
 
     QDialogButtonBox *buttonBox, *buttonBox2;
     QLabel *hostLabel, *portLabel, *imageLabel;
@@ -139,6 +140,7 @@ private slots:
     void updateZonesList();
     void updateRecords(const QList<BonjourRecord> &list);
     void dnsRecordResolved(const QHostInfo &info, int port);
+    void clearConsoleWindow();
 };
 
 #endif // DIALOG_H

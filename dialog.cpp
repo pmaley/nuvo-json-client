@@ -328,16 +328,20 @@ void Dialog::createConsoleBox()
     disconnectButton = new QPushButton(tr("Disconnect"));
     disconnectButton->setEnabled(false);
 
+    clearButton = new QPushButton(tr("Clear"));
+
     buttonBox2 = new QDialogButtonBox;
     buttonBox2->addButton(sendButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(connectButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(disconnectButton, QDialogButtonBox::ActionRole);
+    buttonBox2->addButton(clearButton, QDialogButtonBox::ActionRole);
     buttonBox2->addButton(quitButton, QDialogButtonBox::RejectRole);
 
     connect(connectButton, SIGNAL(clicked()), this, SLOT(connectToHost2()));
     connect(disconnectButton, SIGNAL(clicked()), nuvo, SLOT(disconnectFromHost()));
     connect(sendButton, SIGNAL(clicked()), this, SLOT(generateNewRequest()));
     connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(clearButton, SIGNAL(clicked()), this, SLOT(clearConsoleWindow()));
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->addWidget(hostLabel, 0, 0, Qt::AlignLeft);
@@ -485,6 +489,11 @@ void Dialog::browseItemClicked(QModelIndex index)
 void Dialog::zoneSelected(QString zone)
 {
     nuvo->changeCurrentZone(zone);
+}
+
+void Dialog::clearConsoleWindow()
+{
+    consoleTextEdit->clear();
 }
 
 
