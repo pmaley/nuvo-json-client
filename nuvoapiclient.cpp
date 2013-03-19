@@ -131,7 +131,6 @@ void NuvoApiClient::browseUpOne()
 
 void NuvoApiClient::unsubscribe(QString channel)
 {
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
     QString closeRequest( tr("{ \"method\" : \"cancel\", \"params\" : %2 }\n").arg(channelString) );
     sendRequest(closeRequest);
@@ -152,14 +151,12 @@ int NuvoApiClient::browseContainer(int index)
 }
 
 int NuvoApiClient::browseContainer(QString url, int startIndex){
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString count(tr("{ \"from\": %1, \"count\" : -1 }").arg(startIndex));
     QString request(tr( "{ \"url\" : \"%2\", \"method\" : \"browse\", \"params\" : %3 }\n").arg(url,count));
     return sendRequest(request);
 }
 
 int NuvoApiClient::continueBrowseContainer(QString channel, int startIndex){
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString count(tr("{ \"from\": %1, \"count\" : -1 }").arg(startIndex));
     QString request(tr( "{ \"channel\" : \"%2\", \"method\" : \"browse\", \"params\" : %3 }\n").arg(channel,count));
     return sendRequest(request);
@@ -167,7 +164,6 @@ int NuvoApiClient::continueBrowseContainer(QString channel, int startIndex){
 
 int NuvoApiClient::sendKeepAlive(QString channel)
 {
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString channels(tr("{ \"channels\" : [\"%1\"] }").arg(channel));
     QString request( tr("{ \"method\" : \"keepAlive\", \"params\" : %2 }\n").arg(channels) );
     return sendRequest(request);
@@ -365,7 +361,6 @@ void NuvoApiClient::updateVolume(QString id, int value){
     QJsonObject obj = findAvItem(id);
     QString url(obj.value("url").toString());
     QString params( tr("{ \"value\" : { \"int\" : %1 } }").arg(value));
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr(" { \"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(url,params));
     sendRequest(request);
 }
@@ -374,7 +369,6 @@ void NuvoApiClient::toggleValue(QString id)
 {
     QJsonObject obj = findAvItem(id);
     QString url(obj.value("url").toString());
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString params(tr("{ \"operation\" : \"toggle\" }"));
     QString request(tr("{\"url\" : \"%2\", \"method\" : \"updateValue\", \"params\" : %3 }").arg(url,params));
     sendRequest(request);
@@ -389,7 +383,6 @@ void NuvoApiClient::invokeAction(QString id)
 void NuvoApiClient::invokeAction(QJsonObject obj)
 {
     QString url(obj.value("url").toString());
-    QString reqId(tr("\"req-%1\"").arg(requestNum));
     QString request(tr(" { \"url\":\"%2\", \"method\":\"invoke\" }").arg(url));
     sendRequest(request);
 }
@@ -407,7 +400,6 @@ void NuvoApiClient::loadAv(int index)
     QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
     QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
     QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("item").toObject()).toJson());
-    QString reqId( tr("\"req-%1\"").arg(requestNum) );
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1 }").arg(context) );
     QString request( tr("{ \"url\" : %2, \"method\" : \"invoke\", \"params\" : %3 }").arg(url, params) );
