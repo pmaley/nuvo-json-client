@@ -55,7 +55,7 @@ private:
     void createNowPlayingBox();
     void createBrowseBox();
 
-    Overlay *overlay;
+    Overlay *overlay, *statusOverlay;
     void resizeEvent(QResizeEvent *event);
 
     enum { NumGridRows = 3, NumButtons = 5 };

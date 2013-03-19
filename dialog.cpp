@@ -57,6 +57,8 @@ Dialog::Dialog()
     connect(browser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
+//    statusOverlay = new Overlay(browseView);
+//    statusOverlay->show();
     overlay = new Overlay(this);
     overlay->show();
 
