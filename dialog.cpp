@@ -57,8 +57,9 @@ Dialog::Dialog()
     connect(browser, SIGNAL(currentBonjourRecordsChanged(const QList<BonjourRecord> &)),
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
-//    statusOverlay = new Overlay(browseView);
-//    statusOverlay->show();
+    statusOverlay = new Overlay(nowPlayingBox);
+    statusOverlay->hide();
+
     overlay = new Overlay(this);
     overlay->show();
 
@@ -66,6 +67,8 @@ Dialog::Dialog()
 
 void Dialog::resizeEvent(QResizeEvent *event) {
     overlay->resize(event->size());
+    statusOverlay->resize(nowPlayingBox->width(),nowPlayingBox->height());
+
     event->accept();
 }
 
