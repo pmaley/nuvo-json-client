@@ -311,7 +311,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         } else if ( type == "value"){
             updateDisplay(channel,i);
         } else {
-            qDebug() << "ITEM NOT PROCESSED:" << id;
+            qDebug() << "PARSE_REPLY_MESSAGE: ITEM NOT PROCESSED:" << id;
         }
     }
 
@@ -342,7 +342,7 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
             else if (type == "childItemChanged"){ parseChildItemChangedMessage(channel,currentObj); }
             else if (type == "childInserted"){ parseChildInsertedMessage(channel,currentObj); }
             else if (type == "childRemoved"){ parseChildRemovedMessage(channel,currentObj); }
-            else { qDebug() << "ITEM NOT PROCESSED:" << id; }
+            else { qDebug() << "PARSE_EVENT_MESSAGE: EVENT NOT PROCESSED:" << type; }
         }
     }
     qDebug() << "EXITING" << __func__;
@@ -407,7 +407,6 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     qDebug() << "ENTERING" << __func__;
     int index = (int)value.value("index").toDouble();
 
-    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
     QJsonObject newItem(channels[channel].value("children").toArray().at(index).toObject());
 
     QJsonObject::Iterator iterator2;
@@ -482,7 +481,7 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
     } else if (id == "info") {
         parseTrackMetadata();;
     } else {
-        qDebug() << "ITEM NOT PROCESSED:" << id;
+        qDebug() << "UPDATE_DISPLAY: ITEM NOT PROCESSED:" << id;
     }
 }
 

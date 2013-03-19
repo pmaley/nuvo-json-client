@@ -31,7 +31,7 @@ Dialog::Dialog()
     progressBarTimer->start(1000);
     connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(incrementProgressBar()));
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
-    connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeSliderAdjusted()));
+    //connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeSliderAdjusted()));
 
     mainLayout = new QGridLayout();
     mainLayout->setMenuBar(menuBar);
@@ -123,6 +123,8 @@ void Dialog::createMenu()
     fileMenu = new QMenu(tr("&File"), this);
     fileMenu->addAction(tr("&Debug Mode"), this, SLOT(hideButtonPressed()),
                       QKeySequence(tr("Ctrl+D", "")));
+    fileMenu->addAction(tr("Clear Console"), this, SLOT(clearConsoleWindow()),
+                      QKeySequence(tr("Ctrl+K", "")));
     menuBar->addMenu(fileMenu);
 }
 
