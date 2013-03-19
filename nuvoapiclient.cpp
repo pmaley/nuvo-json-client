@@ -229,7 +229,6 @@ void NuvoApiClient::parseJsonMessage(QString result)
     if (j.keys().contains("error"))
         emit displayFormattedText(QString(tr("<font color=\"Red\">%1</font><br>").arg(QString(QJsonDocument(j).toJson()))));
     else {
-        //emit displayText(QString(tr("<font color=\"Black\">%1</font><br>").arg(QString(QJsonDocument(j).toJson()))));
         emit displayUnformattedText(QString(tr("%1\n").arg(QString(QJsonDocument(j).toJson()))));
     }
     QString type(j.value("type").toString());
