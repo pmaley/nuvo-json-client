@@ -512,6 +512,7 @@ void NuvoApiClient::parseTrackMetadata(){
     metadata2 = QString(tr("<b>%1</b>").arg(obj.value("description").toString()));
     metadata3 = QString(obj.value("longDescription").toString());
 
+    emit albumArtCleared();
     QUrl url(obj.value("icon").toString());
     QNetworkRequest request(url);
     m_netwManager->get(request);

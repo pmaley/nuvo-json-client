@@ -7,6 +7,7 @@ Dialog::Dialog()
 
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
+    connect(nuvo, SIGNAL(albumArtCleared()), this, SLOT(clearAlbumArt()));
     connect(nuvo, SIGNAL(progressBarChanged()), this, SLOT(updateProgressBar()));
     connect(nuvo->tcpSocket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(onConnectionStateChange()));
     connect(nuvo, SIGNAL(raiseError(const QString &)), this, SLOT(displayErrorMessage(const QString &)));
@@ -467,6 +468,13 @@ void Dialog::displayErrorMessage(const QString &err){
     QMessageBox::information(this, tr("NuVo API"),tr("The following error occurred: %1.").arg(err));
 }
 
+void Dialog::clearAlbumArt()
+{
+    QPixmap *temp = new QPixmap(":/images/default_album_art_large@2x.png");
+    QPixmap image(temp->scaledToHeight(100));
+    delete temp;
+    imageLabel->setPixmap(image);
+}
 void Dialog::updateAlbumArt(){
     imageLabel->setPixmap(nuvo->albumArt.scaledToHeight(100));
 }

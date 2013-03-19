@@ -59,6 +59,7 @@ signals:
     void avStateChanged();
     void raiseError(const QString &err);
     void albumArtChanged();
+    void albumArtCleared();
     void progressBarChanged();
     void displayUnformattedText(const QString &err);
     void displayFormattedText(const QString &err);

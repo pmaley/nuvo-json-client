@@ -131,6 +131,7 @@ private slots:
     void displayFormattedText(const QString &err);
     void displayErrorMessage(const QString &err);
     void updateAlbumArt();
+    void clearAlbumArt();
     void updateProgressBar();
     void updateTransportControls();
     void updateMetadata();
