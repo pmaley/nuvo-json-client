@@ -39,6 +39,12 @@ QJsonObject NuvoApiClient::findZone(QString zoneTitle)
     return QJsonObject(QJsonValue(QString("error")).toObject());
 }
 
+QString NuvoApiClient::getStatusString()
+{
+    QJsonObject obj = findAvItem("status");
+    return obj.value("value").toObject().value("string").toString();
+}
+
 bool NuvoApiClient::getMuteState(){
     QJsonObject obj = findAvItem("volume");
     return obj.value("value").toObject().value("volume").toObject().keys().contains("mute");

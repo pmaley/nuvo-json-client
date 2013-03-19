@@ -31,6 +31,7 @@ public:
     bool getMuteState();
     bool getShuffleState();
     bool getRepeatState();
+    QString getStatusString();
 
     void connectToHost();
     void connectToHost(QString host, int port);

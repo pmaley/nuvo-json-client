@@ -58,9 +58,13 @@ Dialog::Dialog()
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
     statusOverlay = new Overlay(nowPlayingBox);
+    statusOverlay->setText("are you still there?");
     statusOverlay->hide();
 
+    connect(statusOverlay, SIGNAL(mouseClickEvent()), statusOverlay, SLOT(hide()));
+
     overlay = new Overlay(this);
+    overlay->setText("Connecting to system...");
     overlay->show();
 
 }
@@ -423,6 +427,13 @@ void Dialog::redisplay(){
     updateVolume();
     updateMetadata();
     updateTransportControls();
+    QString status(nuvo->getStatusString());
+    if (!status.isEmpty()){
+        statusOverlay->setText(status);
+        statusOverlay->show();
+    } else {
+        statusOverlay->hide();
+    }
 }
 
 void Dialog::updateZonesList()
