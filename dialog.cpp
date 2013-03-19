@@ -31,6 +31,9 @@ Dialog::Dialog()
     progressBarTimer->start(1000);
     connect(progressBarTimer, SIGNAL(timeout()), this, SLOT(incrementProgressBar()));
     connect(volumeSlider, SIGNAL(sliderReleased()), this, SLOT(volumeSliderAdjusted()));
+
+    // This causes an event to be triggered when the slider is updated in code,
+    // we only want it to trigger if the slider changes value by user interaction
     //connect(volumeSlider, SIGNAL(valueChanged(int)), this, SLOT(volumeSliderAdjusted()));
 
     mainLayout = new QGridLayout();
@@ -91,6 +94,8 @@ Dialog::~Dialog()
 void Dialog::dnsRecordResolved(const QHostInfo & info, int port){
     QString address(info.addresses().takeFirst().toString());
     qDebug() << address << port;
+    hostCombo->setText(address);
+    portLineEdit->setText(QString(tr("%1").arg(port)));
     nuvo->connectToHost(address, port);
     overlay->hide();
     this->setEnabled(true);
