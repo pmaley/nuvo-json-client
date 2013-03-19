@@ -36,6 +36,7 @@ public:
     void connectToHost(QString host, int port);
 
     int sendRequest(QString request);
+    int sendRequest2(QString request);
 
     void invokeAction(QJsonObject obj);
     void invokeAction(QString id);
