@@ -268,11 +268,10 @@ void Dialog::createMetadataBox()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QPixmap *temp = new QPixmap(":/images/default_album_art_large@2x.png");
-    QPixmap image(temp->scaledToHeight(100));
+    imageLabel = new QLabel();
+    imageLabel->setPixmap(temp->scaledToWidth(200));
     delete temp;
 
-    imageLabel = new QLabel();
-    imageLabel->setPixmap(image);
     layout->addWidget(imageLabel);
     for (int i = 0; i < NumGridRows; ++i) {
         labels[i] = new QLabel();
@@ -471,12 +470,12 @@ void Dialog::displayErrorMessage(const QString &err){
 void Dialog::clearAlbumArt()
 {
     QPixmap *temp = new QPixmap(":/images/default_album_art_large@2x.png");
-    QPixmap image(temp->scaledToHeight(100));
+    imageLabel->setPixmap(temp->scaledToWidth(200));
     delete temp;
-    imageLabel->setPixmap(image);
+
 }
 void Dialog::updateAlbumArt(){
-    imageLabel->setPixmap(nuvo->albumArt.scaledToHeight(100));
+    imageLabel->setPixmap(nuvo->albumArt.scaledToWidth(100));
 }
 
 void Dialog::updateTransportControls()

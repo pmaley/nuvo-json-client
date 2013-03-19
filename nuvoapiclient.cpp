@@ -490,7 +490,7 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
     } else if (id == "state") {
         avState = QString(item.value("value").toObject().value("avState").toString());
     } else if (id == "info") {
-        parseTrackMetadata();;
+        parseTrackMetadata();
     } else {
         qDebug() << "UPDATE_DISPLAY: ITEM NOT PROCESSED:" << id;
     }
