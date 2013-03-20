@@ -400,7 +400,7 @@ void NuvoApiClient::browseClick(int index)
     else { browseContainer(index); }
 }
 
-void NuvoApiClient::loadAv(int index)
+void NuvoApiClient::loadAv2(int index)
 {
     qDebug() << "ENTERING" << __func__;
     QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
@@ -409,6 +409,26 @@ void NuvoApiClient::loadAv(int index)
     QString parentItem( QJsonDocument(channels[currentBrowseChannel].value("item").toObject()).toJson());
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
     QString params( tr("{\"context\": %1, \"avUrl\": \"%2\" }").arg(context,channels[avChannel].value("item").toObject().value("url").toString()) );
+    QString request( tr("{ \"url\" : %1, \"method\" : \"invoke\", \"params\" : %2 }").arg(url, params) );
+    sendRequest(request);
+    qDebug() << "EXITING" << __func__;
+}
+
+
+void NuvoApiClient::loadAv(int index)
+{
+    qDebug() << "ENTERING" << __func__;
+    QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
+    //QString url(tr("\"%1\"").arg(QString(channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("url").toString())));
+    //QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
+    QString reqItem(tr("%1").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
+    QString parentItem( QJsonDocument(channels[currentBrowseChannel].value("item").toObject()).toJson());
+
+    QString item ( tr( "{ \"item\": %1, \"parent\": %2, \"index\": %3 }").arg(reqItem,parentItem,QString::number(index)) );
+    //QString context( tr("{ \"item\": %1, \"avUrl\": \"%2\" }").arg(item,channels[avChannel].value("item").toObject().value("url").toString()) );
+    QString context( tr("{ \"item\": %1 }").arg(item) );
+
+    QString params( tr("{\"context\": %1 }").arg(context));
     QString request( tr("{ \"url\" : %1, \"method\" : \"invoke\", \"params\" : %2 }").arg(url, params) );
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
