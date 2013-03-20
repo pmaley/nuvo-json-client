@@ -39,6 +39,13 @@ QJsonObject NuvoApiClient::findZone(QString zoneTitle)
     return QJsonObject(QJsonValue(QString("error")).toObject());
 }
 
+void NuvoApiClient::setChildren(QString channel, QJsonArray children)
+{
+    QJsonObject::Iterator iterator;
+    iterator = channels[channel].find("children");
+    iterator.value() = children;
+}
+
 QString NuvoApiClient::getStatusString()
 {
     QJsonObject obj = findAvItem("status");
@@ -315,9 +322,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         for (int i = 0; i < insertChildren.size(); i++){
             children.append(insertChildren.at(i).toObject());
         }
-        QJsonObject::Iterator iterator;
-        iterator = channels[channel].find("children");
-        iterator.value() = children;
+        setChildren(channel,children);
 
         int objLen = channels[channel].value("children").toArray().size();
         if (objLen == count){
@@ -373,7 +378,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             browseChannelStack.push(currentBrowseChannel);
         }
         currentBrowseChannel = channel;
-        emit metadataChanged();
     }
 
     qDebug() << "EXITING" << __func__;
@@ -460,9 +464,7 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     iterator2.value() = QJsonValue(value.value("value"));
     QJsonArray children(channels[channel].value("children").toArray());
     children.replace(index,QJsonValue(newItem));
-    QJsonObject::Iterator iterator;
-    iterator = channels[channel].find("children");
-    iterator.value() = children;
+    setChildren(channel,children);
     updateDisplay(channel,index);
 }
 
@@ -470,9 +472,7 @@ void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject va
     int index = (int)value.value("index").toDouble();
     QJsonArray children(channels[channel].value("children").toArray());
     children.replace(index,QJsonValue(value.value("item")));
-    QJsonObject::Iterator iterator;
-    iterator = channels[channel].find("children");
-    iterator.value() = children;
+    setChildren(channel,children);
     updateDisplay(channel,index);
 }
 
@@ -480,9 +480,7 @@ void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value)
     int index = (int)value.value("index").toDouble();
     QJsonArray children(channels[channel].value("children").toArray());
     children.removeAt(index);
-    QJsonObject::Iterator iterator;
-    iterator = channels[channel].find("children");
-    iterator.value() = children;
+    setChildren(channel,children);
     updateDisplay(channel,index);
 }
 
@@ -495,9 +493,8 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
 
     QJsonArray children(channels[channel].value("children").toArray());
     children.insert(index,value.value("item").toObject());
-    QJsonObject::Iterator iterator;
-    iterator = channels[channel].find("children");
-    iterator.value() = children;
+    setChildren(channel,children);
+    updateDisplay(channel,index);
 
     qDebug() << "EXITING" << __func__;
 }

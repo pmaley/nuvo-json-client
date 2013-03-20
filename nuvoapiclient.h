@@ -105,6 +105,8 @@ private:
 
     void parseTrackMetadata();
 
+    void setChildren(QString channel, QJsonArray children);
+
     void parseChildValueChangedMessage(QString channel, QJsonObject value);
     void parseChildItemChangedMessage(QString channel, QJsonObject value);
     void parseChildRemovedMessage(QString channel, QJsonObject value);
