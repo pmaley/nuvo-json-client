@@ -352,6 +352,12 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     {
         currentNowPlayingContextMenuChannel = channel;
     }
+    else if ( id == currentBrowseRequestNum ){
+        if (!currentBrowseChannel.isEmpty()){
+            browseChannelStack.push(currentBrowseChannel);
+        }
+        currentBrowseChannel = channel;
+    }
 
     // Inspect individual elements, process accordingly
     // REFACTOR
@@ -370,14 +376,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             if (!contextUrl.isEmpty())
                 currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
         }
-    }
-
-    // Drilling down, push previous container onto stack
-    if ( id == currentBrowseRequestNum ){
-        if (!currentBrowseChannel.isEmpty()){
-            browseChannelStack.push(currentBrowseChannel);
-        }
-        currentBrowseChannel = channel;
     }
 
     qDebug() << "EXITING" << __func__;
@@ -515,15 +513,7 @@ void NuvoApiClient::updateDisplay(QString channel, int index)
 
 void NuvoApiClient::parseTrackMetadata(){
     qDebug() << "ENTERING" << __func__;
-
-    QJsonArray array(channels[avChannel].value("children").toArray());
-    int i;
-    for (i=0; i < array.size(); i++){
-        if (array.at(i).toObject().value("id").toString() == "info"){
-            break;
-        }
-    }
-    QJsonObject obj(array.at(i).toObject());
+    QJsonObject obj = findAvItem("info");
 
     metadata1 = QString(obj.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(obj.value("description").toString()));
