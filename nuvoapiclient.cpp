@@ -142,7 +142,7 @@ void NuvoApiClient::browseUpOne()
 void NuvoApiClient::unsubscribe(QString channel)
 {
     QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
-    QString closeRequest( tr("{ \"method\" : \"cancel\", \"params\" : %2 }\n").arg(channelString) );
+    QString closeRequest( tr("{ \"method\" : \"close\", \"params\" : %2 }\n").arg(channelString) );
     sendRequest(closeRequest);
 }
 
@@ -313,7 +313,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
     QJsonArray it(channels[channel].value("children").toArray());
 
-    if (!channel.isEmpty())
+    if (!channel.isEmpty() && currentReBrowseChannel.isEmpty())
         sendKeepAlive(channel);
 
     if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentAvRequestNum)) ){
