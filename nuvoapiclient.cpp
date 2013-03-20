@@ -248,7 +248,6 @@ void NuvoApiClient::parseJsonMessage(QString result)
     if (type == "reply" && !channel.isEmpty() ) { parseReplyMessage(j); }
     else if ( type == "event"){  parseEventMessage(j); }
     else if ( type == "closed"){ channelClosed(channel); }
-    else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
     if (channel == avChannel)
     {
@@ -369,7 +368,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     }
 
     // Drilling down, push previous container onto stack
-    if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentBrowseRequestNum)) ){
+    if ( id == currentBrowseRequestNum ){
         if (!currentBrowseChannel.isEmpty()){
             browseChannelStack.push(currentBrowseChannel);
         }
@@ -384,21 +383,15 @@ void NuvoApiClient::parseEventMessage(QJsonObject obj)
 {
     qDebug() << "ENTERING" << __func__;
     QString channel = obj.value("channel").toString();
-    QJsonValue value = obj.value("event");
-    qDebug() << channel;
-
-    if ( value.isArray() ){
-        QJsonArray array = value.toArray();
-        for (int i = 0; i < array.size(); i++) {
-            QJsonObject currentObj = array.at(i).toObject();
-            QString type = QString(currentObj.value("type").toString());
-            QString id = QString(currentObj.value("id").toString());
-            if (type == "childValueChanged"){ parseChildValueChangedMessage(channel,currentObj); }
-            else if (type == "childItemChanged"){ parseChildItemChangedMessage(channel,currentObj); }
-            else if (type == "childInserted"){ parseChildInsertedMessage(channel,currentObj); }
-            else if (type == "childRemoved"){ parseChildRemovedMessage(channel,currentObj); }
-            else { qDebug() << "PARSE_EVENT_MESSAGE: EVENT NOT PROCESSED:" << type; }
-        }
+    QJsonArray array = obj.value("event").toArray();
+    for (int i = 0; i < array.size(); i++) {
+        QJsonObject currentObj = array.at(i).toObject();
+        QString type = QString(currentObj.value("type").toString());
+        if (type == "childValueChanged"){ parseChildValueChangedMessage(channel,currentObj); }
+        else if (type == "childItemChanged"){ parseChildItemChangedMessage(channel,currentObj); }
+        else if (type == "childInserted"){ parseChildInsertedMessage(channel,currentObj); }
+        else if (type == "childRemoved"){ parseChildRemovedMessage(channel,currentObj); }
+        else { qDebug() << "PARSE_EVENT_MESSAGE: EVENT NOT PROCESSED:" << type; }
     }
     qDebug() << "EXITING" << __func__;
 }
@@ -428,16 +421,22 @@ void NuvoApiClient::invokeAction(QString id)
 
 void NuvoApiClient::invokeAction(QJsonObject obj)
 {
-    QString url(obj.value("url").toString());
-    QString request(tr(" { \"url\":\"%2\", \"method\":\"invoke\" }").arg(url));
+    QString request(tr(" { \"url\":\"%2\", \"method\":\"invoke\" }").arg(obj.value("url").toString()));
     sendRequest(request);
 }
 
 void NuvoApiClient::browseClick(int index)
 {
     bool av = channels[currentBrowseChannel].value("children").toArray().at(index).toObject().value("av").toBool();
-    if (av == true) { loadAv(index);  }
-    else { browseContainer(index); }
+
+    if (av == true)
+    {
+        loadAv(index);
+    }
+    else
+    {
+        browseContainer(index);
+    }
 }
 
 void NuvoApiClient::loadAv(int index)
