@@ -43,7 +43,6 @@ public:
     void invokeAction(QString id);
 
     void loadAv(int index);
-    void loadAv2(int index);
 
     void toggleValue(QString id);
     void updateVolume(QString id, int value);
