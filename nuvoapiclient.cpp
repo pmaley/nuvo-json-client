@@ -404,7 +404,7 @@ void NuvoApiClient::loadAv(int index)
 {
     qDebug() << "ENTERING" << __func__;
     QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
-    QString reqItem(tr("%1").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
+    QString reqItem(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson());
     QString parentItem( QJsonDocument(channels[currentBrowseChannel].value("item").toObject()).toJson());
     QString item ( tr( "{ \"item\": %1, \"parent\": %2, \"index\": %3 }").arg(reqItem,parentItem,QString::number(index)) );
     QString context( tr("{ \"item\": %1 }").arg(item) );
