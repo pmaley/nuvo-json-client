@@ -268,10 +268,6 @@ void NuvoApiClient::parseJsonMessage(QString result)
     {
         emit zoneListChanged();
     }
-    else if (channel == currentBrowseChannel)
-    {
-        emit browseDataChanged();
-    }
 
     qDebug() << "EXITING" << __func__;
 }
@@ -369,7 +365,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
         if (id == "info"){
             parseTrackMetadata();
-        } else if ( type == "value"){
+        } else
+        if ( type == "value"){
             updateDisplay(channel,i);
         } else if ( id == "trackItem"){
             QString contextUrl(current.value("context").toObject().value("url").toString());
@@ -515,15 +512,17 @@ void NuvoApiClient::parseTrackMetadata(){
     qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem("info");
 
+    // This is awful, don't put style information ANYWHERE in this class
     metadata1 = QString(obj.value("title").toString());
     metadata2 = QString(tr("<b>%1</b>").arg(obj.value("description").toString()));
     metadata3 = QString(obj.value("longDescription").toString());
 
-    emit albumArtCleared();
     QUrl url(obj.value("icon").toString());
-    QNetworkRequest request(url);
-    m_netwManager->get(request);
-
+    if ( !url.isEmpty() ){
+        emit albumArtCleared();
+        QNetworkRequest request(url);
+        m_netwManager->get(request);
+    }
     qDebug() << "EXITING" << __func__;
 }
 
