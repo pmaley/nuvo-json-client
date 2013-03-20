@@ -239,27 +239,34 @@ void NuvoApiClient::parseJsonMessage(QString result)
 
     if (j.keys().contains("error"))
         emit displayFormattedText(QString(tr("<font color=\"Red\">%1</font><br>").arg(QString(QJsonDocument(j).toJson()))));
-    else {
+    else
         emit displayUnformattedText(QString(tr("%1\n").arg(QString(QJsonDocument(j).toJson()))));
-    }
+
     QString type(j.value("type").toString());
     QString channel(j.value("channel").toString());
 
-    if (type == "reply") { parseReplyMessage(j); }
+    if (type == "reply" && !channel.isEmpty() ) { parseReplyMessage(j); }
     else if ( type == "event"){  parseEventMessage(j); }
     else if ( type == "closed"){ channelClosed(channel); }
     else { qDebug() << "RESPONSE NOT PROCESSED:" << type; }
 
-    if (!channel.isEmpty() && channel == avChannel)
+    if (channel == avChannel)
+    {
         emit refreshDisplay();
-
-    if (channel == currentBrowseChannel){
-        emit browseDataChanged();
-    } else if (channel == zonesChannel){
-        emit zoneListChanged();
-    } else if (channel == currentBrowseChannel){
+    }
+    else if (channel == currentBrowseChannel)
+    {
         emit browseDataChanged();
     }
+    else if (channel == zonesChannel)
+    {
+        emit zoneListChanged();
+    }
+    else if (channel == currentBrowseChannel)
+    {
+        emit browseDataChanged();
+    }
+
     qDebug() << "EXITING" << __func__;
 }
 
@@ -284,14 +291,14 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
     // If the channel exists, and the browse result is complete,
     // then set the container in the hash
-    if (!channel.isEmpty() && count == length)
+    if (count == length)
     {
         channels[channel] = QJsonObject(obj.value("result").toObject());
     }
     // If channel exists, browse result is incomplete, and
     // we aren't already mid-incremental browse (first response),
     // then set the container in the hash, and continue browsing container
-    else if (!channel.isEmpty() && count != length && channel != currentReBrowseChannel)
+    else if (count != length && channel != currentReBrowseChannel)
     {
         channels[channel] = QJsonObject(obj.value("result").toObject());
         currentReBrowseChannel = channel;
@@ -301,8 +308,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     // If channel exists, browse result is incomplete,
     // and we are incrementally browsing,
     // then append children to browse container,
-    //
-    else if (!channel.isEmpty() && count != length && channel == currentReBrowseChannel)
+    // and either continue browsing, or clear browse channel variable
+    else if (count != length && channel == currentReBrowseChannel)
     {
         QJsonArray insertChildren(obj.value("result").toObject().value("children").toArray());
         QJsonArray children(channels[channel].value("children").toArray());
@@ -325,7 +332,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
 
     // Keep channel alive if finished browsing it
-    if (!channel.isEmpty() && currentReBrowseChannel.isEmpty())
+    if (currentReBrowseChannel.isEmpty())
         sendKeepAlive(channel);
 
     // Match requests and their channel with stored values
@@ -435,7 +442,6 @@ void NuvoApiClient::browseClick(int index)
 
 void NuvoApiClient::loadAv(int index)
 {
-    qDebug() << "ENTERING" << __func__;
     QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
     QString reqItem(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson());
     QString parentItem( QJsonDocument(channels[currentBrowseChannel].value("item").toObject()).toJson());
@@ -444,16 +450,12 @@ void NuvoApiClient::loadAv(int index)
     QString params( tr("{\"context\": %1 }").arg(context));
     QString request( tr("{ \"url\" : %1, \"method\" : \"invoke\", \"params\" : %2 }").arg(url, params) );
     sendRequest(request);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject value)
 {
-    qDebug() << "ENTERING" << __func__;
     int index = (int)value.value("index").toDouble();
-
     QJsonObject newItem(channels[channel].value("children").toArray().at(index).toObject());
-
     QJsonObject::Iterator iterator2;
     iterator2 = newItem.find("value");
     iterator2.value() = QJsonValue(value.value("value"));
@@ -462,39 +464,26 @@ void NuvoApiClient::parseChildValueChangedMessage(QString channel, QJsonObject v
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
     iterator.value() = children;
-
     updateDisplay(channel,index);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseChildItemChangedMessage(QString channel, QJsonObject value){
-    qDebug() << "ENTERING" << __func__;
-
     int index = (int)value.value("index").toDouble();
-    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
-
     QJsonArray children(channels[channel].value("children").toArray());
     children.replace(index,QJsonValue(value.value("item")));
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
     iterator.value() = children;
-
     updateDisplay(channel,index);
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value){
-    qDebug() << "ENTERING" << __func__;
     int index = (int)value.value("index").toDouble();
-    QString id = channels[channel].value("children").toArray().at(index).toObject().value("id").toString();
-
     QJsonArray children(channels[channel].value("children").toArray());
     children.removeAt(index);
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
     iterator.value() = children;
-
-    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value)
