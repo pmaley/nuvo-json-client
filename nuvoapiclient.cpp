@@ -483,6 +483,7 @@ void NuvoApiClient::parseChildRemovedMessage(QString channel, QJsonObject value)
     QJsonObject::Iterator iterator;
     iterator = channels[channel].find("children");
     iterator.value() = children;
+    updateDisplay(channel,index);
 }
 
 void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value)
