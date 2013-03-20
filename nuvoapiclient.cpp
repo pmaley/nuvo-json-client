@@ -488,9 +488,6 @@ void NuvoApiClient::parseChildInsertedMessage(QString channel, QJsonObject value
 {
     qDebug() << "ENTERING" << __func__;
     int index = (int)value.value("index").toDouble();
-    QString url = value.value("item").toObject().value("url").toString();
-    QString id = value.value("item").toObject().value("id").toString();
-
     QJsonArray children(channels[channel].value("children").toArray());
     children.insert(index,value.value("item").toObject());
     setChildren(channel,children);
