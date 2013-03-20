@@ -195,17 +195,6 @@ int NuvoApiClient::sendRequest(QString request)
     return requestNum-1;
 }
 
-int NuvoApiClient::sendRequest2(QString request)
-{
-    QByteArray byteArray = request.toUtf8();
-    const char* cString = byteArray.constData();
-    tcpSocket->write(cString);
-    emit displayFormattedText(QString(tr("<font color=\"Blue\">%1</font><br>").arg(cString)));
-    qDebug() << cString << "written to socket. Request #" << requestNum;
-    requestNum++;
-    return requestNum-1;
-}
-
 void NuvoApiClient::connectToHost(QString host, int port)
 {
     if (!tcpSocket->isOpen())
@@ -334,7 +323,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         } else if ( type == "value"){
             updateDisplay(channel,i);
         } else if ( id == "trackItem"){
-            currentNowPlayingContextMenuRequestNum = browseContainer(current.value("context").toObject().value("url").toString());
+            QString contextUrl(current.value("context").toObject().value("url").toString());
+            if (!contextUrl.isEmpty())
+                currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
         }
     }
 
@@ -416,7 +407,7 @@ void NuvoApiClient::loadAv(int index)
     QString reqItem(tr("{ \"item\" : %1 }").arg(QString(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson())));
     QString parentItem( QJsonDocument(channels[browseChannelStack.top()].value("item").toObject()).toJson());
     QString context( tr("{ \"item\": %1, \"index\" : %2, \"parentItem\" : %3 }").arg(reqItem, QString::number(index), parentItem) );
-    QString params( tr("{\"context\": %1 }").arg(context) );
+    QString params( tr("{\"context\": %1, \"avUrl\": \"\" }").arg(context) );
     QString request( tr("{ \"url\" : %2, \"method\" : \"invoke\", \"params\" : %3 }").arg(url, params) );
     sendRequest(request);
     qDebug() << "EXITING" << __func__;
