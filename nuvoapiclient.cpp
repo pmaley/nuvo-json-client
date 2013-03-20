@@ -273,6 +273,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     qDebug() << "ENTERING" << __func__;
     qDebug() << "ID: " << obj.value("id").toString();
 
+    int id = obj.value("id").toString().toInt();
     QString channel = obj.value("channel").toString();
     int count = (int)(obj.value("result").toObject().value("count").toDouble());
     int length = obj.value("result").toObject().value("children").toArray().size();
@@ -280,10 +281,16 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
     // Handle incremental browsing
     // REFACTOR
+
+    // If the channel exists, and the browse result is complete,
+    // then set the container in the hash
     if (!channel.isEmpty() && count == length)
     {
         channels[channel] = QJsonObject(obj.value("result").toObject());
     }
+    // If channel exists, browse result is incomplete, and
+    // we aren't already mid-incremental browse (first response),
+    // then set the container in the hash, and continue browsing container
     else if (!channel.isEmpty() && count != length && channel != currentReBrowseChannel)
     {
         channels[channel] = QJsonObject(obj.value("result").toObject());
@@ -291,6 +298,10 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         int objLen = channels[channel].value("children").toArray().size();
         continueBrowseContainer(channel,objLen);
     }
+    // If channel exists, browse result is incomplete,
+    // and we are incrementally browsing,
+    // then append children to browse container,
+    //
     else if (!channel.isEmpty() && count != length && channel == currentReBrowseChannel)
     {
         QJsonArray insertChildren(obj.value("result").toObject().value("children").toArray());
@@ -303,31 +314,37 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         iterator.value() = children;
 
         int objLen = channels[channel].value("children").toArray().size();
-        if (objLen == count) { currentReBrowseChannel = ""; }
-        else { continueBrowseContainer(channel,objLen); }
+        if (objLen == count){
+            currentReBrowseChannel = "";
+        }
+        else
+        {
+            continueBrowseContainer(channel,objLen);
+        }
     }
 
-    QJsonArray it(channels[channel].value("children").toArray());
 
+    // Keep channel alive if finished browsing it
     if (!channel.isEmpty() && currentReBrowseChannel.isEmpty())
         sendKeepAlive(channel);
 
-    if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentAvRequestNum)) )
+    // Match requests and their channel with stored values
+    if ( id == currentAvRequestNum )
     {
         avChannel = channel;
     }
-    else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentZonesRequestNum)) )
+    else if ( id == currentZonesRequestNum )
     {
         zonesChannel = channel;
     }
-    else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentNowPlayingContextMenuRequestNum)) )
+    else if ( id == currentNowPlayingContextMenuRequestNum )
     {
         currentNowPlayingContextMenuChannel = channel;
     }
 
-
     // Inspect individual elements, process accordingly
     // REFACTOR
+    QJsonArray it(channels[channel].value("children").toArray());
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
