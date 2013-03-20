@@ -278,14 +278,21 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     int length = obj.value("result").toObject().value("children").toArray().size();
 
 
-    if (!channel.isEmpty() && count == length){
+    // Handle incremental browsing
+    // REFACTOR
+    if (!channel.isEmpty() && count == length)
+    {
         channels[channel] = QJsonObject(obj.value("result").toObject());
-    } else if (!channel.isEmpty() && count != length && channel != currentReBrowseChannel){
+    }
+    else if (!channel.isEmpty() && count != length && channel != currentReBrowseChannel)
+    {
         channels[channel] = QJsonObject(obj.value("result").toObject());
         currentReBrowseChannel = channel;
         int objLen = channels[channel].value("children").toArray().size();
         continueBrowseContainer(channel,objLen);
-    } else if (!channel.isEmpty() && count != length && channel == currentReBrowseChannel){
+    }
+    else if (!channel.isEmpty() && count != length && channel == currentReBrowseChannel)
+    {
         QJsonArray insertChildren(obj.value("result").toObject().value("children").toArray());
         QJsonArray children(channels[channel].value("children").toArray());
         for (int i = 0; i < insertChildren.size(); i++){
@@ -305,14 +312,22 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     if (!channel.isEmpty() && currentReBrowseChannel.isEmpty())
         sendKeepAlive(channel);
 
-    if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentAvRequestNum)) ){
+    if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentAvRequestNum)) )
+    {
         avChannel = channel;
-    } else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentZonesRequestNum)) ){
+    }
+    else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentZonesRequestNum)) )
+    {
         zonesChannel = channel;
-    } else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentNowPlayingContextMenuRequestNum)) ){
+    }
+    else if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentNowPlayingContextMenuRequestNum)) )
+    {
         currentNowPlayingContextMenuChannel = channel;
     }
 
+
+    // Inspect individual elements, process accordingly
+    // REFACTOR
     for (int i = 0; i < it.size(); i++ ){;
         QJsonObject current(it.at(i).toObject());
         QString id(current.value("id").toString());
@@ -329,6 +344,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
     }
 
+    // Drilling down, push previous container onto stack
     if ( QString(obj.value("id").toString()) == QString(tr("%1").arg(currentBrowseRequestNum)) ){
         if (!currentBrowseChannel.isEmpty()){
             browseChannelStack.push(currentBrowseChannel);
