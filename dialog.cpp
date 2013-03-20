@@ -514,9 +514,9 @@ void Dialog::updateTransportControls()
     shuffleButton->setEnabled(nuvo->getItemActive("shuffle"));
     shuffleButton->setChecked(nuvo->getShuffleState());
     repeatButton->setEnabled(nuvo->getItemActive("repeatMode"));
-    //repeatButton->setChecked(nuvo->getItemActive("repeatMode") && nuvo->getRepeatState());
-    repeatButton->setChecked(nuvo->getItemActive("repeatMode"));
+    repeatButton->setChecked(nuvo->getItemActive("repeatMode") && nuvo->getRepeatState());
 }
+
 void Dialog::clearBrowseWindow()
 {
     browseModel->setRowCount(0);
