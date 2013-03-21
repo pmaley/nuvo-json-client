@@ -70,9 +70,12 @@ private:
     BonjourResolver *resolver;
 
     QMenuBar *menuBar;
-    QGroupBox *transportControlsBox, *transportControlsBox2, *metadataBox, *nowPlayingBox, *consoleBox, *browseBox;
+    QGroupBox *transportControlsBox, *transportControlsBox2, *metadataBox,
+                *nowPlayingBox, *consoleBox, *browseBox, *progressBox;
+
     QTextEdit *consoleWindow;
     QLabel *labels[NumGridRows];
+    QLabel *progressCurrent, *progressMax;
 
     QComboBox * zonesCombo;
 

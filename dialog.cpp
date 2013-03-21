@@ -290,13 +290,21 @@ void Dialog::createNowPlayingBox()
 {
     nowPlayingBox = new QGroupBox();
     QGridLayout *layout = new QGridLayout;
+    progressBox = new QGroupBox();
+    QHBoxLayout *layout2 = new QHBoxLayout();
 
     createMetadataBox();
-    trackProgressBar = new QProgressBar();
+    progressCurrent = new QLabel(this);
+    progressMax = new QLabel(this);
+    trackProgressBar = new QProgressBar(this);
+    layout2->addWidget(progressCurrent);
+    layout2->addWidget(trackProgressBar);
+    layout2->addWidget(progressMax);
+    progressBox->setLayout(layout2);
 
     layout->addWidget(imageLabel,0,0,1,1);
     layout->addWidget(metadataBox,0,1,1,1);
-    layout->addWidget(trackProgressBar,1,0,1,2);
+    layout->addWidget(progressBox,1,0,1,2);
     layout->addWidget(transportControlsBox2,3,0,1,2);
     layout->addWidget(transportControlsBox,4,0,1,2);
 
@@ -423,7 +431,11 @@ void Dialog::onConnectionStateChange(){
 
 void Dialog::incrementProgressBar(){
     if (nuvo->avState == "playing" && trackProgressBar->maximum() > 0) {
+        QString time = QDateTime::fromTime_t(trackProgressBar->value()).toString("mm:ss");
+        QString timeMax = QDateTime::fromTime_t(trackProgressBar->maximum()).toString("mm:ss");
         trackProgressBar->setValue(trackProgressBar->value()+1);
+        progressCurrent->setText(time);
+        progressMax->setText(timeMax);
     }
 }
 
