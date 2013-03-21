@@ -431,11 +431,9 @@ void Dialog::onConnectionStateChange(){
 
 void Dialog::incrementProgressBar(){
     if (nuvo->avState == "playing" && trackProgressBar->maximum() > 0) {
-        QString time = QDateTime::fromTime_t(trackProgressBar->value()).toString("mm:ss");
-        QString timeMax = QDateTime::fromTime_t(trackProgressBar->maximum()).toString("mm:ss");
         trackProgressBar->setValue(trackProgressBar->value()+1);
+        QString time = QDateTime::fromTime_t(trackProgressBar->value()).toString("mm:ss");
         progressCurrent->setText(time);
-        progressMax->setText(timeMax);
     }
 }
 

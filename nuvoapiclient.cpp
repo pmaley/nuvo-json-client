@@ -150,6 +150,7 @@ void NuvoApiClient::unsubscribe(QString channel)
 {
     QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
     QString closeRequest( tr("{ \"method\" : \"close\", \"params\" : %2 }\n").arg(channelString) );
+    channelsToClose.append(channel);
     sendRequest(closeRequest);
 }
 
@@ -255,6 +256,7 @@ void NuvoApiClient::parseJsonMessage(QString result)
     if (type == "reply" && !channel.isEmpty() ) { parseReplyMessage(j); }
     else if ( type == "event"){  parseEventMessage(j); }
     else if ( type == "closed"){ channelClosed(channel); }
+    else if ( type == "removed"){ channelRemoved(channel); }
 
     if (channel == avChannel)
     {
@@ -272,9 +274,68 @@ void NuvoApiClient::parseJsonMessage(QString result)
     qDebug() << "EXITING" << __func__;
 }
 
+void NuvoApiClient::replaceChannel(int reqId, QString newChannel)
+{
+    QString oldChannel(channelsToReopen[reqId]);
+
+    if (browseChannelStack.contains(oldChannel)){
+        int index = browseChannelStack.indexOf(oldChannel);
+        browseChannelStack.replace(index,newChannel);
+    }
+    if (currentBrowseChannel == oldChannel)
+        currentBrowseChannel = newChannel;
+    if (avChannel == oldChannel)
+        avChannel = newChannel;
+    if (zonesChannel == oldChannel)
+        zonesChannel = newChannel;
+    if (currentNowPlayingContextMenuChannel == oldChannel)
+        currentNowPlayingContextMenuChannel = newChannel;
+
+    channelsToReopen.remove(reqId);
+    channels.remove(oldChannel);
+}
+
 void NuvoApiClient::channelClosed(QString channel)
 {
+
+    qDebug() << "CHANNEL CLOSED" << channel;
+    qDebug() << "CHANNELS TO CLOSE:" << channelsToClose;
+    if ( channelsToClose.contains(channel) )
+    {
+        channelsToClose.removeAll(channel);
+        channels.remove(channel);
+    }
+    else if ( channels.contains(channel) )
+    {
+        QString url = channels[channel].value("item").toObject().value("url").toString();
+        qDebug() << "Re-opening channel" << channel << "at:" << url;
+        int reqId = browseContainer(url);
+
+        channelsToReopen[reqId] = QString(channel);
+
+//        if (channel == avChannel){
+//            currentAvRequestNum = reqId;
+//        } else if (channel == currentBrowseChannel){
+//            currentBrowseRequestNum = reqId;
+//        } else if (channel == zonesChannel){
+//            currentZonesRequestNum = reqId;
+//        } else if (channel == currentNowPlayingContextMenuChannel){
+//            currentNowPlayingContextMenuRequestNum = reqId;
+//        } else if (browseChannelStack.contains(channel)){
+//            //browseChannelStack.remove(browseChannelStack.indexOf(channel));
+//            browseChannelStack.clear();
+//            currentBrowseRequestNum = browseContainer("/stable/music/");
+//        }
+    }
+
+    qDebug() << "CHANNELS:" << channels.keys();
+}
+
+void NuvoApiClient::channelRemoved(QString channel)
+{
+    qDebug() << "CHANNEL REMOVED" << channel;
     channels.remove(channel);
+    qDebug() << "CHANNELS:" << channels.keys();
 }
 
 void NuvoApiClient::parseReplyMessage(QJsonObject obj)
@@ -332,8 +393,8 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 
 
     // Keep channel alive if finished browsing it
-    if (currentReBrowseChannel.isEmpty())
-        sendKeepAlive(channel);
+//    if (currentReBrowseChannel.isEmpty())
+//        sendKeepAlive(channel);
 
     // Match requests and their channel with stored values
     if ( id == currentAvRequestNum )
@@ -354,6 +415,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
         currentBrowseChannel = channel;
     }
+
+    if (channelsToReopen.contains(id))
+        replaceChannel(id,channel);
 
     // Inspect individual elements, process accordingly
     // REFACTOR
@@ -376,7 +440,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
     }
     parseTrackMetadata();
-
+    qDebug() << "CHANNELS:" << channels.keys();
     qDebug() << "EXITING" << __func__;
 }
 

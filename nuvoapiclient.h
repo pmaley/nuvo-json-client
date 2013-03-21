@@ -90,11 +90,16 @@ private:
     QString avChannel, currentBrowseChannel, zonesChannel, currentReBrowseChannel, currentNowPlayingContextMenuChannel;
 
     QMap<QString, QJsonObject> channels;
+    QMap<int, QString> channelsToReopen;
     QStack<QString> browseChannelStack;
+    QList<QString> channelsToClose;
+
+    void replaceChannel(int reqId, QString newChannel);
 
     void subscribeToChannelList();
     void unsubscribe(QString channel);
     void channelClosed(QString channel);
+    void channelRemoved(QString channel);
     int sendKeepAlive(QString channel);
 
     void updateDisplay(QString channel, int index);
