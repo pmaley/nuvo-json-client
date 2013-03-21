@@ -342,7 +342,7 @@ void NuvoApiClient::printChannels()
     QMapIterator<QString, QJsonObject> i(channels);
      while (i.hasNext()) {
          i.next();
-         qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString() << i.value().keys() << i.value().isEmpty();
+         qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString();
      }
 
 }
