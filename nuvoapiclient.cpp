@@ -258,6 +258,7 @@ void NuvoApiClient::parseJsonMessage(QString result)
 
     if (channel == avChannel)
     {
+
         emit refreshDisplay();
     }
     else if (channel == currentBrowseChannel)
@@ -363,17 +364,19 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         QString id(current.value("id").toString());
         QString type(current.value("type").toString());
 
-        if (id == "info"){
-            parseTrackMetadata();
-        } else
+//        if (id == "info"){
+//            parseTrackMetadata();
+//        } else
         if ( type == "value"){
             updateDisplay(channel,i);
-        } else if ( id == "trackItem"){
-            QString contextUrl(current.value("context").toObject().value("url").toString());
+        } else if ( id == "context"){
+            //QString contextUrl(current.value("context").toObject().value("url").toString());
+            QString contextUrl(current.value("url").toString());
             if (!contextUrl.isEmpty())
                 currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
         }
     }
+    parseTrackMetadata();
 
     qDebug() << "EXITING" << __func__;
 }
@@ -512,14 +515,18 @@ void NuvoApiClient::parseTrackMetadata(){
     qDebug() << "ENTERING" << __func__;
     QJsonObject obj = findAvItem("info");
 
-    // This is awful, don't put style information ANYWHERE in this class
+    QJsonObject timeObj = findAvItem("time");
+    progressMax = (int)timeObj.value("maxDouble").toDouble();
+    progressPos = (int)timeObj.value("value").toObject().value("double").toDouble();
+    emit progressBarChanged();
+
     metadata1 = QString(obj.value("title").toString());
     metadata2 = QString(obj.value("description").toString());
     metadata3 = QString(obj.value("longDescription").toString());
 
+    emit albumArtCleared();
     QUrl url(obj.value("icon").toString());
     if ( !url.isEmpty() ){
-        emit albumArtCleared();
         QNetworkRequest request(url);
         m_netwManager->get(request);
     }

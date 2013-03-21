@@ -486,6 +486,10 @@ void Dialog::updateVolume()
 void Dialog::updateProgressBar(){
     trackProgressBar->setMaximum(nuvo->progressMax);
     trackProgressBar->setValue(nuvo->progressPos);
+    QString time = QDateTime::fromTime_t(trackProgressBar->value()).toString("mm:ss");
+    QString timeMax = QDateTime::fromTime_t(trackProgressBar->maximum()).toString("mm:ss");
+    progressCurrent->setText(time);
+    progressMax->setText(timeMax);
 }
 
 void Dialog::updateMetadata()
