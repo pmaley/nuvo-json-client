@@ -154,6 +154,14 @@ void NuvoApiClient::unsubscribe(QString channel)
     sendRequest(closeRequest);
 }
 
+void NuvoApiClient::unsafe_unsubscribe(QString channel)
+{
+    QString channelString( tr("{ \"channels\" : [\"%1\"] }").arg(channel) );
+    QString closeRequest( tr("{ \"method\" : \"close\", \"params\" : %2 }\n").arg(channelString) );
+    sendRequest(closeRequest);
+}
+
+
 void NuvoApiClient::subscribeToChannelList()
 {
     currentAvRequestNum = browseContainer("/stable/av/");
@@ -277,9 +285,10 @@ void NuvoApiClient::parseJsonMessage(QString result)
 void NuvoApiClient::replaceChannel(int reqId, QString newChannel)
 {
     qDebug() << "ENTERING" << __func__;
-    qDebug() << currentBrowseChannel << avChannel << zonesChannel << currentNowPlayingContextMenuChannel;
-
     QString oldChannel(channelsToReopen[reqId]);
+
+    qDebug() << currentBrowseChannel << avChannel << zonesChannel << currentNowPlayingContextMenuChannel;
+    qDebug() << newChannel << oldChannel;
 
     if (browseChannelStack.contains(oldChannel)){
         int index = browseChannelStack.indexOf(oldChannel);
@@ -333,7 +342,7 @@ void NuvoApiClient::printChannels()
     QMapIterator<QString, QJsonObject> i(channels);
      while (i.hasNext()) {
          i.next();
-         qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString() << i.value().keys();
+         qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString() << i.value().keys() << i.value().isEmpty();
      }
 
 }
@@ -350,6 +359,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 {
     qDebug() << "ENTERING" << __func__;
     qDebug() << "ID: " << obj.value("id").toString();
+    printChannels();
 
     int id = obj.value("id").toString().toInt();
     QString channel = obj.value("channel").toString();

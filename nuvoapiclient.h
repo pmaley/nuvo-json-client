@@ -99,6 +99,7 @@ private:
 
     void subscribeToChannelList();
     void unsubscribe(QString channel);
+    void unsafe_unsubscribe(QString channel);
     void channelClosed(QString channel);
     void channelRemoved(QString channel);
     int sendKeepAlive(QString channel);
