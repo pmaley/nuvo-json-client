@@ -258,7 +258,6 @@ void NuvoApiClient::parseJsonMessage(QString result)
 
     if (channel == avChannel)
     {
-
         emit refreshDisplay();
     }
     else if (channel == currentBrowseChannel)
