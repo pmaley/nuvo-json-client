@@ -128,6 +128,7 @@ void Dialog::createBrowseBox()
     browseView->setAlternatingRowColors(true);
     browseModel = new QStandardItemModel(0, 1);
     browseView->setModel(browseModel);
+    connect(browseView, SIGNAL(activated(QModelIndex)),this, SLOT(browseItemClicked(QModelIndex)));
     connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
 
     layout->addWidget(backBrowseButton, 0, 0, 1, 1);
@@ -480,7 +481,7 @@ void Dialog::updateProgressBar(){
 void Dialog::updateMetadata()
 {
     labels[0]->setText(nuvo->metadata1);
-    labels[1]->setText(nuvo->metadata2);
+    labels[1]->setText(tr("<b>%1</b>").arg(nuvo->metadata2));
     labels[2]->setText(nuvo->metadata3);
     updateNowPlayingContextMenu();
 }

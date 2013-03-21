@@ -514,7 +514,7 @@ void NuvoApiClient::parseTrackMetadata(){
 
     // This is awful, don't put style information ANYWHERE in this class
     metadata1 = QString(obj.value("title").toString());
-    metadata2 = QString(tr("<b>%1</b>").arg(obj.value("description").toString()));
+    metadata2 = QString(obj.value("description").toString());
     metadata3 = QString(obj.value("longDescription").toString());
 
     QUrl url(obj.value("icon").toString());
