@@ -1,3 +1,5 @@
+TARGET = "NuVo Player"
+
 QT += widgets network script
 
 HEADERS     = dialog.h \
