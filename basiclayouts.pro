@@ -1,5 +1,7 @@
 TARGET = "NuVo Player"
 
+!mac:LIBS += -ldns_sd
+
 QT += widgets network script
 
 HEADERS     = dialog.h \
