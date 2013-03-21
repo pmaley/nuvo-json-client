@@ -64,7 +64,6 @@ Dialog::Dialog()
                 this, SLOT(updateRecords(const QList<BonjourRecord> &)));
 
     statusOverlay = new Overlay(nowPlayingBox);
-    statusOverlay->setText("are you still there?");
     statusOverlay->hide();
 
     connect(statusOverlay, SIGNAL(mouseClickEvent()), statusOverlay, SLOT(hide()));
@@ -108,12 +107,10 @@ Dialog::~Dialog()
 
 void Dialog::dnsRecordResolved(const QHostInfo & info, int port){
     QString address(info.addresses().takeFirst().toString());
-    qDebug() << address << port;
     hostCombo->setText(address);
-    portLineEdit->setText(QString(tr("%1").arg(port)));
+    portLineEdit->setText(QString::number(port));
     nuvo->connectToHost(address, port);
     overlay->hide();
-    this->setEnabled(true);
 }
 
 void Dialog::createBrowseBox()
