@@ -128,6 +128,7 @@ void Dialog::createBrowseBox()
     browseView->setAlternatingRowColors(true);
     browseModel = new QStandardItemModel(0, 1);
     browseView->setModel(browseModel);
+    browseView->setEditTriggers(NULL);
     connect(browseView, SIGNAL(activated(QModelIndex)),this, SLOT(browseItemClicked(QModelIndex)));
     connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
 
