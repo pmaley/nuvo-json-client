@@ -95,6 +95,7 @@ private:
     QList<QString> channelsToClose;
 
     void replaceChannel(int reqId, QString newChannel);
+    void printChannels();
 
     void subscribeToChannelList();
     void unsubscribe(QString channel);

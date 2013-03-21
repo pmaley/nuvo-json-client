@@ -276,6 +276,9 @@ void NuvoApiClient::parseJsonMessage(QString result)
 
 void NuvoApiClient::replaceChannel(int reqId, QString newChannel)
 {
+    qDebug() << "ENTERING" << __func__;
+    qDebug() << currentBrowseChannel << avChannel << zonesChannel << currentNowPlayingContextMenuChannel;
+
     QString oldChannel(channelsToReopen[reqId]);
 
     if (browseChannelStack.contains(oldChannel)){
@@ -293,6 +296,9 @@ void NuvoApiClient::replaceChannel(int reqId, QString newChannel)
 
     channelsToReopen.remove(reqId);
     channels.remove(oldChannel);
+    qDebug() << "CHANNELS:" << channels.keys();
+    printChannels();
+    qDebug() << "EXITING" << __func__;
 }
 
 void NuvoApiClient::channelClosed(QString channel)
@@ -300,6 +306,8 @@ void NuvoApiClient::channelClosed(QString channel)
 
     qDebug() << "CHANNEL CLOSED" << channel;
     qDebug() << "CHANNELS TO CLOSE:" << channelsToClose;
+    qDebug() << "CHANNELS BEFORE:" << channels.keys();
+
     if ( channelsToClose.contains(channel) )
     {
         channelsToClose.removeAll(channel);
@@ -312,23 +320,22 @@ void NuvoApiClient::channelClosed(QString channel)
         int reqId = browseContainer(url);
 
         channelsToReopen[reqId] = QString(channel);
-
-//        if (channel == avChannel){
-//            currentAvRequestNum = reqId;
-//        } else if (channel == currentBrowseChannel){
-//            currentBrowseRequestNum = reqId;
-//        } else if (channel == zonesChannel){
-//            currentZonesRequestNum = reqId;
-//        } else if (channel == currentNowPlayingContextMenuChannel){
-//            currentNowPlayingContextMenuRequestNum = reqId;
-//        } else if (browseChannelStack.contains(channel)){
-//            //browseChannelStack.remove(browseChannelStack.indexOf(channel));
-//            browseChannelStack.clear();
-//            currentBrowseRequestNum = browseContainer("/stable/music/");
-//        }
     }
 
-    qDebug() << "CHANNELS:" << channels.keys();
+    qDebug() << "CHANNELS AFTER:" << channels.keys();
+    printChannels();
+}
+
+void NuvoApiClient::printChannels()
+{
+
+    qDebug() << QTime::currentTime() << QTime::currentTime().msec();
+    QMapIterator<QString, QJsonObject> i(channels);
+     while (i.hasNext()) {
+         i.next();
+         qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString() << i.value().keys();
+     }
+
 }
 
 void NuvoApiClient::channelRemoved(QString channel)
@@ -336,6 +343,7 @@ void NuvoApiClient::channelRemoved(QString channel)
     qDebug() << "CHANNEL REMOVED" << channel;
     channels.remove(channel);
     qDebug() << "CHANNELS:" << channels.keys();
+    printChannels();
 }
 
 void NuvoApiClient::parseReplyMessage(QJsonObject obj)
@@ -356,6 +364,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     // then set the container in the hash
     if (count == length)
     {
+        qDebug() << "SETTING CHANNEL" << channel;
         channels[channel] = QJsonObject(obj.value("result").toObject());
     }
     // If channel exists, browse result is incomplete, and
@@ -363,6 +372,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     // then set the container in the hash, and continue browsing container
     else if (count != length && channel != currentReBrowseChannel)
     {
+        qDebug() << "SETTING CHANNEL" << channel;
         channels[channel] = QJsonObject(obj.value("result").toObject());
         currentReBrowseChannel = channel;
         int objLen = channels[channel].value("children").toArray().size();
@@ -427,20 +437,20 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         QString id(current.value("id").toString());
         QString type(current.value("type").toString());
 
-//        if (id == "info"){
-//            parseTrackMetadata();
-//        } else
         if ( type == "value"){
             updateDisplay(channel,i);
         } else if ( id == "context"){
             //QString contextUrl(current.value("context").toObject().value("url").toString());
             QString contextUrl(current.value("url").toString());
+            qDebug() << "BROWSE CONTEXT URL" << contextUrl;
             if (!contextUrl.isEmpty())
                 currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
         }
     }
+
     parseTrackMetadata();
     qDebug() << "CHANNELS:" << channels.keys();
+    printChannels();
     qDebug() << "EXITING" << __func__;
 }
 
