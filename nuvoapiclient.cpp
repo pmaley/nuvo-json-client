@@ -529,8 +529,7 @@ void NuvoApiClient::loadAv(int index)
     QString url( tr("\"%1load\"").arg(channels[avChannel].value("item").toObject().value("url").toString()) );
     QString reqItem(QJsonDocument(channels[currentBrowseChannel].value("children").toArray().at(index).toObject()).toJson());
     QString parentItem( QJsonDocument(channels[currentBrowseChannel].value("item").toObject()).toJson());
-    QString item ( tr( "{ \"item\": %1, \"parent\": %2, \"index\": %3 }").arg(reqItem,parentItem,QString::number(index)) );
-    QString context( tr("{ \"item\": %1 }").arg(item) );
+    QString context ( tr( "{ \"item\": %1, \"parent\": %2, \"index\": %3 }").arg(reqItem,parentItem,QString::number(index)) );
     QString params( tr("{\"context\": %1 }").arg(context));
     QString request( tr("{ \"url\" : %1, \"method\" : \"invoke\", \"params\" : %2 }").arg(url, params) );
     sendRequest(request);
