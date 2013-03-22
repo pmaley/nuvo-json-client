@@ -447,7 +447,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         QString id(current.value("id").toString());
         QString type(current.value("type").toString());
 
-        if ( type == "value"){
+        if (id == "info"){
+            parseTrackMetadata();
+        } else if ( type == "value"){
             updateDisplay(channel,i);
         } else if ( id == "context"){
             //QString contextUrl(current.value("context").toObject().value("url").toString());
@@ -458,7 +460,6 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         }
     }
 
-    parseTrackMetadata();
     qDebug() << "CHANNELS:" << channels.keys();
     printChannels();
     qDebug() << "EXITING" << __func__;
