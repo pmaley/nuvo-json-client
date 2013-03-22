@@ -11,7 +11,7 @@ Dialog::Dialog()
     //connect(nowPlayingContextMenu,SIGNAL())
     //nowPlayingContextMenu->
 
-
+    resolver = NULL;
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
     connect(nuvo, SIGNAL(albumArtCleared()), this, SLOT(clearAlbumArt()));
@@ -70,8 +70,6 @@ Dialog::Dialog()
 
     overlay = new Overlay(this);
     overlay->setText("Connecting to system...");
-    overlay->show();
-
 }
 
 void Dialog::resizeEvent(QResizeEvent *event) {
@@ -88,7 +86,6 @@ void Dialog::updateRecords(
         qDebug() << record.serviceName;
         QVariant variant;
         variant.setValue(record);
-
         if (!resolver) {
             resolver = new BonjourResolver(this);
             connect(resolver, SIGNAL(bonjourRecordResolved(const QHostInfo &, int)),
