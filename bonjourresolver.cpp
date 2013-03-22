@@ -2,7 +2,7 @@
 #include <QtNetwork/QHostInfo>
 
 #include "bonjourrecord.h"
-#include "BonjourResolver.h"
+#include "bonjourresolver.h"
 
 BonjourResolver::BonjourResolver(QObject *parent)
     : QObject(parent), dnssref(0), bonjourSocket(0), bonjourPort(-1)
