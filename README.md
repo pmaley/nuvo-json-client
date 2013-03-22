@@ -15,11 +15,20 @@ Steps to build:
 	- Ubuntu:	'chmod a+x' .run file
 				run from command line
 
-4) Open basiclayouts.pro in QT Creator
+4) Install Bonjour library (Linux only)
+  - Download Bonjour: http://www.macosforge.org
+  	- http://www.opensource.apple.com/tarballs/mDNSResponder/mDNSResponder-320.10.80.tar.gz
+  - Build:
+  	- untar /mDNSResponder-320.10.80.tar.gz	
+  	- cd to 'mDNSResponder-320.10.80/mDNSPosix/'
+  	- Run "make os=linux install"
 
-5) In QT Creator, click "configure project" button
 
-6) From build menu, select "Run"
+5) Open basiclayouts.pro in QT Creator
+
+6) In QT Creator, click "configure project" button
+
+7) From build menu, select "Run"
 
 
 
