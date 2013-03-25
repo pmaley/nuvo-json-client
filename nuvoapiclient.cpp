@@ -484,7 +484,7 @@ void NuvoApiClient::browseNowPlayingContextMenu()
 void NuvoApiClient::browseBrowseContextMenu(int index)
 {
     QJsonObject obj = findBrowseItem(index);
-    QString contextUrl(obj.value("url").toString());
+    QString contextUrl(obj.value("nsdk").toObject().value("context").toObject().value("path").toString());
     if (!contextUrl.isEmpty()) {
         currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
     }
