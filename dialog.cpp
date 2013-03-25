@@ -558,8 +558,10 @@ void Dialog::populateContextMenu()
     for (int i = 0; i < items.size(); i++){
         nowPlayingContextMenu->addAction(items.at(i),this,SLOT(contextMenuItemSelected()));
     }
-    if (items.size() > 0)
-        nowPlayingContextMenu->exec(imageLabel->mapToGlobal(*pendingMenuLocation));
+    if (items.size() > 0){
+        //nowPlayingContextMenu->exec(imageLabel->mapToGlobal(*pendingMenuLocation));
+        nowPlayingContextMenu->exec(*pendingMenuLocation);
+    }
 }
 
 void Dialog::closeContextMenu()
