@@ -277,9 +277,9 @@ void NuvoApiClient::parseJsonMessage(QString result)
     }
     else if (channel == zonesChannel)
     {
-        qDebug() << "ZONE LIST CHANGED";
         emit zoneListChanged();
-    } else if (channel == currentNowPlayingContextMenuChannel)
+    }
+    else if (channel == currentNowPlayingContextMenuChannel)
     {
         emit contextMenuLoaded();
     }
@@ -427,6 +427,7 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
     if ( id == currentAvRequestNum )
     {
         avChannel = channel;
+        parseTrackMetadata();
     }
     else if ( id == currentZonesRequestNum )
     {
@@ -624,9 +625,11 @@ void NuvoApiClient::parseTrackMetadata(){
     metadata3 = QString(obj.value("longDescription").toString());
 
     emit albumArtCleared();
+    currentArtUrl = "";
     QUrl url(obj.value("icon").toString());
     if ( !url.isEmpty() ){
         QNetworkRequest request(url);
+        currentArtUrl = url.toString();
         m_netwManager->get(request);
     }
     qDebug() << "EXITING" << __func__;
@@ -640,9 +643,12 @@ void NuvoApiClient::slot_netwManagerFinished(QNetworkReply *reply)
         return;
     }
 
-    QByteArray jpegData = reply->readAll();
-    albumArt.loadFromData(jpegData);
-    emit albumArtChanged();
+    if (reply->url().toString() == currentArtUrl)
+    {
+        QByteArray jpegData = reply->readAll();
+        albumArt.loadFromData(jpegData);
+        emit albumArtChanged();
+    }
 }
 
 void NuvoApiClient::tcpError(QAbstractSocket::SocketError socketError)

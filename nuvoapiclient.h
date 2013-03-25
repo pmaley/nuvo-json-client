@@ -91,6 +91,7 @@ private:
     QString currentMessage;
     int currentBrowseRequestNum, currentAvRequestNum, currentZonesRequestNum, currentNowPlayingContextMenuRequestNum;
     QString avChannel, currentBrowseChannel, zonesChannel, currentReBrowseChannel, currentNowPlayingContextMenuChannel;
+    QString currentArtUrl;
 
     QMap<QString, QJsonObject> channels;
     QMap<int, QString> channelsToReopen;

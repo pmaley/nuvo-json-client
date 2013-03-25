@@ -488,11 +488,13 @@ void Dialog::displayErrorMessage(const QString &err){
 
 void Dialog::clearAlbumArt()
 {
+    qDebug() << "CLEAR ALBUM ART";
     imageLabel->setPixmap(placeholderArt->scaledToWidth(200));
 }
 
 void Dialog::updateAlbumArt()
 {
+    qDebug() << "UPDATE ALBUM ART";
     imageLabel->setPixmap(nuvo->albumArt.scaledToWidth(100));
 }
 
