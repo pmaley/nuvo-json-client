@@ -21,10 +21,11 @@ NuvoApiClient::NuvoApiClient(QObject *parent) : QObject(parent)
 
 void NuvoApiClient::changeCurrentZone(QString zoneTitle)
 {
+    qDebug() << "CHANGE CURRENT ZONE";
     QJsonObject zone = findZone(zoneTitle);
     QString url(zone.value("url").toString());
     currentAvRequestNum = browseContainer(url);
-    if (!avChannel.isEmpty())
+    if (!avChannel.isEmpty() && !channels[avChannel].isEmpty())
         unsubscribe(avChannel);
 }
 
@@ -129,11 +130,14 @@ QList<QString> NuvoApiClient::getBrowseItems()
 
 QList<QString> NuvoApiClient::getChildTitles(QString channel)
 {
+    qDebug() << "ENTERING" << __func__;
     QList<QString> list;
     QJsonArray children = channels[channel].value("children").toArray();
     for (int i = 0; i < children.size(); i++){
+        qDebug() << QString(children.at(i).toObject().value("title").toString());
         list.append(QString(children.at(i).toObject().value("title").toString()));
     }
+    qDebug() << "EXITING" << __func__;
     return list;
 }
 
@@ -276,6 +280,7 @@ void NuvoApiClient::parseJsonMessage(QString result)
     }
     else if (channel == zonesChannel)
     {
+        qDebug() << "ZONE LIST CHANGED";
         emit zoneListChanged();
     }
 
@@ -322,7 +327,7 @@ void NuvoApiClient::channelClosed(QString channel)
         channelsToClose.removeAll(channel);
         channels.remove(channel);
     }
-    else if ( channels.contains(channel) )
+    else if ( channels.contains(channel) && !channels[channel].isEmpty())
     {
         QString url = channels[channel].value("item").toObject().value("url").toString();
         qDebug() << "Re-opening channel" << channel << "at:" << url;
@@ -342,7 +347,9 @@ void NuvoApiClient::printChannels()
     QMapIterator<QString, QJsonObject> i(channels);
      while (i.hasNext()) {
          i.next();
-         qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString();
+         if (!i.value().isEmpty()){
+            qDebug() << i.key() << ": " << i.value().value("item").toObject().value("url").toString();
+         }
      }
 
 }
@@ -454,9 +461,9 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
         } else if ( id == "context"){
             //QString contextUrl(current.value("context").toObject().value("url").toString());
             QString contextUrl(current.value("url").toString());
-            qDebug() << "BROWSE CONTEXT URL" << contextUrl;
-            if (!contextUrl.isEmpty())
-                currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
+//            qDebug() << "BROWSE CONTEXT URL" << contextUrl;
+//            if (!contextUrl.isEmpty())
+//                currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
         }
     }
 

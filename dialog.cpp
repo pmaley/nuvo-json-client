@@ -3,13 +3,8 @@
 
 Dialog::Dialog()
 {
-    //this->setDisabled(true);
-
     placeholderArt = new QPixmap(":/images/default_album_art_large@2x.png");
     nowPlayingContextMenu = new QMenu(this);
-    //nowPlayingContextMenu->addAction("Test action");
-    //connect(nowPlayingContextMenu,SIGNAL())
-    //nowPlayingContextMenu->
 
     resolver = NULL;
     nuvo = new NuvoApiClient();
@@ -465,12 +460,15 @@ void Dialog::contextMenuItemSelected()
 
 void Dialog::updateZonesList()
 {
+    qDebug() << "ENTERING" << __func__;
     QList<QString> items = nuvo->getZonesList();
     zonesCombo->clear();
     for (int i = 0; i < items.size(); i++){
+        qDebug() << items.at(i);
         zonesCombo->addItem(items.at(i));
     }
     redisplay();
+    qDebug() << "EXITING" << __func__;
 }
 
 void Dialog::updateVolume()
