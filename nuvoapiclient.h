@@ -74,6 +74,7 @@ signals:
 
 public slots:
     void browseNowPlayingContextMenu();
+    void browseBrowseContextMenu(int index);
     void disconnectFromHost();
     void messageReceived();
     void tcpError(QAbstractSocket::SocketError socketError);
@@ -125,6 +126,7 @@ private:
 
     QJsonObject findZone(QString zoneTitle);
     QJsonObject findAvItem(QString id);
+    QJsonObject findBrowseItem(int index);
 
     
 };

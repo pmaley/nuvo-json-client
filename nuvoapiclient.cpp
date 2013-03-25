@@ -79,6 +79,12 @@ QJsonObject NuvoApiClient::findAvItem(QString id)
     return QJsonObject(QJsonValue(QString("error")).toObject());
 }
 
+QJsonObject NuvoApiClient::findBrowseItem(int index)
+{
+    QJsonArray children = channels[currentBrowseChannel].value("children").toArray();
+    return children.at(index).toObject();
+}
+
 bool NuvoApiClient::getItemActive(QString id)
 {
     QJsonArray children = channels[avChannel].value("children").toArray();
@@ -470,6 +476,14 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
 void NuvoApiClient::browseNowPlayingContextMenu()
 {
     QJsonObject obj = findAvItem("context");
+    QString contextUrl(obj.value("url").toString());
+    if (!contextUrl.isEmpty()) {
+        currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
+    }
+}
+void NuvoApiClient::browseBrowseContextMenu(int index)
+{
+    QJsonObject obj = findBrowseItem(index);
     QString contextUrl(obj.value("url").toString());
     if (!contextUrl.isEmpty()) {
         currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);

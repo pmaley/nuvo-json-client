@@ -153,6 +153,7 @@ private slots:
     void clearConsoleWindow();
     void closeContextMenu();
     void updateNowPlayingContextMenu(const QPoint& Pos);
+    void updateBrowseContextMenu(const QPoint& Pos);
 };
 
 #endif // DIALOG_H

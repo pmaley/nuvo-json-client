@@ -127,6 +127,9 @@ void Dialog::createBrowseBox()
     connect(browseView, SIGNAL(activated(QModelIndex)),this, SLOT(browseItemClicked(QModelIndex)));
     connect(browseView, SIGNAL(clicked(QModelIndex)), this, SLOT(browseItemClicked(QModelIndex)));
 
+    browseView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(browseView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(updateBrowseContextMenu(QPoint)));
+
     layout->addWidget(backBrowseButton, 0, 0, 1, 1);
     layout->addWidget(zonesCombo, 0, 1, 1, 4);
     layout->addWidget(browseView, 1, 0, 1, 5);
@@ -579,3 +582,11 @@ void Dialog::contextMenuItemSelected()
     //qDebug() << "SELECTED" << QString(nowPlayingContextMenu->activeAction()->text());
 }
 
+void Dialog::updateBrowseContextMenu(const QPoint& Pos)
+{
+    qDebug() << "CONTEXT MENU REQUESTED:" << browseView->currentIndex().row();
+    if (pendingMenuLocation != NULL)
+        delete pendingMenuLocation;
+    pendingMenuLocation = new QPoint(Pos);
+    nuvo->browseBrowseContextMenu(browseView->currentIndex().row());
+}
