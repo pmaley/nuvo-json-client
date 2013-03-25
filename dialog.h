@@ -61,6 +61,7 @@ private:
     enum { NumGridRows = 3, NumButtons = 5 };
     NuvoApiClient* nuvo;
     QPixmap *placeholderArt;
+    QPoint *pendingMenuLocation;
 
     QMenu *nowPlayingContextMenu;
     QSplitter *splitter;
@@ -127,6 +128,7 @@ private slots:
     void hideButtonPressed();
     void zoneSelected(QString zone);
     void clearBrowseWindow();
+    void populateContextMenu();
 
     void contextMenuItemSelected();
 
@@ -149,8 +151,8 @@ private slots:
     void updateRecords(const QList<BonjourRecord> &list);
     void dnsRecordResolved(const QHostInfo &info, int port);
     void clearConsoleWindow();
-    void showContextMenu(const QPoint& Pos);
-    void updateNowPlayingContextMenu();
+    void closeContextMenu();
+    void updateNowPlayingContextMenu(const QPoint& Pos);
 };
 
 #endif // DIALOG_H

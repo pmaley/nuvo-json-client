@@ -130,14 +130,11 @@ QList<QString> NuvoApiClient::getBrowseItems()
 
 QList<QString> NuvoApiClient::getChildTitles(QString channel)
 {
-    qDebug() << "ENTERING" << __func__;
     QList<QString> list;
     QJsonArray children = channels[channel].value("children").toArray();
     for (int i = 0; i < children.size(); i++){
-        qDebug() << QString(children.at(i).toObject().value("title").toString());
         list.append(QString(children.at(i).toObject().value("title").toString()));
     }
-    qDebug() << "EXITING" << __func__;
     return list;
 }
 
@@ -282,6 +279,9 @@ void NuvoApiClient::parseJsonMessage(QString result)
     {
         qDebug() << "ZONE LIST CHANGED";
         emit zoneListChanged();
+    } else if (channel == currentNowPlayingContextMenuChannel)
+    {
+        emit contextMenuLoaded();
     }
 
     qDebug() << "EXITING" << __func__;
@@ -458,18 +458,27 @@ void NuvoApiClient::parseReplyMessage(QJsonObject obj)
             parseTrackMetadata();
         } else if ( type == "value"){
             updateDisplay(channel,i);
-        } else if ( id == "context"){
-            //QString contextUrl(current.value("context").toObject().value("url").toString());
-            QString contextUrl(current.value("url").toString());
-//            qDebug() << "BROWSE CONTEXT URL" << contextUrl;
-//            if (!contextUrl.isEmpty())
-//                currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
         }
     }
 
     qDebug() << "CHANNELS:" << channels.keys();
     printChannels();
     qDebug() << "EXITING" << __func__;
+}
+
+void NuvoApiClient::browseNowPlayingContextMenu()
+{
+    QJsonObject obj = findAvItem("context");
+    QString contextUrl(obj.value("url").toString());
+    if (!contextUrl.isEmpty()) {
+        currentNowPlayingContextMenuRequestNum = browseContainer(contextUrl);
+    }
+}
+void NuvoApiClient::closeNowPlayingContextMenu()
+{
+    if (!currentNowPlayingContextMenuChannel.isEmpty()){
+        unsubscribe(currentNowPlayingContextMenuChannel);
+    }
 }
 
 void NuvoApiClient::parseEventMessage(QJsonObject obj)

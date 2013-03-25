@@ -5,7 +5,11 @@ Dialog::Dialog()
 {
     placeholderArt = new QPixmap(":/images/default_album_art_large@2x.png");
     nowPlayingContextMenu = new QMenu(this);
+    connect(nowPlayingContextMenu,SIGNAL(aboutToHide()),this,SLOT(closeContextMenu()));
+    //connect(nowPlayingContextMenu,SIGNAL(aboutToShow()),this,SLOT(updateNowPlayingContextMenu()));
 
+
+    pendingMenuLocation = NULL;
     resolver = NULL;
     nuvo = new NuvoApiClient();
     connect(nuvo, SIGNAL(albumArtChanged()), this, SLOT(updateAlbumArt()));
@@ -21,6 +25,8 @@ Dialog::Dialog()
     connect(nuvo, SIGNAL(refreshDisplay()), this, SLOT(redisplay()));
     connect(nuvo, SIGNAL(zoneListChanged()), this, SLOT(updateZonesList()));
     connect(nuvo, SIGNAL(browseListCleared()), this, SLOT(clearBrowseWindow()));
+
+    connect(nuvo, SIGNAL(contextMenuLoaded()), this, SLOT(populateContextMenu()));
 
     createMenu();
     createTransportControlsBox();
@@ -266,8 +272,7 @@ void Dialog::createMetadataBox()
     imageLabel = new QLabel();
     imageLabel->setPixmap(placeholderArt->scaledToWidth(200));
     imageLabel->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(imageLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showContextMenu(QPoint)));
-
+    connect(imageLabel, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(updateNowPlayingContextMenu(QPoint)));
 
     layout->addWidget(imageLabel);
     for (int i = 0; i < NumGridRows; ++i) {
@@ -443,21 +448,6 @@ void Dialog::redisplay(){
     }
 }
 
-void Dialog::updateNowPlayingContextMenu()
-{
-    QList<QString> items = nuvo->getNowPlayingContextItems();
-    nowPlayingContextMenu->clear();
-    for (int i = 0; i < items.size(); i++){
-        nowPlayingContextMenu->addAction(items.at(i),this,SLOT(contextMenuItemSelected()));
-    }
-}
-void Dialog::contextMenuItemSelected()
-{
-    qDebug() << "ITEM SELECTED";
-    qDebug() << nowPlayingContextMenu->actions().length();
-//    qDebug() << "SELECTED" << QString(nowPlayingContextMenu->activeAction()->text());
-}
-
 void Dialog::updateZonesList()
 {
     qDebug() << "ENTERING" << __func__;
@@ -490,7 +480,6 @@ void Dialog::updateMetadata()
     labels[0]->setText(nuvo->metadata1);
     labels[1]->setText(tr("<b>%1</b>").arg(nuvo->metadata2));
     labels[2]->setText(nuvo->metadata3);
-    updateNowPlayingContextMenu();
 }
 
 void Dialog::displayErrorMessage(const QString &err){
@@ -557,9 +546,34 @@ void Dialog::clearConsoleWindow()
     consoleTextEdit->clear();
 }
 
-void Dialog::showContextMenu(const QPoint& Pos)
+void Dialog::populateContextMenu()
 {
-    nowPlayingContextMenu->exec(imageLabel->mapToGlobal(Pos));
+    QList<QString> items = nuvo->getNowPlayingContextItems();
+    nowPlayingContextMenu->clear();
+    for (int i = 0; i < items.size(); i++){
+        nowPlayingContextMenu->addAction(items.at(i),this,SLOT(contextMenuItemSelected()));
+    }
+    if (items.size() > 0)
+        nowPlayingContextMenu->exec(imageLabel->mapToGlobal(*pendingMenuLocation));
 }
 
+void Dialog::closeContextMenu()
+{
+    nuvo->closeNowPlayingContextMenu();
+}
+
+void Dialog::updateNowPlayingContextMenu(const QPoint& Pos)
+{
+    if (pendingMenuLocation != NULL)
+        delete pendingMenuLocation;
+    pendingMenuLocation = new QPoint(Pos);
+    nuvo->browseNowPlayingContextMenu();
+}
+
+void Dialog::contextMenuItemSelected()
+{
+    qDebug() << "ITEM SELECTED";
+    qDebug() << nowPlayingContextMenu->actions().length();
+    //qDebug() << "SELECTED" << QString(nowPlayingContextMenu->activeAction()->text());
+}
 

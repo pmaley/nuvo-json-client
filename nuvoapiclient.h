@@ -70,8 +70,10 @@ signals:
     void refreshDisplay();
     void zoneListChanged();
     void browseListCleared();
+    void contextMenuLoaded();
 
 public slots:
+    void browseNowPlayingContextMenu();
     void disconnectFromHost();
     void messageReceived();
     void tcpError(QAbstractSocket::SocketError socketError);
@@ -82,6 +84,7 @@ public slots:
     int continueBrowseContainer(QString channel, int startIndex = 0);
     void browseUpOne();
     void changeCurrentZone(QString zoneId);
+    void closeNowPlayingContextMenu();
 
 private:
     int requestNum;
