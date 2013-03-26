@@ -621,8 +621,8 @@ void NuvoApiClient::parseTrackMetadata(){
     emit progressBarChanged();
 
     metadata1 = QString(obj.value("title").toString());
-    metadata2 = QString(obj.value("description").toString());
-    metadata3 = QString(obj.value("longDescription").toString());
+    metadata2 = QString(obj.value("subtitle").toString());
+    metadata3 = QString(obj.value("description").toString());
 
     emit albumArtCleared();
     currentArtUrl = "";
