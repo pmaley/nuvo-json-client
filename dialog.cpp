@@ -310,7 +310,7 @@ void Dialog::createNowPlayingBox()
     nowPlayingBox->setLayout(layout);
 }
 
-void Dialog::prevButtonPressed(){ nuvo->invokeAction("prev"); }
+void Dialog::prevButtonPressed(){ nuvo->invokeAction("previous"); }
 void Dialog::nextButtonPressed(){ nuvo->invokeAction("next"); }
 void Dialog::playButtonPressed(){ nuvo->invokeAction("play"); }
 void Dialog::pauseButtonPressed(){ nuvo->invokeAction("pause"); }
@@ -502,7 +502,7 @@ void Dialog::updateTransportControls()
 {
     likeButton->setEnabled(nuvo->getItemActive("like"));
     dislikeButton->setEnabled(nuvo->getItemActive("dislike"));
-    prevButton->setEnabled(nuvo->getItemActive("prev"));
+    prevButton->setEnabled(nuvo->getItemActive("previous"));
     nextButton->setEnabled(nuvo->getItemActive("next"));
     stopButton->setEnabled(nuvo->getItemActive("stop"));
     pauseButton->setEnabled(nuvo->getItemActive("pause"));
